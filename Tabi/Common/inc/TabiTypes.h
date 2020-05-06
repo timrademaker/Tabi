@@ -6,6 +6,12 @@
 #include <unordered_map>
 #include <memory>
 
+#if defined(_WINDOWS)
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
 namespace tabi
 {
     // Container types
@@ -49,5 +55,10 @@ namespace tabi
     constexpr auto forward(Args&&... a_Args)
     {
         return std::forward<T>(std::forward<Args>(a_Args)...);
+    }
+
+    namespace graphics
+    {
+        using WindowHandle = HWND;
     }
 }

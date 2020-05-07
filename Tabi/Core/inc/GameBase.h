@@ -4,7 +4,7 @@
 
 namespace tabi
 {
-    class GameBase
+    class TABI_EXPORT GameBase
     {
     public:
         GameBase(const char* a_Name, const int a_Width, const int a_Height, const bool a_Vsync)
@@ -16,28 +16,28 @@ namespace tabi
         * Called after the engine subsystems have been initialized.
         * @return Whether the initialization was successful or not
         */
-        virtual TABI_EXPORT bool OnInitialize() { return true; };
+        virtual bool OnInitialize() { return true; };
         
         /**
         * Called every tick, before engine systems have been updated.
         */
-        virtual TABI_EXPORT void OnUpdate(float a_DeltaTime) { TABI_UNUSED(a_DeltaTime); };
+        virtual void OnUpdate(float a_DeltaTime) { TABI_UNUSED(a_DeltaTime); };
         
         /**
         * Called after the engine's rendering has been completed.
         */
-        virtual TABI_EXPORT void OnRender() {};
+        virtual void OnRender() {};
     
         /**
         * Called before the engine shuts down.
         */
-        virtual TABI_EXPORT void OnDestroy() {};
+        virtual void OnDestroy() {};
     
     
-        TABI_EXPORT int GetWindowHeight() const { return m_Height; }
-        TABI_EXPORT int GetWindowWidth() const { return m_Width; }
-        TABI_EXPORT const char* GetWindowName() const { return m_Name; }
-        TABI_EXPORT bool VsyncEnabled() const { return m_Vsync; }
+        int GetWindowHeight() const { return m_Height; }
+        int GetWindowWidth() const { return m_Width; }
+        const char* GetWindowName() const { return m_Name; }
+        bool VsyncEnabled() const { return m_Vsync; }
         
     
     private:

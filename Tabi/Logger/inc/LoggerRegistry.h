@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TabiTypes.h>
+#include <TabiMacros.h>
 
 #include <string>
 #include <unordered_map>
@@ -17,7 +18,7 @@ namespace tabi
         /** A registry holding all created loggers.
         * There are two instances: One for the client (Game), and one for the engine (Tabi)
         */
-        class LoggerRegistry
+        class TABI_EXPORT LoggerRegistry
         {
             using LoggerName_t = tabi::string;
         public:

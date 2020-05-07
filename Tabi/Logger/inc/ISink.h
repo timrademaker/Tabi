@@ -1,5 +1,7 @@
 #pragma once
 
+#include <TabiMacros.h>
+
 #include <spdlog/sinks/base_sink.h>
 
 #include <string>
@@ -10,7 +12,7 @@ namespace tabi
     {
         /** The base sink class
         */
-        class ISink : public spdlog::sinks::base_sink<spdlog::details::null_mutex>
+        class TABI_EXPORT ISink : public spdlog::sinks::base_sink<spdlog::details::null_mutex>
         {
         public:
             using SinkMsg_t = spdlog::details::log_msg;

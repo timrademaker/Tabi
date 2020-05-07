@@ -7,7 +7,7 @@
 
 namespace tabi
 {
-    class Application
+    class TABI_EXPORT Application
     {
     public:
     
@@ -15,14 +15,14 @@ namespace tabi
         * Get the application
         * @return A reference to the application
         */
-        static TABI_EXPORT Application& Get();
+        static Application& Get();
     
         /**
         * Run the game
         * @param a_Game The user-defined game instance
         * @return The error code if an error occurred
         */
-        TABI_EXPORT int Run(tabi::shared_ptr<GameBase> a_Game);
+        int Run(tabi::shared_ptr<GameBase> a_Game);
     
     private:
         Application() {};

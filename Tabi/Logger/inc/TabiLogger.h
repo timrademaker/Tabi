@@ -2,6 +2,7 @@
 
 #include "ISink.h"
 
+#include <TabiMacros.h>
 #include <TabiTypes.h>
 
 #include <spdlog/logger.h>
@@ -16,7 +17,7 @@ namespace tabi
 
         /** Enum containing the different levels of severity for a logged message
         */
-        enum class ELogLevel
+        enum class TABI_EXPORT ELogLevel
         {
             Trace       = spdlog::level::trace,
             Debug       = spdlog::level::debug,
@@ -28,7 +29,7 @@ namespace tabi
 
         /** The Logger class
         */
-        class Logger
+        class TABI_EXPORT Logger
         {
             using SinkPtr = ISink*;
             using InternalLogLevel_t = spdlog::level::level_enum;

@@ -8,7 +8,7 @@ namespace tabi
 {
     namespace logger
     {
-        class ConsoleSink : public ISink
+        class TABI_EXPORT ConsoleSink : public ISink
         {
         public:
             ConsoleSink();

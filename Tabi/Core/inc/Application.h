@@ -1,7 +1,8 @@
 #pragma once
 
 #include "GameBase.h"
-#include "TabiTypes.h"
+
+#include <TabiPointers.h>
 
 #include <memory>
 

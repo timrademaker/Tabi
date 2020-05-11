@@ -9,22 +9,26 @@ namespace tabi
         class IWindow
         {
         public:
-            IWindow() = delete;
-            IWindow(float a_Width, float a_Height, WindowHandle a_WindowHandle)
-                : m_Width(a_Width), m_Height(a_Height), m_WindowHandle(a_WindowHandle)
-            {}
+            static tabi::shared_ptr<IWindow> OpenWindow(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
+
+
+            const char* GetWindowName() { return m_WindowName; }
+            unsigned int GetHeight() const { return m_Height; }
+            unsigned int GetWidth() const { return m_Width; }
+            WindowHandle GetHandle() const { return m_WindowHandle; }
+
+        protected:
+            IWindow()
+                : m_Width(0), m_Height(0), m_WindowHandle(nullptr)
+            { }
 
             virtual ~IWindow() = default;
 
-
-            float GetHeight() const { return m_Height; }
-            float GetWidth() const { return m_Width; }
-            WindowHandle GetHandle() const { return m_WindowHandle; }
-
-        private:
-            const float m_Width;
-            const float m_Height;
-            const WindowHandle m_WindowHandle;
+        protected:
+            const char* m_WindowName;
+            unsigned int m_Width;
+            unsigned int m_Height;
+            WindowHandle m_WindowHandle;
         };
     }
 }

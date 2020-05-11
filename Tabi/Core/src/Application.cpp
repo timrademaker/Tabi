@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <chrono>
+#include "Windows/OpenGL/OpenGLWindow.h"
 
 
 using tabi::Application;
@@ -48,6 +49,15 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         auto frameEnd = std::chrono::high_resolution_clock::now();
         deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(frameEnd - frameStart).count();
         TabiLog(ELogLevel::Trace, "DeltaTime: " + std::to_string(deltaTime));
+
+#if defined(_WINDOWS)
+        MSG msg = MSG();
+        while(PeekMessage(&msg, m_Window->GetHandle(), NULL, NULL, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+#endif
     }
     
     TabiLog(ELogLevel::Trace, "Exited game loop");
@@ -62,6 +72,8 @@ void Application::Initialize()
 {
     if (!m_Initialized)
     {
+        // Create window
+        m_Window = graphics::IWindow::OpenWindow("Test Window", 640, 480);
 
         m_Initialized = true;
     }

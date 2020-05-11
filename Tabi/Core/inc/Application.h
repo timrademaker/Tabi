@@ -4,7 +4,7 @@
 
 #include <TabiPointers.h>
 
-#include <memory>
+#include <IWindow.h>
 
 namespace tabi
 {
@@ -24,6 +24,8 @@ namespace tabi
         * @return The error code if an error occurred
         */
         int Run(tabi::shared_ptr<GameBase> a_Game);
+
+        void ExitGame() { m_Running = false; }
     
     private:
         Application() {};
@@ -33,6 +35,9 @@ namespace tabi
         void Initialize();
 
         void Destroy();
+
+    private:
+        tabi::shared_ptr<tabi::graphics::IWindow> m_Window;
 
         bool m_Running = false;
 

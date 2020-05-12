@@ -157,6 +157,11 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
         HGLRC const openGLRenderingContext = wglCreateContext(deviceContext);
         wglMakeCurrent(deviceContext, openGLRenderingContext);
         //wglDeleteContext(openGLRenderingContext);
+
+        if (!gladLoadGL())
+        {
+            logger::TabiLog(logger::ELogLevel::Warning, "Failed to initialize OpenGL context");
+        }
     }
     break;
     case WM_CLOSE:

@@ -35,7 +35,7 @@ tabi::graphics::Window* tabi::graphics::Window::Initialize(const char* a_WindowN
 
         handle = CreateWindowEx(0, wc.lpszClassName,
             a_WindowName, 
-            WS_OVERLAPPEDWINDOW | WS_VISIBLE, 
+            WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU, 
             CW_USEDEFAULT, CW_USEDEFAULT, a_Width, a_Height, 
             nullptr, nullptr, nullptr, nullptr
         );
@@ -82,8 +82,7 @@ void Window::Test()
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
         "}\0";
 
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    const unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
@@ -93,13 +92,11 @@ void Window::Test()
         "void main()\n"
         "{ FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); }\0";
 
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    const unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
 
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
+    const unsigned int shaderProgram = glCreateProgram();
 
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
@@ -122,6 +119,11 @@ void Window::DrawShit()
     glEnableVertexAttribArray(0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+Window::~Window()
+{
+    delete m_Context;
 }
 
 LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -150,7 +152,7 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
             0, 0, 0
         };
 
-        HDC deviceContext = GetDC(hWnd);
+        const HDC deviceContext = GetDC(hWnd);
         const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(deviceContext, &pfd);
         SetPixelFormat(deviceContext, letWindowsChooseThisPixelFormat, &pfd);
 
@@ -169,7 +171,6 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
         Application::Get().ExitGame();
     }
     break;
-
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

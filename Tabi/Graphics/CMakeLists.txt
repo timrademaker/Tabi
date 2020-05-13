@@ -5,7 +5,9 @@ cmake_minimum_required (VERSION 3.8)
 set(HEADERS
     inc/IWindow.h
     inc/IRenderer.h
+    inc/IContext.h
     inc/Windows/OpenGL/OpenGLWindow.h
+    inc/Windows/OpenGL/OpenGLContext.h
 )
 
 # Set sources for Graphics
@@ -13,6 +15,7 @@ set(SOURCES
     src/IRenderer.cpp
     src/IWindow.cpp
     src/Windows/OpenGL/OpenGLWindow.cpp
+    src/Windows/OpenGL/OpenGLContext.cpp
 )
 
 # Add source to this project's executable.

@@ -11,6 +11,7 @@ namespace tabi
         public:
             static tabi::shared_ptr<IWindow> OpenWindow(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
 
+            virtual void SwapBuffer() const = 0;
 
             const char* GetWindowName() { return m_WindowName; }
             unsigned int GetHeight() const { return m_Height; }
@@ -26,7 +27,7 @@ namespace tabi
 
         protected:
             const char* m_WindowName;
-            unsigned int m_Width;
+            unsigned int m_Width; // TODO: Move size to context
             unsigned int m_Height;
             WindowHandle m_WindowHandle;
         };

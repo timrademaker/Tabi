@@ -20,14 +20,14 @@ namespace tabi
 
         protected:
             IWindow()
-                : m_Width(0), m_Height(0), m_WindowHandle(nullptr)
+                : m_WindowName("IWindow"), m_Width(0), m_Height(0), m_WindowHandle(nullptr)
             { }
 
             virtual ~IWindow() = default;
 
         protected:
             const char* m_WindowName;
-            unsigned int m_Width; // TODO: Move size to context
+            unsigned int m_Width;       // TODO: Move size to context
             unsigned int m_Height;
             WindowHandle m_WindowHandle;
         };

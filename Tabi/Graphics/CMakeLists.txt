@@ -8,6 +8,8 @@ set(HEADERS
     inc/IContext.h
     inc/Windows/OpenGL/OpenGLWindow.h
     inc/Windows/OpenGL/OpenGLContext.h
+    inc/Windows/OpenGL/OpenGLRenderer.h
+    inc/Windows/OpenGL/OpenGLHelpers.h
 )
 
 # Set sources for Graphics
@@ -16,6 +18,8 @@ set(SOURCES
     src/IWindow.cpp
     src/Windows/OpenGL/OpenGLWindow.cpp
     src/Windows/OpenGL/OpenGLContext.cpp
+    src/Windows/OpenGL/OpenGLRenderer.cpp
+    src/Windows/OpenGL/OpenGLHelpers.cpp
 )
 
 # Add source to this project's executable.

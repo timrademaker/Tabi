@@ -13,13 +13,13 @@
 
 using namespace tabi::graphics;
 
-tabi::graphics::Window* tabi::graphics::Window::Initialize(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height)
+tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height)
 {
     WindowHandle handle;
     {
         const LPCSTR windowClassName = "Window Class";
 
-        WNDCLASS wc = {0};
+        WNDCLASS wc = { 0 };
         // Window procedure function - Handles messages
         wc.lpfnWndProc = ProcessMessages;
         wc.hInstance = nullptr;
@@ -30,29 +30,22 @@ tabi::graphics::Window* tabi::graphics::Window::Initialize(const char* a_WindowN
         if (!RegisterClass(&wc))
         {
             logger::TabiLog(logger::ELogLevel::Critical, "Unable to register class for window creation!");
-            return nullptr;
+            assert(false);
         }
 
         handle = CreateWindowEx(0, wc.lpszClassName,
-            a_WindowName, 
-            WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU, 
-            CW_USEDEFAULT, CW_USEDEFAULT, a_Width, a_Height, 
+            a_WindowName,
+            WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU,
+            CW_USEDEFAULT, CW_USEDEFAULT, a_Width, a_Height,
             nullptr, nullptr, nullptr, nullptr
         );
     }
-   
+    m_WindowName = a_WindowName;
+    m_Width = a_Width;
+    m_Height = a_Height;
+    m_WindowHandle = handle;
 
-    // Create instance of this class
-    Window* wnd = new Window;
-
-    wnd->m_WindowName = a_WindowName;
-    wnd->m_Width = a_Width;
-    wnd->m_Height = a_Height;
-    wnd->m_WindowHandle = handle;
-
-    wnd->Test();
-    
-    return wnd;
+    Test();
 }
 
 void Window::Test()

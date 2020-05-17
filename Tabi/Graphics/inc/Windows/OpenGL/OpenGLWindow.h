@@ -11,15 +11,14 @@ namespace tabi
         class Window : public IWindow
         {
         public:
-            static Window* Initialize(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
+            Window(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
+            virtual ~Window();
 
             virtual void SwapBuffer() const override { m_Context->SwapBuffer(); };
 
             void Test();
             void DrawShit();
         protected:
-            Window() = default;
-            virtual ~Window();
 
         private:
             Context* m_Context;

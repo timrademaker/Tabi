@@ -33,4 +33,4 @@ target_include_directories(Graphics PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 #target_include_directories(Graphics PRIVATE ${GLAD_DIR}/include)
 
 # Add libraries
-target_link_libraries(Graphics PUBLIC TabiCommon Logger Core GLAD)
+target_link_libraries(Graphics PUBLIC TabiCommon Logger Core GLAD FileSystem)

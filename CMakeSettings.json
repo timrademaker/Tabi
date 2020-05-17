@@ -7,7 +7,7 @@
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\out\\build\\${name}",
             "installRoot": "${projectDir}\\out\\install\\${name}",
-            "cmakeCommandArgs": "-DBUILD_PLATFORM=x64 -DBUILD_PLATFORM_STATIC_LIB_EXT=lib",
+            "cmakeCommandArgs": "-DBUILD_PLATFORM=x64 -DBUILD_PLATFORM_STATIC_LIB_EXT=lib -DWINDOWS=TRUE",
             "buildCommandArgs": "-v",
             "ctestCommandArgs": "",
             "variables": []

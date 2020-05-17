@@ -14,7 +14,7 @@ namespace tabi
             Window(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
             virtual ~Window();
 
-            virtual void SwapBuffer() const override { m_Context->SwapBuffer(); };
+            virtual void SwapBuffer() const override { if (m_Context) { m_Context->SwapBuffer(); } };
 
             void Test();
             void DrawShit();

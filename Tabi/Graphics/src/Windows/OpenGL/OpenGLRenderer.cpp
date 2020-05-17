@@ -1,7 +1,9 @@
 #include "Windows/OpenGL/OpenGLRenderer.h"
 
 #include "Windows/OpenGL/OpenGLHelpers.h"
-#include "TabiMacros.h"
+#include <TabiMacros.h>
+
+#include <IFile.h>
 
 #include <glad/glad.h>
 
@@ -105,12 +107,29 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
     return program;
 }
 
+#include "Logging.h"
 ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexShaderPath, const char* a_FragmentShaderPath) const
 {
-    TABI_UNUSED(a_VertexShaderPath);
-    TABI_UNUSED(a_FragmentShaderPath);
+    FSize fileLen = 0;
 
-    // TODO: Implement
-    assert(false);
-    return ShaderHandle();
+    // Load vertex shader
+    auto vertShadFile = IFile::OpenFile(a_VertexShaderPath, EFileOpenFlags::Read);
+    FSize vertShaderBytesRead = 0;
+    vertShadFile->GetLength(fileLen);
+    
+    tabi::vector<char> vertexShaderBuffer(fileLen);
+    vertShadFile->Read(&vertexShaderBuffer[0], fileLen, &vertShaderBytesRead);
+
+    // Load fragment shader
+    auto fragShadFile = IFile::OpenFile(a_FragmentShaderPath, EFileOpenFlags::Read);
+    FSize fragShaderBytesRead = 0;
+    fragShadFile->GetLength(fileLen);
+
+    tabi::vector<char> fragmentShaderBuffer(fileLen);
+    fragShadFile->Read(&fragmentShaderBuffer[0], fileLen, &fragShaderBytesRead);
+
+    logger::TabiLog(logger::ELogLevel::Info, tabi::string(&vertexShaderBuffer[0]));
+    logger::TabiLog(logger::ELogLevel::Info, tabi::string(&fragmentShaderBuffer[0]));
+
+    return CreateShaderProgram(&vertexShaderBuffer[0], static_cast<int>(vertShaderBytesRead), &fragmentShaderBuffer[0], static_cast<int>(fragShaderBytesRead));
 }

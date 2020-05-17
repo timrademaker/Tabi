@@ -27,3 +27,6 @@ endif ()
 add_subdirectory ("Tabi")
 add_subdirectory("Game")
 add_subdirectory("ThirdParty")
+
+# Copy assets to output directory
+file(COPY "Assets" DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

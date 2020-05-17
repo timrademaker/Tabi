@@ -11,6 +11,12 @@
 
 namespace tabi
 {
+    namespace files
+    {
+        using FH = int32_t;
+        using FSize = int64_t;
+    }
+
     namespace graphics
     {
 #if defined(_WINDOWS)

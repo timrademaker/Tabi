@@ -17,6 +17,11 @@ namespace tabi
         using FSize = int64_t;
     }
 
+    namespace resources
+    {
+        using ResouceID = unsigned long long int;
+    }
+
     namespace graphics
     {
 #if defined(_WINDOWS)

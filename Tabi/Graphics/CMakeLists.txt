@@ -1,4 +1,4 @@
-# CMakeList.txt : CMake project for Common
+# CMakeList.txt : CMake project for Graphics
 cmake_minimum_required (VERSION 3.8)
 
 # Set headers for Graphics

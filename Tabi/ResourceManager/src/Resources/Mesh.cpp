@@ -214,7 +214,11 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 void Mesh::Draw()
 {
     // Temporary
-    glBindBuffer(GL_ARRAY_BUFFER, m_Handle);
-    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(m_Vertices.size()));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    //glDrawArrays(GL_TRIANGLES, 0, m_VertexCount);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(m_VAO);
+    glDrawElements(GL_TRIANGLES, m_VertexCount, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }

@@ -40,12 +40,24 @@ using namespace tabi::graphics;
 //};
 
 
-MeshHandle tabi::graphics::Renderer::BufferMesh(const Mesh& a_Mesh, const EBufferMode a_BufferMode) const
+MeshHandle tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
 {
-    MeshHandle buff;
-    glGenBuffers(1, &buff);
-    glBindBuffer(GL_ARRAY_BUFFER, buff);
+    assert(!a_Mesh.m_Vertices.empty());
 
+    GLuint vao;
+    glGenBuffers(1, &vao);
+    glBindVertexArray(vao);
+    
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    GLuint ebo = 0;
+    if (!a_Mesh.m_Indices.empty())
+    {
+        glGenBuffers(1, &ebo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    }
 
     GLenum usage = GL_STATIC_DRAW;
     switch (a_BufferMode)
@@ -64,6 +76,11 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(const Mesh& a_Mesh, const EBuffe
 
     glBufferData(GL_ARRAY_BUFFER, a_Mesh.m_Vertices.size() * sizeof(Mesh::Vertex), &a_Mesh.m_Vertices[0], usage);
 
+    if (!a_Mesh.m_Indices.empty())
+    {
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_Mesh.m_Indices.size() * sizeof(unsigned int), &a_Mesh.m_Indices[0], usage);
+    }
+
     // Vertex coordinates
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), nullptr);
     glEnableVertexAttribArray(0);
@@ -76,9 +93,21 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(const Mesh& a_Mesh, const EBuffe
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), (void*)(6 * sizeof(FLOAT)));
     glEnableVertexAttribArray(2);
 
-    helpers::CheckMeshLoadError(buff);
+    helpers::CheckMeshLoadError(vbo);
 
-    return buff;
+    a_Mesh.m_VertexCount = static_cast<unsigned int>(a_Mesh.m_Vertices.size());
+    
+    a_Mesh.m_VAO = vao;
+    a_Mesh.m_VBO = vbo;
+    a_Mesh.m_EBO = ebo;
+    
+    if (a_CleanUpMeshDataAfterBuffering)
+    {
+        a_Mesh.m_Vertices.clear();
+        a_Mesh.m_Indices.clear();
+    }
+
+    return vbo;
 }
 
 TextureHandle tabi::graphics::Renderer::BufferTexture(const Texture& a_Texture, const EBufferMode a_BufferMode) const

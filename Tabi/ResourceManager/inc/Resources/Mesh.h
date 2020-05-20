@@ -5,6 +5,8 @@
 #include <TabiTypes.h>
 #include <TabiMath.h>
 
+#include <glad/glad.h>
+
 namespace tinygltf
 {
     class Model;
@@ -36,15 +38,17 @@ namespace tabi
         //tabi::vector<tabi::maths::vec2> m_VertexTextureCoordinates;
         tabi::vector<unsigned> m_Indices;
 
-        graphics::MeshHandle m_MeshHandle;
+        GLuint m_VAO;
+        GLuint m_VBO;
+        GLuint m_EBO;
+
+        unsigned int m_VertexCount;
 
         tabi::shared_ptr<Material> m_Material = nullptr;
 
         bool m_TextureCoordinatesAreNormalized = false;
 
         tabi::string m_Name;
-
-        graphics::MeshHandle m_Handle;
     };
 
 }

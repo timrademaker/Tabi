@@ -22,12 +22,13 @@ namespace tabi
             static IRenderer& GetInstance();
 
             /**
-            * @brief Load a mesh into a buffer
+            * @brief Load a mesh into a buffer, and updates the mesh with necessary data
             * @params a_Mesh The mesh to load
+            * @params a_CleanUpMeshDataAfterBuffering True if the vertex data should be cleaned up after buffering
             * @params a_BufferMode The mode in which to buffer the mesh
             * @returns A mesh handle
             */
-            virtual MeshHandle BufferMesh(const Mesh& a_Mesh, const EBufferMode a_BufferMode = EBufferMode::Static) const = 0;
+            virtual MeshHandle BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering = true, const EBufferMode a_BufferMode = EBufferMode::Static) const = 0;
             /**
             * @brief Load a texture into a buffer
             * @params a_Mesh The texture to load

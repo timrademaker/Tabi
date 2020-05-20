@@ -1,4 +1,4 @@
-#include "Windows/OpenGL/OpenGLWindow.h"
+#include "Windows/WindowsWindow.h"
 
 #include "IRenderer.h"
 
@@ -10,6 +10,10 @@
 
 #include <Windows.h>
 #include <GL/GL.h>
+
+#if defined(OPENGL)
+#include "Windows/OpenGL/OpenGLContext.h"
+#endif
 
 #pragma comment (lib, "opengl32.lib")
 

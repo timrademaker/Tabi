@@ -62,8 +62,20 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(const Mesh& a_Mesh, const EBuffe
     }
     }
 
-    TABI_UNUSED(a_Mesh);
-    //glBufferData(GL_ARRAY_BUFFER, a_Mesh.m_Vertices.size() * sizeof(Mesh::Vertex), &a_Mesh.m_Vertices[0], usage);
+    glBufferData(GL_ARRAY_BUFFER, a_Mesh.m_Vertices.size() * sizeof(Mesh::Vertex), &a_Mesh.m_Vertices[0], usage);
+
+    // Vertex coordinates
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), nullptr);
+    glEnableVertexAttribArray(0);
+
+    // Vertex normals
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), (void*)(3 * sizeof(FLOAT)));
+    glEnableVertexAttribArray(1);
+
+    // Texture coordinates
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), (void*)(6 * sizeof(FLOAT)));
+    glEnableVertexAttribArray(2);
+
     helpers::CheckMeshLoadError(buff);
 
     return buff;

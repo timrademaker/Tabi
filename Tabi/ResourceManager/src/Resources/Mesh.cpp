@@ -7,6 +7,8 @@
 
 #include <tinygltf/tiny_gltf.h>
 
+#include <glad/glad.h>
+
 #include <cassert>
 
 
@@ -37,7 +39,8 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
             auto count = a_Model.accessors[attribIter->second].count;
-            m->m_VertexNormals.reserve(count);
+            //m->m_VertexNormals.reserve(count);
+            m->m_Vertices.reserve(count);
 
             auto& buffer = a_Model.buffers[bufferView.buffer];
 
@@ -52,7 +55,17 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
                     vertexNormal.z = -vertexNormal.z;
                 }
 
-                m->m_VertexNormals.push_back(vertexNormal);
+                //m->m_VertexNormals.push_back(vertexNormal);
+                if(m->m_Vertices.size() <= index)
+                {
+                    Mesh::Vertex v;
+                    v.m_Normal = vertexNormal;
+                    m->m_Vertices.push_back(v);
+                }
+                else
+                {
+                    m->m_Vertices.at(index).m_Normal = vertexNormal;
+                }
             }
         }
 
@@ -64,7 +77,12 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
             auto count = a_Model.accessors[attribIter->second].count;
-            m->m_VertexCoordinates.reserve(count);
+
+            //m->m_VertexCoordinates.reserve(count);
+            if(m->m_Vertices.capacity() < count)
+            {
+                m->m_Vertices.reserve(count);
+            }
 
             auto& buffer = a_Model.buffers[bufferView.buffer];
 
@@ -79,7 +97,18 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
                     vertexPosition.z = -vertexPosition.z;
                 }
 
-                m->m_VertexCoordinates.push_back(vertexPosition);
+                //m->m_VertexCoordinates.push_back(vertexPosition);
+                if (m->m_Vertices.size() <= index)
+                {
+                    Mesh::Vertex v;
+                    v.m_Pos = vertexPosition;
+                    m->m_Vertices.push_back(v);
+                }
+                else
+                {
+                    m->m_Vertices.at(index).m_Pos = vertexPosition;
+                }
+
             }
         }
 
@@ -90,7 +119,12 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
             auto count = a_Model.accessors[attribIter->second].count;
-            m->m_VertexCoordinates.reserve(count);
+
+            //m->m_VertexCoordinates.reserve(count);
+            if(m->m_Vertices.capacity() <= count)
+            {
+                m->m_Vertices.reserve(count);
+            }
 
             auto& buffer = a_Model.buffers[bufferView.buffer];
 
@@ -123,7 +157,17 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
                     m->m_TextureCoordinatesAreNormalized = true;
                 }
 
-                m->m_VertexTextureCoordinates.push_back(textureCoords);
+                //m->m_VertexTextureCoordinates.push_back(textureCoords);
+                if (m->m_Vertices.size() < index)
+                {
+                    Mesh::Vertex v;
+                    v.m_TexCoords = textureCoords;
+                    m->m_Vertices.push_back(v);
+                }
+                else
+                {
+                    m->m_Vertices.at(index).m_TexCoords = textureCoords;
+                }
             }
         }
 
@@ -165,4 +209,12 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
     }
 
     return std::move(m);
+}
+
+void Mesh::Draw()
+{
+    // Temporary
+    glBindBuffer(GL_ARRAY_BUFFER, m_Handle);
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(m_Vertices.size()));
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

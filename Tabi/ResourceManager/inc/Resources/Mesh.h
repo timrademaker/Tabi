@@ -18,19 +18,22 @@ namespace tabi
     class Mesh : public tabi::IResource
     {
     public:
-        //class Vertex
-        //{
-        //    tabi::maths::vec3 m_Pos;
-        //    tabi::maths::vec3 m_Normal;
-        //    tabi::maths::vec2 m_TexCoords;
-        //};
+        struct Vertex
+        {
+            tabi::maths::vec3 m_Pos;
+            tabi::maths::vec3 m_Normal;
+            tabi::maths::vec2 m_TexCoords;
+        };
     public:
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
+        void Draw();
 
     public:
-        tabi::vector<tabi::maths::vec3> m_VertexCoordinates;
-        tabi::vector<tabi::maths::vec3> m_VertexNormals;
-        tabi::vector<tabi::maths::vec2> m_VertexTextureCoordinates;
+        tabi::vector<Vertex> m_Vertices;
+
+        //tabi::vector<tabi::maths::vec3> m_VertexCoordinates;
+        //tabi::vector<tabi::maths::vec3> m_VertexNormals;
+        //tabi::vector<tabi::maths::vec2> m_VertexTextureCoordinates;
         tabi::vector<unsigned> m_Indices;
 
         graphics::MeshHandle m_MeshHandle;
@@ -40,6 +43,8 @@ namespace tabi
         bool m_TextureCoordinatesAreNormalized = false;
 
         tabi::string m_Name;
+
+        graphics::MeshHandle m_Handle;
     };
 
 }

@@ -94,41 +94,6 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
 {
     switch(message)
     {
-    case WM_CREATE:
-    {
-        PIXELFORMATDESCRIPTOR pfd =
-        {
-            sizeof(PIXELFORMATDESCRIPTOR),
-            1,
-            PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-            PFD_TYPE_RGBA,
-            32,             // Color depth of the framebuffer.
-            0, 0, 0, 0, 0, 0,
-            0,
-            0,
-            0,
-            0, 0, 0, 0,
-            24,     // Number of bits in the depth buffer
-            8,    // Number of bits in the stencil buffer
-            0,
-            PFD_MAIN_PLANE,
-            0,
-            0, 0, 0
-        };
-
-        const HDC deviceContext = GetDC(hWnd);
-        const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(deviceContext, &pfd);
-        SetPixelFormat(deviceContext, letWindowsChooseThisPixelFormat, &pfd);
-
-        HGLRC const openGLRenderingContext = wglCreateContext(deviceContext);
-        wglMakeCurrent(deviceContext, openGLRenderingContext);
-
-        if (!gladLoadGL())
-        {
-            logger::TabiLog(logger::ELogLevel::Warning, "Failed to initialize OpenGL context");
-        }
-    }
-    break;
     case WM_CLOSE:
     {
         Application::Get().ExitGame();

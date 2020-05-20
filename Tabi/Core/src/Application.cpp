@@ -5,14 +5,16 @@
 
 #include <cassert>
 #include <chrono>
-#include "Windows/OpenGL/OpenGLWindow.h"
+
+#if defined(_WINDOWS)
+#include "Windows/WindowsWindow.h"
+#endif
 
 
 using tabi::Application;
 using tabi::GameBase;
 using tabi::logger::ELogLevel;
 using tabi::logger::TabiLog;
-
 
 
 Application& Application::Get()
@@ -45,6 +47,8 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         // TODO: Render
 
         a_Game->OnRender();
+
+        m_Window->SwapBuffer();
 
         auto frameEnd = std::chrono::high_resolution_clock::now();
         deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(frameEnd - frameStart).count();

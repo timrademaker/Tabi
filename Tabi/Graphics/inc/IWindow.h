@@ -13,7 +13,7 @@ namespace tabi
         public:
             static tabi::shared_ptr<IWindow> OpenWindow(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
 
-            virtual void SwapBuffer() const = 0;
+            void SwapBuffer() const { if (m_Context) { m_Context->SwapBuffer(); } }
 
             const char* GetWindowName() { return m_WindowName; }
             WindowHandle GetHandle() const { return m_WindowHandle; }

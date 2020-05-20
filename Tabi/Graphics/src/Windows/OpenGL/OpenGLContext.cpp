@@ -1,13 +1,47 @@
 #include "Windows/OpenGL/OpenGLContext.h"
 
+#include <Logging.h>
+
 #include <glad/glad.h>
 
 using namespace tabi::graphics;
 
 Context::Context(HWND a_Hwnd, unsigned a_Width, unsigned a_Height)
 {
-    Context::Resize(a_Width, a_Height);
     m_DeviceContext = GetDC(a_Hwnd);
+
+    PIXELFORMATDESCRIPTOR pfd =
+    {
+        sizeof(PIXELFORMATDESCRIPTOR),
+        1,
+        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+        PFD_TYPE_RGBA,
+        32,             // Color depth of the framebuffer.
+        0, 0, 0, 0, 0, 0,
+        0,
+        0,
+        0,
+        0, 0, 0, 0,
+        24,     // Number of bits in the depth buffer
+        8,    // Number of bits in the stencil buffer
+        0,
+        PFD_MAIN_PLANE,
+        0,
+        0, 0, 0
+    };
+
+    const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(m_DeviceContext, &pfd);
+    SetPixelFormat(m_DeviceContext, letWindowsChooseThisPixelFormat, &pfd);
+
+    HGLRC const openGLRenderingContext = wglCreateContext(m_DeviceContext);
+    wglMakeCurrent(m_DeviceContext, openGLRenderingContext);
+
+    if (!gladLoadGL())
+    {
+        logger::TabiLog(logger::ELogLevel::Warning, "Failed to initialize OpenGL context");
+    }
+
+    Context::Resize(a_Width, a_Height);
 }
 
 void Context::SwapBuffer() const

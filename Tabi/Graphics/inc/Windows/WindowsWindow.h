@@ -2,8 +2,6 @@
 
 #include "IWindow.h"
 
-#include "OpenGLContext.h"
-
 namespace tabi
 {
     namespace graphics

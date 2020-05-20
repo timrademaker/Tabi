@@ -4,6 +4,7 @@
 #include <TabiMacros.h>
 
 #include <IFile.h>
+#include <Resources/Mesh.h>
 
 #include <glad/glad.h>
 
@@ -12,31 +13,31 @@
 using namespace tabi::graphics;
 
 // Temporary mesh class for testing
-class tabi::Mesh
-{
-public:
-    struct Vertex
-    {
-        float m_Pos[3];
-        float m_Normal[3];
-        float m_TexCoords[2];
-    };
-
-public:
-    tabi::vector<Vertex> m_Vertices;
-    tabi::vector<unsigned int> m_Indices;
-    tabi::vector<Texture> m_Textures;
-
-    unsigned int VAO;
-    unsigned int VBO;
-    unsigned int EBO;
-};
+//class tabi::Mesh
+//{
+//public:
+//    struct Vertex
+//    {
+//        float m_Pos[3];
+//        float m_Normal[3];
+//        float m_TexCoords[2];
+//    };
+//
+//public:
+//    tabi::vector<Vertex> m_Vertices;
+//    tabi::vector<unsigned int> m_Indices;
+//    tabi::vector<Texture> m_Textures;
+//
+//    unsigned int VAO;
+//    unsigned int VBO;
+//    unsigned int EBO;
+//};
 
 // Temporary texture class for testing
-class tabi::Texture
-{
-
-};
+//class tabi::Texture
+//{
+//
+//};
 
 
 MeshHandle tabi::graphics::Renderer::BufferMesh(const Mesh& a_Mesh, const EBufferMode a_BufferMode) const
@@ -61,7 +62,8 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(const Mesh& a_Mesh, const EBuffe
     }
     }
 
-    glBufferData(GL_ARRAY_BUFFER, a_Mesh.m_Vertices.size() * sizeof(Mesh::Vertex), &a_Mesh.m_Vertices[0], usage);
+    TABI_UNUSED(a_Mesh);
+    //glBufferData(GL_ARRAY_BUFFER, a_Mesh.m_Vertices.size() * sizeof(Mesh::Vertex), &a_Mesh.m_Vertices[0], usage);
     helpers::CheckMeshLoadError(buff);
 
     return buff;

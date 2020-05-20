@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 3.8)
 
 # Set headers for Graphics
 set(HEADERS
+    inc/Camera.h
+    inc/Light.h
     inc/IWindow.h
     inc/IRenderer.h
     inc/IContext.h

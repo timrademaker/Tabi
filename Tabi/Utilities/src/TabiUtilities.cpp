@@ -6,7 +6,7 @@ using namespace tabi;
 ////////////////////////////////////////////////////////////////////////////////
 // Courtesy of: http://stackoverflow.com/questions/5878775/how-to-find-and-replace-string
 ////////////////////////////////////////////////////////////////////////////////
-tabi::string tabi::StringReplace(const tabi::string& a_String, const tabi::string& a_Search, const tabi::string& a_Replacement)
+tabi::string tabi::utils::StringReplace(const tabi::string& a_String, const tabi::string& a_Search, const tabi::string& a_Replacement)
 {
     tabi::string result(a_String);
     size_t pos = 0;
@@ -24,7 +24,7 @@ tabi::string tabi::StringReplace(const tabi::string& a_String, const tabi::strin
 // String hashing function
 // Taken from http://www.cse.yorku.ca/~oz/hash.html (public domain)
 ////////////////////////////////////////////////////////////////////////////////
-tabi::resources::ResouceID tabi::CalculateResourceID(tabi::string& a_FilePath)
+tabi::resources::ResouceID tabi::utils::CalculateResourceID(tabi::string& a_FilePath)
 {
     resources::ResouceID hash = 0;
     const char* cstr = a_FilePath.c_str();

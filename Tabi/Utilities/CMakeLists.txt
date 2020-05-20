@@ -18,4 +18,4 @@ add_library(Utilities ${SOURCES} ${HEADERS})
 target_include_directories(Utilities PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(Utilities PUBLIC Common Logger)
+target_link_libraries(Utilities PUBLIC TabiCommon Logger)

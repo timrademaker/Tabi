@@ -16,7 +16,7 @@ tabi::string tabi::ResourceManager::GetPath(const tabi::string& a_Path) const
     {
         if (fullPath.find(wCard.first) != tabi::string::npos)
         {
-            fullPath = StringReplace(fullPath, wCard.first, wCard.second);
+            fullPath = utils::StringReplace(fullPath, wCard.first, wCard.second);
         }
     }
 

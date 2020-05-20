@@ -208,17 +208,19 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
         }
     }
 
-    return std::move(m);
+    return m;
 }
 
-void Mesh::Draw()
+void Mesh::Draw() const
 {
-    // Temporary
-    //glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    //glDrawArrays(GL_TRIANGLES, 0, m_VertexCount);
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     glBindVertexArray(m_VAO);
-    glDrawElements(GL_TRIANGLES, m_VertexCount, GL_UNSIGNED_INT, 0);
+    if(m_EBO != 0)
+    {
+        glDrawElements(GL_TRIANGLES, m_VertexCount, GL_UNSIGNED_INT, nullptr);
+    }
+    else
+    {
+        glDrawArrays(GL_TRIANGLES, 0, m_VertexCount);
+    }
     glBindVertexArray(0);
 }

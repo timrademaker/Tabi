@@ -25,7 +25,6 @@ set(SOURCES
 # Add source to this project's executable.
 add_library(ResourceManager EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 
-
 target_include_directories(ResourceManager PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries

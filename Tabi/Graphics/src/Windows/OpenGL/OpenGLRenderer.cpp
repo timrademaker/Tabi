@@ -6,6 +6,8 @@
 #include <IFile.h>
 #include <Resources/Mesh.h>
 
+#include "Logging.h"
+
 #include <glad/glad.h>
 
 #include <cassert>
@@ -72,30 +74,39 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_Clean
         usage = GL_STREAM_DRAW;
         break;
     }
+    default:
+        break;
     }
 
     glBufferData(GL_ARRAY_BUFFER, a_Mesh.m_Vertices.size() * sizeof(Mesh::Vertex), &a_Mesh.m_Vertices[0], usage);
 
-    if (!a_Mesh.m_Indices.empty())
-    {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_Mesh.m_Indices.size() * sizeof(unsigned int), &a_Mesh.m_Indices[0], usage);
-    }
-
     // Vertex coordinates
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
     // Vertex normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), (void*)(3 * sizeof(FLOAT)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     // Texture coordinates
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(FLOAT), (void*)(6 * sizeof(FLOAT)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     helpers::CheckMeshLoadError(vbo);
 
-    a_Mesh.m_VertexCount = static_cast<unsigned int>(a_Mesh.m_Vertices.size());
+    if (!a_Mesh.m_Indices.empty())
+    {
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_Mesh.m_Indices.size() * sizeof(a_Mesh.m_Indices.at(0)), &a_Mesh.m_Indices[0], usage);
+    }
+
+    if(!a_Mesh.m_Indices.empty())
+    {
+        a_Mesh.m_VertexCount = static_cast<unsigned int>(a_Mesh.m_Indices.size());
+    }
+    else
+    {
+        a_Mesh.m_VertexCount = static_cast<unsigned int>(a_Mesh.m_Vertices.size());
+    }
     
     a_Mesh.m_VAO = vao;
     a_Mesh.m_VBO = vbo;
@@ -106,6 +117,9 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_Clean
         a_Mesh.m_Vertices.clear();
         a_Mesh.m_Indices.clear();
     }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
     return vbo;
 }
@@ -150,7 +164,6 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
     return program;
 }
 
-#include "Logging.h"
 ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexShaderPath, const char* a_FragmentShaderPath) const
 {
     FSize fileLen = 0;

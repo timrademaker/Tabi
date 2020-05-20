@@ -28,7 +28,7 @@ namespace tabi
         };
     public:
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
-        void Draw();
+        void Draw() const;
 
     public:
         tabi::vector<Vertex> m_Vertices;

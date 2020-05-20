@@ -19,7 +19,7 @@ tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, u
 {
     WindowHandle handle;
     {
-        const LPCSTR windowClassName = "Window Class";
+        const LPCSTR windowClassName = "TabiWindowClass";
 
         WNDCLASS wc = { 0 };
         // Window procedure function - Handles messages
@@ -43,10 +43,8 @@ tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, u
         );
     }
     m_WindowName = a_WindowName;
-    m_Width = a_Width;
-    m_Height = a_Height;
     m_WindowHandle = handle;
-    m_Context = new Context(handle);
+    m_Context = new Context(handle, a_Width, a_Height);
 
     Test();
 }
@@ -81,9 +79,6 @@ void Window::Test()
 
 void Window::DrawShit()
 {
-    glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -127,7 +122,6 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
 
         HGLRC const openGLRenderingContext = wglCreateContext(deviceContext);
         wglMakeCurrent(deviceContext, openGLRenderingContext);
-        //wglDeleteContext(openGLRenderingContext);
 
         if (!gladLoadGL())
         {

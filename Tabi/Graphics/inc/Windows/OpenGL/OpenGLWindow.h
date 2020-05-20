@@ -20,8 +20,6 @@ namespace tabi
             void DrawShit();
         protected:
 
-        private:
-            Context* m_Context;
         };
 
         LRESULT CALLBACK ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

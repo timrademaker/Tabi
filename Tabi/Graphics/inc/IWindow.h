@@ -2,6 +2,8 @@
 
 #include <TabiTypes.h>
 
+#include "IContext.h"
+
 namespace tabi
 {
     namespace graphics
@@ -14,22 +16,20 @@ namespace tabi
             virtual void SwapBuffer() const = 0;
 
             const char* GetWindowName() { return m_WindowName; }
-            unsigned int GetHeight() const { return m_Height; }
-            unsigned int GetWidth() const { return m_Width; }
             WindowHandle GetHandle() const { return m_WindowHandle; }
+            const IContext* GetContext() const { return m_Context; }
 
         protected:
             IWindow()
-                : m_WindowName("IWindow"), m_Width(0), m_Height(0), m_WindowHandle(nullptr)
+                : m_WindowName("IWindow"), m_WindowHandle(nullptr)
             { }
 
             virtual ~IWindow() = default;
 
         protected:
             const char* m_WindowName;
-            unsigned int m_Width;       // TODO: Move size to context
-            unsigned int m_Height;
             WindowHandle m_WindowHandle;
+            IContext* m_Context;
         };
     }
 }

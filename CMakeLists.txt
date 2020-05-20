@@ -22,6 +22,15 @@ else ()
 	
 endif ()
 
+if(USE_OPENGL)
+    add_compile_definitions("OPENGL")
+endif()
+
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+add_compile_definitions("TINYGLTF_IMPLEMENTATION" "STB_IMAGE_IMPLEMENTATION" "STB_IMAGE_WRITE_IMPLEMENTATION")
+
 
 # Include sub-projects.
 add_subdirectory ("Tabi")

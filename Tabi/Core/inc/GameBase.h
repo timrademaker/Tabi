@@ -40,12 +40,11 @@ namespace tabi
         bool VsyncEnabled() const { return m_Vsync; }
         
     
-    private:
         GameBase() = delete;
         GameBase(const GameBase&) = delete;
         GameBase& operator=(const GameBase&) = delete;
     
-    private:
+    protected:
         int m_Width;
         int m_Height;
         bool m_Vsync;

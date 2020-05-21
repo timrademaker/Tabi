@@ -66,3 +66,13 @@ void GLAPIENTRY tabi::graphics::helpers::MessageCallback(GLenum a_Source, GLenum
     graphicsLogger->Log(severity, "Type: " + std::to_string(a_Type) + "\nMessage: " + a_Message);
 }
 #endif
+
+#if defined(_DEBUG)
+#if defined(GL_DEBUG_OUTPUT)
+void tabi::graphics::helpers::EnableOpenGLDebugOutput()
+{
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(MessageCallback, 0);
+}
+#endif
+#endif

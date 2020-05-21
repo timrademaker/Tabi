@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
-
 namespace tabi
 {
     namespace graphics
@@ -14,8 +12,11 @@ namespace tabi
             // Check if shader program compilation resulted in an error
             bool CheckShaderProgramError(unsigned int a_Program);
 
+#if defined(_DEBUG)
 #if defined(GL_DEBUG_OUTPUT)
-            void GLAPIENTRY MessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLenum a_Severity, GLsizei a_Length, const GLchar* a_Message, const void* a_UserParam);
+            // Enables OpenGL debug output if possible
+            void EnableOpenGLDebugOutput();
+#endif
 #endif
         }
     }

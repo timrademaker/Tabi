@@ -44,8 +44,7 @@ Context::Context(HWND a_Hwnd, unsigned a_Width, unsigned a_Height)
     }
 #if defined(_DEBUG)
 #if defined(GL_DEBUG_OUTPUT)
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(tabi::graphics::helpers::MessageCallback, 0);
+    tabi::graphics::helpers::EnableOpenGLDebugOutput();
 #endif
 #endif
     

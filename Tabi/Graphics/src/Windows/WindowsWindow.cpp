@@ -49,44 +49,6 @@ tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, u
     m_WindowName = a_WindowName;
     m_WindowHandle = handle;
     m_Context = new Context(handle, a_Width, a_Height);
-
-    Test();
-}
-
-void Window::Test()
-{
-    unsigned int VAO = 0;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    GLuint buff;
-    glGenBuffers(1, &buff);
-    glBindBuffer(GL_ARRAY_BUFFER, buff);
-
-    float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-    };
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
-
-    auto shaderProgram = IRenderer::GetInstance().CreateShaderProgram("Assets/Shaders/VertexShader.vert", "Assets/Shaders/FragmentShader.frag");
-
-    glUseProgram(shaderProgram);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    DrawShit();
-}
-
-void Window::DrawShit()
-{
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 Window::~Window()

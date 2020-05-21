@@ -84,6 +84,7 @@ tabi::vector<char> tabi::gltf::LoadGLTFFileContentFromPath(const char* a_Path, b
     if (!file)
     {
         logger::TabiLog(logger::ELogLevel::Error, "Unable to open file for model " + tabi::string(a_Path));
+        assert(false);
         return tabi::vector<char>();
     }
 
@@ -96,6 +97,7 @@ tabi::vector<char> tabi::gltf::LoadGLTFFileContentFromPath(const char* a_Path, b
     if ((res & EFileResult::Ok) != EFileResult::Ok)
     {
         logger::TabiLog(logger::ELogLevel::Error, "Something went wrong when reading the file for model " + tabi::string(a_Path));
+        assert(false);
         return tabi::vector<char>();
     }
 

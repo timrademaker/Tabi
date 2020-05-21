@@ -14,34 +14,6 @@
 
 using namespace tabi::graphics;
 
-// Temporary mesh class for testing
-//class tabi::Mesh
-//{
-//public:
-//    struct Vertex
-//    {
-//        float m_Pos[3];
-//        float m_Normal[3];
-//        float m_TexCoords[2];
-//    };
-//
-//public:
-//    tabi::vector<Vertex> m_Vertices;
-//    tabi::vector<unsigned int> m_Indices;
-//    tabi::vector<Texture> m_Textures;
-//
-//    unsigned int VAO;
-//    unsigned int VBO;
-//    unsigned int EBO;
-//};
-
-// Temporary texture class for testing
-//class tabi::Texture
-//{
-//
-//};
-
-
 bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
 {
     assert(!a_Mesh.m_Vertices.empty());

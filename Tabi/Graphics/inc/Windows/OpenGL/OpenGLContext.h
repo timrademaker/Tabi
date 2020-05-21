@@ -14,7 +14,6 @@ namespace tabi
             Context(HWND a_Hwnd, unsigned int a_Width, unsigned int a_Height);
             virtual ~Context() = default;
 
-        public:
             virtual void SwapBuffer() const override;
             virtual void Resize(unsigned int a_Width, unsigned int a_Height) override;
 

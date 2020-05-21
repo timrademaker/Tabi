@@ -26,16 +26,16 @@ namespace tabi
             * @params a_Mesh The mesh to load
             * @params a_CleanUpMeshDataAfterBuffering True if the vertex data should be cleaned up after buffering
             * @params a_BufferMode The mode in which to buffer the mesh
-            * @returns A mesh handle
+            * @returns Whether the operation completed successfully
             */
-            virtual MeshHandle BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering = true, const EBufferMode a_BufferMode = EBufferMode::Static) const = 0;
+            virtual bool BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering = true, const EBufferMode a_BufferMode = EBufferMode::Static) const = 0;
             /**
             * @brief Load a texture into a buffer
             * @params a_Mesh The texture to load
             * @params a_BufferMode The mode in which to buffer the texture
-            * @returns A texture handle
+            * @returns Whether the operation completed successfully
             */
-            virtual TextureHandle BufferTexture(const Texture& a_Texture, const EBufferMode a_BufferMode = EBufferMode::Static) const = 0;
+            virtual bool BufferTexture(const Texture& a_Texture, const EBufferMode a_BufferMode = EBufferMode::Static) const = 0;
             /**
             * @brief Load shaders into a shader program
             * @params a_VertexShader The source of the vertex shader

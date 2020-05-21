@@ -3,6 +3,8 @@
 
 #include <TabiTypes.h>
 
+#include <glad/glad.h>
+
 
 namespace tinygltf
 {
@@ -21,6 +23,6 @@ namespace tabi
         int m_Width;
         int m_Height;
 
-        graphics::TextureHandle m_TextureHandle;
+        GLuint m_TextureHandle;
     };
 }

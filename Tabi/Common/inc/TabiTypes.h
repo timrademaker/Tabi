@@ -27,9 +27,6 @@ namespace tabi
 #if defined(_WINDOWS)
         using WindowHandle = HWND;
 #endif
-
-        using MeshHandle = unsigned int;
-        using TextureHandle = unsigned int;
         using ShaderHandle = unsigned int;
     }
 }

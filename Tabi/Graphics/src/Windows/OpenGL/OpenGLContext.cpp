@@ -1,5 +1,7 @@
 #include "Windows/OpenGL/OpenGLContext.h"
 
+#include "Windows/OpenGL/OpenGLHelpers.h"
+
 #include <Logging.h>
 
 #include <glad/glad.h>
@@ -40,7 +42,13 @@ Context::Context(HWND a_Hwnd, unsigned a_Width, unsigned a_Height)
     {
         logger::TabiLog(logger::ELogLevel::Warning, "Failed to initialize OpenGL context");
     }
-
+#if defined(_DEBUG)
+#if defined(GL_DEBUG_OUTPUT)
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(tabi::graphics::helpers::MessageCallback, 0);
+#endif
+#endif
+    
     Context::Resize(a_Width, a_Height);
 }
 

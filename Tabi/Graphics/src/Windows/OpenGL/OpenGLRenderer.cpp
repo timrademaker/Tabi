@@ -42,7 +42,7 @@ using namespace tabi::graphics;
 //};
 
 
-MeshHandle tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
+bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
 {
     assert(!a_Mesh.m_Vertices.empty());
 
@@ -92,8 +92,6 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_Clean
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    helpers::CheckMeshLoadError(vbo);
-
     if (!a_Mesh.m_Indices.empty())
     {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_Mesh.m_Indices.size() * sizeof(a_Mesh.m_Indices.at(0)), &a_Mesh.m_Indices[0], usage);
@@ -121,10 +119,12 @@ MeshHandle tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_Clean
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    return vbo;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    return true;
 }
 
-TextureHandle tabi::graphics::Renderer::BufferTexture(const Texture& a_Texture, const EBufferMode a_BufferMode) const
+bool tabi::graphics::Renderer::BufferTexture(const Texture& a_Texture, const EBufferMode a_BufferMode) const
 {
     TABI_UNUSED(a_Texture);
     TABI_UNUSED(a_BufferMode);
@@ -132,7 +132,7 @@ TextureHandle tabi::graphics::Renderer::BufferTexture(const Texture& a_Texture, 
     // TODO: Implement
     assert(false);
 
-    return TextureHandle();
+    return true;
 }
 
 ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexShader, const int a_VertexShaderLength, const char* a_FragmentShader, const int a_FragmentShaderLength) const

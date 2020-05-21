@@ -19,7 +19,7 @@ bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMesh
     assert(!a_Mesh.m_Vertices.empty());
 
     GLuint vao;
-    glGenBuffers(1, &vao);
+    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     
     GLuint vbo;
@@ -160,4 +160,9 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
     logger::TabiLog(logger::ELogLevel::Info, tabi::string(&fragmentShaderBuffer[0]));
 
     return CreateShaderProgram(&vertexShaderBuffer[0], static_cast<int>(vertShaderBytesRead), &fragmentShaderBuffer[0], static_cast<int>(fragShaderBytesRead));
+}
+
+void Renderer::UseShader(const ShaderHandle a_ShaderHandle)
+{
+    glUseProgram(a_ShaderHandle);
 }

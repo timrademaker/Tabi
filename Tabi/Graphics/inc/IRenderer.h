@@ -53,6 +53,12 @@ namespace tabi
             */
             virtual ShaderHandle CreateShaderProgram(const char* a_VertexShaderPath, const char* a_FragmentShaderPath) const = 0;
 
+            /**
+            * @brief Use a loaded shader
+            * @params a_ShaderHandle The handle returned by CreateShaderProgram
+            */
+            virtual void UseShader(const ShaderHandle a_ShaderHandle) = 0;
+
         protected:
             IRenderer() = default;
             virtual ~IRenderer() = default;

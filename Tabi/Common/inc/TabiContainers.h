@@ -10,6 +10,11 @@
 namespace tabi
 {
     using string = std::string;
+    template<typename T>
+    tabi::string to_string(T a_Value)
+    {
+        return std::to_string(a_Value);
+    }
 
     template<typename T, typename allocator_t = typename std::vector<T>::allocator_type>
     using vector = std::vector<T, allocator_t>;

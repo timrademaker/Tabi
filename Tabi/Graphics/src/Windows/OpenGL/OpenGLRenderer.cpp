@@ -216,6 +216,8 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
         glUniform1i(glGetUniformLocation(m_TextureShader, "uTexture"), 0);
+
+        
     }
     else
     {
@@ -235,4 +237,6 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
         glDrawArrays(GL_TRIANGLES, 0, a_Mesh.m_VertexCount);
     }
     glBindVertexArray(0);
+
+    helpers::CheckForErrors();
 }

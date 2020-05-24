@@ -6,8 +6,6 @@
 #include <TabiTypes.h>
 #include <TabiMacros.h>
 
-#include <string>
-
 namespace tabi
 {
     namespace logger
@@ -39,7 +37,7 @@ namespace tabi
         template<typename Sink, typename ... SinkArgs>
         TABI_EXPORT LoggerPtr CreateTabiLogger(tabi::string a_LoggerName, SinkArgs&& ... a_SinkArgs)
         {
-            auto sink = tabi::make_shared<Sink>(tabi::forward<SinkArgs>(a_SinkArgs)...);
+            auto sink = new Sink(tabi::forward<SinkArgs>(a_SinkArgs)...);
             auto l = tabi::make_shared<Logger>(a_LoggerName, sink);
             LoggerRegistry::GetTabiLoggerRegistry().InitializeLogger(l);
 

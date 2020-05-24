@@ -32,10 +32,10 @@ namespace tabi
             /**
             * @brief Load a texture into a buffer
             * @params a_Mesh The texture to load
-            * @params a_BufferMode The mode in which to buffer the texture
+            * @params a_CleanUpTextureDataAfterBuffering True if the texture data should be cleaned up after buffering
             * @returns Whether the operation completed successfully
             */
-            virtual bool BufferTexture(Texture& a_Texture) const = 0;
+            virtual bool BufferTexture(Texture& a_Texture, const bool a_CleanUpTextureDataAfterBuffering = true) const = 0;
             /**
             * @brief Load shaders into a shader program
             * @params a_VertexShader The source of the vertex shader

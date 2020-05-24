@@ -118,10 +118,19 @@ bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMesh
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    // Check for textures to buffer
+    if (a_Mesh.m_Material
+        && a_Mesh.m_Material->m_MetalicRoughness
+        && a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture
+        )
+    {
+        BufferTexture(*a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture.get());
+    }
+
     return true;
 }
 
-bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture) const
+bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture, const bool a_CleanUpTextureDataAfterBuffering) const
 {
     // TODO: Store color mode in texture (RGB(A))
     // TODO: Support 1D and 3D textures as well?
@@ -129,11 +138,16 @@ bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture) const
     GLuint tex;
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, a_Texture.m_Width, a_Texture.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, a_Texture.m_TextureData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, a_Texture.m_Width, a_Texture.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &a_Texture.m_TextureData[0]);
     glGenerateMipmap(GL_TEXTURE_2D);
 
 
     a_Texture.m_TextureHandle = tex;
+
+    if (a_CleanUpTextureDataAfterBuffering)
+    {
+        a_Texture.m_TextureData.clear();
+    }
 
     return true;
 }

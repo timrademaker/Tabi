@@ -13,7 +13,7 @@ namespace tabi
             virtual ~Renderer() override = default;
 
             virtual bool BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering = true, EBufferMode a_BufferMode = EBufferMode::Static) const override;
-            virtual bool BufferTexture(Texture& a_Texture) const override;
+            virtual bool BufferTexture(Texture& a_Texture, const bool a_CleanUpTextureDataAfterBuffering = true) const override;
             virtual ShaderHandle CreateShaderProgram(const char* a_VertexShader, const int a_VertexShaderLength, const char* a_FragmentShader, const int a_FragmentShaderLength) const override;
             virtual ShaderHandle CreateShaderProgram(const char* a_VertexShaderPath, const char* a_FragmentShaderPath) const override;
 

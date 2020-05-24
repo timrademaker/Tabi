@@ -24,7 +24,7 @@ namespace tabi
         int m_Width;
         int m_Height;
 
-        const char* m_TextureData;
+        tabi::vector<unsigned char> m_TextureData;
 
         GLuint m_TextureHandle;
     };

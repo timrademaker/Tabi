@@ -210,7 +210,7 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
 
         if (m_CurrentlyBoundShader != m_TextureShader)
         {
-            glUseProgram(m_TextureShader);
+            UseShader(m_TextureShader);
         }
 
         glActiveTexture(GL_TEXTURE0);
@@ -221,7 +221,7 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
     {
         if (m_CurrentlyBoundShader != m_MeshShader)
         {
-            glUseProgram(m_MeshShader);
+            UseShader(m_MeshShader);
         }
     }
 

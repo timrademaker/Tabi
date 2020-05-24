@@ -18,10 +18,13 @@ namespace tabi
     {
     public:
         static tabi::shared_ptr<Texture> LoadTextureFromModel(const tinygltf::Model& a_Model, const std::size_t a_TextureIndex);
+        // static tabi::shared_ptr<Texture> LoadTexture(const char* a_FilePath);
 
-    private:
+    public:
         int m_Width;
         int m_Height;
+
+        const char* m_TextureData;
 
         GLuint m_TextureHandle;
     };

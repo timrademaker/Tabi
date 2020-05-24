@@ -28,14 +28,9 @@ namespace tabi
         };
     public:
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
-        void Draw() const;
 
     public:
         tabi::vector<Vertex> m_Vertices;
-
-        //tabi::vector<tabi::maths::vec3> m_VertexCoordinates;
-        //tabi::vector<tabi::maths::vec3> m_VertexNormals;
-        //tabi::vector<tabi::maths::vec2> m_VertexTextureCoordinates;
         tabi::vector<unsigned> m_Indices;
 
         GLuint m_VAO;

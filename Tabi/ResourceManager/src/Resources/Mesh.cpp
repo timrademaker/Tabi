@@ -211,16 +211,3 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
     return m;
 }
 
-void Mesh::Draw() const
-{
-    glBindVertexArray(m_VAO);
-    if(m_EBO != 0)
-    {
-        glDrawElements(GL_TRIANGLES, m_VertexCount, GL_UNSIGNED_INT, nullptr);
-    }
-    else
-    {
-        glDrawArrays(GL_TRIANGLES, 0, m_VertexCount);
-    }
-    glBindVertexArray(0);
-}

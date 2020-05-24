@@ -5,6 +5,8 @@
 
 #include <IFile.h>
 #include <Resources/Mesh.h>
+#include <Resources/Texture.h>
+#include <Resources/Material.h>
 
 #include "Logging.h"
 
@@ -13,6 +15,29 @@
 #include <cassert>
 
 using namespace tabi::graphics;
+
+tabi::graphics::Renderer::Renderer()
+{
+    // Load shaders
+    m_MeshShader = CreateShaderProgram("Assets/Shaders/VertexShader.vert", "Assets/Shaders/FragmentShader.frag");
+    m_TextureShader = CreateShaderProgram("Assets/Shaders/SingleTextureShader.vert", "Assets/Shaders/SingleTextureShader.frag");
+    UseShader(m_TextureShader);
+
+
+    // Create and set (default) texture sampler params
+    glGenSamplers(1, &m_TextureSampler);
+    glBindSampler(GL_TEXTURE_2D, m_TextureSampler);
+
+    // Wrapping mode
+    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    // Border color
+    const float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    glSamplerParameterfv(m_TextureSampler, GL_TEXTURE_BORDER_COLOR, borderColor);
+    // Filtering
+    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
 
 bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
 {
@@ -96,13 +121,19 @@ bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMesh
     return true;
 }
 
-bool tabi::graphics::Renderer::BufferTexture(const Texture& a_Texture, const EBufferMode a_BufferMode) const
+bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture) const
 {
-    TABI_UNUSED(a_Texture);
-    TABI_UNUSED(a_BufferMode);
+    // TODO: Store color mode in texture (RGB(A))
+    // TODO: Support 1D and 3D textures as well?
 
-    // TODO: Implement
-    assert(false);
+    GLuint tex;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, a_Texture.m_Width, a_Texture.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, a_Texture.m_TextureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+
+    a_Texture.m_TextureHandle = tex;
 
     return true;
 }
@@ -165,4 +196,43 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
 void Renderer::UseShader(const ShaderHandle a_ShaderHandle)
 {
     glUseProgram(a_ShaderHandle);
+    m_CurrentlyBoundShader = a_ShaderHandle;
+}
+
+void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
+{
+    // Bind texture if the mesh has one
+    if (a_Mesh.m_Material
+        && a_Mesh.m_Material->m_MetalicRoughness
+        && a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture
+        )
+    {
+
+        if (m_CurrentlyBoundShader != m_TextureShader)
+        {
+            glUseProgram(m_TextureShader);
+        }
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
+        glUniform1i(glGetUniformLocation(m_TextureShader, "uTexture"), 0);
+    }
+    else
+    {
+        if (m_CurrentlyBoundShader != m_MeshShader)
+        {
+            glUseProgram(m_MeshShader);
+        }
+    }
+
+    glBindVertexArray(a_Mesh.m_VAO);
+    if (a_Mesh.m_EBO != 0)
+    {
+        glDrawElements(GL_TRIANGLES, a_Mesh.m_VertexCount, GL_UNSIGNED_INT, nullptr);
+    }
+    else
+    {
+        glDrawArrays(GL_TRIANGLES, 0, a_Mesh.m_VertexCount);
+    }
+    glBindVertexArray(0);
 }

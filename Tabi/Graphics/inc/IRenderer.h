@@ -35,7 +35,7 @@ namespace tabi
             * @params a_BufferMode The mode in which to buffer the texture
             * @returns Whether the operation completed successfully
             */
-            virtual bool BufferTexture(const Texture& a_Texture, const EBufferMode a_BufferMode = EBufferMode::Static) const = 0;
+            virtual bool BufferTexture(Texture& a_Texture) const = 0;
             /**
             * @brief Load shaders into a shader program
             * @params a_VertexShader The source of the vertex shader
@@ -58,6 +58,12 @@ namespace tabi
             * @params a_ShaderHandle The handle returned by CreateShaderProgram
             */
             virtual void UseShader(const ShaderHandle a_ShaderHandle) = 0;
+
+            /**
+            * @brief Renders a mesh
+            * @params a_Mesh The mesh to render
+            */
+            virtual void RenderMesh(const Mesh& a_Mesh) = 0;
 
         protected:
             IRenderer() = default;

@@ -6,9 +6,6 @@ bool TestGameMode::OnInitialize()
 {
     // Set shader
     auto& renderer = tabi::graphics::IRenderer::GetInstance();
-    const auto shaderProgram = renderer.CreateShaderProgram("Assets/Shaders/VertexShader.vert", "Assets/Shaders/FragmentShader.frag");
-    
-    renderer.UseShader(shaderProgram);
 
     // Load mesh(es)
     auto mesh = tabi::make_shared<tabi::Mesh>();
@@ -36,8 +33,9 @@ bool TestGameMode::OnInitialize()
 
 void TestGameMode::OnRender()
 {
+    tabi::graphics::IRenderer& renderer = tabi::graphics::IRenderer::GetInstance();
     for(auto& mesh : m_Meshes)
     {
-        mesh->Draw();
+        renderer.RenderMesh(*mesh);
     }
 }

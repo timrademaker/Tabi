@@ -18,3 +18,10 @@ add_executable (Game ${SOURCES} ${HEADERS})
 target_include_directories(Game PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 target_link_libraries(Game PRIVATE Core Logger)
+
+
+add_custom_command(
+    TARGET Game
+    POST_BUILD
+    COMMAND robocopy "${CMAKE_SOURCE_DIR}/Assets" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets" /NJS /NDL /NJH /ns /nc /np /XO /XX /E /NFL > NUL
+)

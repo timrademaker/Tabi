@@ -19,8 +19,8 @@ using namespace tabi::graphics;
 tabi::graphics::Renderer::Renderer()
 {
     // Load shaders
-    m_MeshShader = CreateShaderProgram("Assets/Shaders/VertexShader.vert", "Assets/Shaders/FragmentShader.frag");
-    m_TextureShader = CreateShaderProgram("Assets/Shaders/SingleTextureShader.vert", "Assets/Shaders/SingleTextureShader.frag");
+    m_MeshShader = CreateShaderProgram("TabiAssets/Shaders/VertexShader.vert", "TabiAssets/Shaders/FragmentShader.frag");
+    m_TextureShader = CreateShaderProgram("TabiAssets/Shaders/SingleTextureShader.vert", "TabiAssets/Shaders/SingleTextureShader.frag");
     UseShader(m_TextureShader);
 
 

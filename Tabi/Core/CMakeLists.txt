@@ -24,3 +24,9 @@ target_include_directories(Core PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 target_link_libraries(Core PUBLIC TabiCommon Graphics)
 # PRIVATE: Used in source files
 target_link_libraries(Core PRIVATE Logger)
+
+add_custom_command(
+    TARGET Core
+    POST_BUILD
+    COMMAND robocopy "${CMAKE_SOURCE_DIR}/TabiAssets" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TabiAssets" /NJS /NDL /NJH /ns /nc /np /XO /XX /E /NFL > NUL
+)

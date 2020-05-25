@@ -3,7 +3,6 @@
 #include <tinygltf/tiny_gltf.h>
 
 
-
 using namespace tabi;
 
 tabi::shared_ptr<Material> Material::LoadMaterial(const tinygltf::Model& a_Model, const std::size_t a_MaterialIndex)
@@ -19,7 +18,7 @@ tabi::shared_ptr<Material> Material::LoadMaterial(const tinygltf::Model& a_Model
     loadedMaterial->m_DoubleSided = mat.doubleSided;
     auto metalicRoughness = tabi::make_unique<MetalicRoughness>();
     auto& baseColor = mat.pbrMetallicRoughness.baseColorFactor;
-    metalicRoughness->m_BaseColorFactor = tabi::maths::vec4(
+    metalicRoughness->m_BaseColorFactor = tabi::math::vec4(
         static_cast<float>(baseColor[0]),
         static_cast<float>(baseColor[1]),
         static_cast<float>(baseColor[2]),

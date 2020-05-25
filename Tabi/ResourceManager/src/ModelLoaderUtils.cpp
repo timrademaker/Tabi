@@ -1,6 +1,7 @@
 #include "ModelLoaderUtils.h"
 
-#include <TabiMath.h>
+#include <vec3.h>
+
 #include <Camera.h>
 #include <Light.h>
 #include <Resources/Mesh.h>
@@ -202,7 +203,7 @@ tabi::vector<tabi::shared_ptr<tabi::Light>> tabi::gltf::GetLights(const tinygltf
     {
         auto l = tabi::make_shared<Light>();
 
-        l->m_Color = tabi::maths::vec3(
+        l->m_Color = tabi::math::vec3(
             static_cast<float>(light.color[0]),
             static_cast<float>(light.color[1]),
             static_cast<float>(light.color[2])
@@ -235,7 +236,7 @@ tabi::vector<tabi::shared_ptr<tabi::Light>> tabi::gltf::GetLights(const tinygltf
 
                 if (!a_Model.nodes[i].translation.empty())
                 {
-                    iter->second->m_Position = tabi::maths::vec3(
+                    iter->second->m_Position = tabi::math::vec3(
                         static_cast<float>(a_Model.nodes[i].translation[0]), 
                         static_cast<float>(a_Model.nodes[i].translation[1]),
                         static_cast<float>(a_Model.nodes[i].translation[2])

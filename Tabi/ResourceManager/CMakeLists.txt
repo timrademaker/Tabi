@@ -28,4 +28,4 @@ add_library(ResourceManager EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 target_include_directories(ResourceManager PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(ResourceManager PUBLIC TabiCommon Graphics Utilities TinyGLTF)
+target_link_libraries(ResourceManager PUBLIC TabiCommon Graphics Utilities Math TinyGLTF)

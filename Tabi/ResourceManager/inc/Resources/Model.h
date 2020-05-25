@@ -3,8 +3,6 @@
 #include "../IResource.h"
 #include <TabiTypes.h>
 
-#include <TabiMath.h>
-
 namespace tinygltf
 {
     class Model;

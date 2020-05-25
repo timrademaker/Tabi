@@ -2,7 +2,7 @@
 
 #include <Resources/Material.h>
 
-#include <TabiMath.h>
+#include <vec3.h>
 #include "ModelLoaderUtils.h"
 
 #include <tinygltf/tiny_gltf.h>
@@ -48,7 +48,7 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             for (std::size_t index = 0; index < count; ++index)
             {
-                tabi::maths::vec3 vertexNormal = *(gltf::GetElementFromBuffer<tabi::maths::vec3>(&buffer.data[0], dataStart, index));
+                tabi::math::vec3 vertexNormal = *(gltf::GetElementFromBuffer<tabi::math::vec3>(&buffer.data[0], dataStart, index));
 
                 if (swapZPositionSign)
                 {
@@ -90,7 +90,7 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             for (std::size_t index = 0; index < count; ++index)
             {
-                tabi::maths::vec3 vertexPosition = *(gltf::GetElementFromBuffer<tabi::maths::vec3>(&buffer.data[0], dataStart, index));
+                tabi::math::vec3 vertexPosition = *(gltf::GetElementFromBuffer<tabi::math::vec3>(&buffer.data[0], dataStart, index));
 
                 if (swapZPositionSign)
                 {
@@ -134,11 +134,11 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             for (std::size_t index = 0; index < count; ++index)
             {
-                tabi::maths::vec2 textureCoords;
+                tabi::math::vec2 textureCoords;
 
                 if (componentType == TINYGLTF_COMPONENT_TYPE_FLOAT)
                 {
-                    textureCoords = *(gltf::GetElementFromBuffer<tabi::maths::vec2>(&buffer.data[0], dataStart, index));
+                    textureCoords = *(gltf::GetElementFromBuffer<tabi::math::vec2>(&buffer.data[0], dataStart, index));
                 }
                 else if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
                 {

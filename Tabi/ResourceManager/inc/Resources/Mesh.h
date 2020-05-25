@@ -3,7 +3,9 @@
 #include "../IResource.h"
 
 #include <TabiTypes.h>
-#include <TabiMath.h>
+
+#include <vec2.h>
+#include <vec3.h>
 
 #include <glad/glad.h>
 
@@ -22,9 +24,9 @@ namespace tabi
     public:
         struct Vertex
         {
-            tabi::maths::vec3 m_Pos;
-            tabi::maths::vec3 m_Normal;
-            tabi::maths::vec2 m_TexCoords;
+            tabi::math::vec3 m_Pos;
+            tabi::math::vec3 m_Normal;
+            tabi::math::vec2 m_TexCoords;
         };
     public:
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);

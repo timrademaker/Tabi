@@ -2,8 +2,9 @@
 
 #include "Texture.h"
 
-#include <TabiMath.h>
 #include <TabiTypes.h>
+
+#include <vec4.h>
 
 namespace tinygltf
 {
@@ -15,7 +16,7 @@ namespace tabi
 {
     struct MetalicRoughness
     {
-        maths::vec4 m_BaseColorFactor;
+        math::vec4 m_BaseColorFactor;
         tabi::shared_ptr<Texture> m_BaseColorTexture;
 
         float m_MetalicFactor;

@@ -23,5 +23,5 @@ target_link_libraries(Game PRIVATE Core Logger)
 add_custom_command(
     TARGET Game
     POST_BUILD
-    COMMAND robocopy "${CMAKE_SOURCE_DIR}/Assets" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets" /NJS /NDL /NJH /ns /nc /np /XO /XX /E /NFL > NUL
+	COMMAND xcopy \"${CMAKE_SOURCE_DIR}/Assets\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets\" /S /Y /I /C
 )

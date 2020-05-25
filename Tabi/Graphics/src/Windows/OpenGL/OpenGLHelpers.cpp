@@ -94,6 +94,29 @@ tabi::string tabi::graphics::helpers::ErrorToString(GLenum a_Error)
     return errorString;
 }
 
+bool tabi::graphics::helpers::IsOpenGLVersionSupported(float a_MinimumRequiredVersion)
+{
+    std::string version = (char*)(glGetString(GL_VERSION));
+
+    std::string versionNumber = version.substr(0, version.find(" "));
+
+    double value = std::atof(versionNumber.c_str());
+    float number = (float)(value * 100 + .5) / 100;
+
+    if(number < a_MinimumRequiredVersion)
+    {
+        m_GraphicsLogger->Log(logger::ELogLevel::Critical, "The supported OpenGL version ("
+            + versionNumber
+            + ") is lower than the minimum version required by this program ("
+            + tabi::to_string(a_MinimumRequiredVersion).substr(0, 3)
+            +")"
+        );
+        return false;
+    }
+
+    return true;
+}
+
 #if defined(_DEBUG)
 #if defined(GL_DEBUG_OUTPUT)
 // OpenGL 4.3 or higher

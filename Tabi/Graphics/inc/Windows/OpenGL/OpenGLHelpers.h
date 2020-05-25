@@ -21,7 +21,11 @@ namespace tabi
             // Check for any OpenGL errors
             static void CheckForErrors();
 
+            // Convert an OpenGL error enum to a string
             static tabi::string ErrorToString(GLenum a_Error);
+
+            // Check if the version of OpenGL you are trying to use is supported
+            static bool IsOpenGLVersionSupported(float a_MinimumRequiredVersion);
 
 #if defined(_DEBUG)
 #if defined(GL_DEBUG_OUTPUT)
@@ -29,6 +33,7 @@ namespace tabi
             static void EnableOpenGLDebugOutput();
 #endif
 #endif
+
         private:
             static tabi::logger::LoggerPtr m_GraphicsLogger;
         };

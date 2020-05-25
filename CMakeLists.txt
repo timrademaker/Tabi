@@ -24,6 +24,7 @@ endif ()
 
 if(USE_OPENGL)
     add_compile_definitions("OPENGL")
+    add_compile_definitions(MINIMUM_OGL_VERSION=3.3f)
 endif()
 
 

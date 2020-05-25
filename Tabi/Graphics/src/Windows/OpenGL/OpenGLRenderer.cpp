@@ -18,6 +18,11 @@ using namespace tabi::graphics;
 
 tabi::graphics::Renderer::Renderer()
 {
+    if(!helpers::IsOpenGLVersionSupported(MINIMUM_OGL_VERSION))
+    {
+        assert(false);
+    }
+
     // Load shaders
     m_MeshShader = CreateShaderProgram("TabiAssets/Shaders/VertexShader.vert", "TabiAssets/Shaders/FragmentShader.frag");
     m_TextureShader = CreateShaderProgram("TabiAssets/Shaders/SingleTextureShader.vert", "TabiAssets/Shaders/SingleTextureShader.frag");

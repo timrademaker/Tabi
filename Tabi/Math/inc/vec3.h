@@ -16,10 +16,32 @@ namespace tabi
             vec3() : x(0), y(0), z(0) {}
             vec3(float a_X, float a_Y, float a_Z) : x(a_X), y(a_Y), z(a_Z) {}
 
-            float dot(const vec3 a_Other) const;
-            vec3 cross(const vec3 a_Other) const;
+            float dot(const vec3& a_Other) const;
+            vec3 cross(const vec3& a_Other) const;
 
-            // TODO: Operators
+            float length() const;
+            float lengthSquared() const;
+
+            /**** Operators ****/
+            float operator[](const int a_Index) const;
+            float& operator[](const int a_Index);
+
+            vec3& operator=(const vec3& a_Rhs);
+
+            bool operator==(const vec3& a_Rhs);
+            bool operator!=(const vec3& a_Rhs);
+
+            friend vec3 operator+(const vec3& a_Lhs, const vec3& a_Rhs);
+            friend vec3 operator+(const vec3& a_Lhs, const float a_Rhs);
+
+            friend vec3 operator-(const vec3& a_Lhs, const vec3& a_Rhs);
+            friend vec3 operator-(const vec3& a_Lhs, const float a_Rhs);
+
+            friend vec3 operator*(const vec3& a_Lhs, const vec3& a_Rhs);
+            friend vec3 operator*(const vec3& a_Lhs, const float a_Rhs);
+
+            friend vec3 operator/(const vec3& a_Lhs, const vec3& a_Rhs);
+            friend vec3 operator/(const vec3& a_Lhs, const float a_Rhs);
 
         public:
             union
@@ -49,6 +71,9 @@ namespace tabi
             };
             
         };
+
+        
+        
 
     }
 }

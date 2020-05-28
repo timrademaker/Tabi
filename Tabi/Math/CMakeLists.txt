@@ -14,6 +14,7 @@ set(SOURCES
     src/vec2.cpp
     src/vec3.cpp
     src/vec4.cpp
+    src/mat4.cpp
 )
 
 # Add source to this project's executable.

@@ -31,13 +31,13 @@ float tabi::math::vec3::lengthSquared() const
 }
 
 /**** Operators ****/
-float vec3::operator[](const int a_Index) const
+float vec3::operator[](const unsigned int a_Index) const
 {
     assert(a_Index < 3);
     return v[a_Index];
 }
 
-float& vec3::operator[](const int a_Index)
+float& vec3::operator[](const unsigned int a_Index)
 {
     assert(a_Index < 3);
     return v[a_Index];
@@ -48,6 +48,80 @@ vec3& vec3::operator=(const vec3& a_Rhs)
     x = a_Rhs.x;
     y = a_Rhs.y;
     z = a_Rhs.z;
+    return *this;
+}
+
+bool vec3::operator==(const vec3& a_Rhs)
+{
+    return (x == a_Rhs.x) && (y == a_Rhs.y) && (z == a_Rhs.z);
+}
+
+bool vec3::operator!=(const vec3& a_Rhs)
+{
+    return !(*this == a_Rhs);
+}
+
+vec3& vec3::operator+=(const vec3& a_Rhs)
+{
+    x += a_Rhs.x;
+    y += a_Rhs.y;
+    z += a_Rhs.z;
+    return *this;
+}
+
+vec3& vec3::operator+=(const float a_Rhs)
+{
+    x += a_Rhs;
+    y += a_Rhs;
+    z += a_Rhs;
+    return *this;
+}
+
+vec3& vec3::operator-=(const vec3& a_Rhs)
+{
+    x -= a_Rhs.x;
+    y -= a_Rhs.y;
+    z -= a_Rhs.z;
+    return *this;
+}
+
+vec3& vec3::operator-=(const float a_Rhs)
+{
+    x -= a_Rhs;
+    y -= a_Rhs;
+    z -= a_Rhs;
+    return *this;
+}
+
+vec3& vec3::operator*=(const vec3& a_Rhs)
+{
+    x *= a_Rhs.x;
+    y *= a_Rhs.y;
+    z *= a_Rhs.z;
+    return *this;
+}
+
+vec3& vec3::operator*=(const float a_Scalar)
+{
+    x *= a_Scalar;
+    y *= a_Scalar;
+    z *= a_Scalar;
+    return *this;
+}
+
+vec3& vec3::operator/=(const vec3& a_Rhs)
+{
+    x /= a_Rhs.x;
+    y /= a_Rhs.y;
+    z /= a_Rhs.z;
+    return *this;
+}
+
+vec3& vec3::operator/=(const float a_Scalar)
+{
+    x /= a_Scalar;
+    y /= a_Scalar;
+    z /= a_Scalar;
     return *this;
 }
 

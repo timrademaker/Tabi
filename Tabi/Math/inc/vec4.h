@@ -63,6 +63,14 @@ namespace tabi
                     float w;
                 };
 
+                struct
+                {
+                    float r;
+                    float g;
+                    float b;
+                    float a;
+                };
+
                 float v[4];
             };
         };

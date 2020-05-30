@@ -33,7 +33,7 @@ mat4 tabi::mat4::Transpose() const
     {
         for (auto j = 0; j < 4; ++j)
         {
-            transpose.Get(j, i) = m[i][j];
+            transpose.m[j][i] = m[i][j];
         }
     }
 
@@ -111,17 +111,17 @@ mat4 tabi::mat4::Scale(const mat4& a_Matrix, const vec4& a_Scale)
 
 void tabi::mat4::Translate(const vec3& a_Translation)
 {
-    m[3][0] += a_Translation.x;
-    m[3][0] += a_Translation.y;
-    m[3][0] += a_Translation.z;
+    m[0][3] += a_Translation.x;
+    m[1][3] += a_Translation.y;
+    m[2][3] += a_Translation.z;
 }
 
 void tabi::mat4::Translate(const vec4& a_Translation)
 {
     assert(a_Translation.w != 0.0f);
-    m[3][0] += a_Translation.x / a_Translation.w;
-    m[3][0] += a_Translation.y / a_Translation.w;
-    m[3][0] += a_Translation.z / a_Translation.w;
+    m[0][3] += a_Translation.x / a_Translation.w;
+    m[1][3] += a_Translation.y / a_Translation.w;
+    m[2][3] += a_Translation.z / a_Translation.w;
 }
 
 mat4 tabi::mat4::Translate(const mat4& a_Matrix, const vec3& a_Translation)
@@ -334,7 +334,7 @@ vec4 tabi::operator*(const mat4& a_Lhs, const vec4& a_Rhs)
     {
         for (auto j = 0; j < 4; ++j)
         {
-            result[i] += a_Lhs.m[j][i] * a_Rhs[i];
+            result[i] += a_Lhs.m[i][j] * a_Rhs[j];
         }
     }
     

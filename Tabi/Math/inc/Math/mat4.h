@@ -10,6 +10,7 @@ namespace tabi
     class vec3;
     class vec4;
 
+    // Row-major 4x4 matrix
     class mat4
     {
     public:

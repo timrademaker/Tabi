@@ -209,6 +209,11 @@ mat4 tabi::mat4::RotateZ(const mat4& a_Matrix, const float a_Radians)
     return result;
 }
 
+mat4 tabi::mat4::CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation)
+{
+    return a_Translation * a_Rotation * a_Scale;
+}
+
 float& tabi::mat4::Get(const unsigned int a_Row, const unsigned int a_Column)
 {
     assert(a_Row < 4);
@@ -318,7 +323,7 @@ mat4 tabi::operator*(const mat4& a_Lhs, const float a_Scalar)
 vec3 tabi::operator*(const mat4& a_Lhs, const vec3& a_Rhs)
 {
     vec4 result = a_Lhs * vec4(a_Rhs, 1.0f);
-    return vec3(result.x, result.y, result.z);
+    return vec3(result.x / result.w, result.y / result.w, result.z / result.w);
 }
 
 vec4 tabi::operator*(const mat4& a_Lhs, const vec4& a_Rhs)

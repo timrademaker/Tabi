@@ -41,6 +41,8 @@ namespace tabi
         static mat4 RotateY(const mat4& a_Matrix, const float a_Radians);
         static mat4 RotateZ(const mat4& a_Matrix, const float a_Radians);
 
+        static mat4 CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation);
+
         float Get(const unsigned int a_Row, const unsigned int a_Column) const;
         float& Get(const unsigned int a_Row, const unsigned int a_Column);
 

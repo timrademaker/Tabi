@@ -3,9 +3,28 @@
 #include "vec3.h"
 #include "vec4.h"
 
+#include <cmath>
 #include <cassert>
 
 using namespace tabi::math;
+
+tabi::math::mat4::mat4()
+{
+    for (auto i = 0; i < 4; ++i)
+    {
+        for (auto j = 0; j < 4; ++j)
+        {
+            if (i == j)
+            {
+                m[i][j] = 1.0f;
+            }
+            else
+            {
+                m[i][j] = 0.0f;
+            }
+        }
+    }
+}
 
 mat4 tabi::math::mat4::Transpose() const
 {
@@ -124,6 +143,72 @@ mat4 tabi::math::mat4::Translate(const mat4& a_Matrix, const vec4& a_Translation
     return result;
 }
 
+void tabi::math::mat4::RotateX(const float a_Radians)
+{
+    const float c = std::cos(a_Radians);
+    const float s = std::sin(a_Radians);
+    mat4 rotation = mat4::Identity();
+
+    rotation.m[1][1] = c;
+    rotation.m[1][2] = -s;
+    rotation.m[2][1] = s;
+    rotation.m[2][2] = c;
+
+    *this *= rotation;
+}
+
+void tabi::math::mat4::RotateY(const float a_Radians)
+{
+    const float c = std::cos(a_Radians);
+    const float s = std::sin(a_Radians);
+    mat4 rotation = mat4::Identity();
+
+    rotation.m[0][0] = c;
+    rotation.m[0][2] = s;
+    rotation.m[2][0] = -s;
+    rotation.m[2][2] = c;
+
+    *this *= rotation;
+}
+
+void tabi::math::mat4::RotateZ(const float a_Radians)
+{
+    const float c = std::cos(a_Radians);
+    const float s = std::sin(a_Radians);
+    mat4 rotation = mat4::Identity();
+
+    rotation.m[0][0] = c;
+    rotation.m[0][1] = -s;
+    rotation.m[1][0] = s;
+    rotation.m[1][1] = c;
+
+    *this *= rotation;
+}
+
+mat4 tabi::math::mat4::RotateX(const mat4& a_Matrix, const float a_Radians)
+{
+    mat4 result = a_Matrix;
+    result.RotateX(a_Radians);
+
+    return result;
+}
+
+mat4 tabi::math::mat4::RotateY(const mat4& a_Matrix, const float a_Radians)
+{
+    mat4 result = a_Matrix;
+    result.RotateY(a_Radians);
+
+    return result;
+}
+
+mat4 tabi::math::mat4::RotateZ(const mat4& a_Matrix, const float a_Radians)
+{
+    mat4 result = a_Matrix;
+    result.RotateZ(a_Radians);
+
+    return result;
+}
+
 float& tabi::math::mat4::Get(const unsigned int a_Row, const unsigned int a_Column)
 {
     assert(a_Row < 4);
@@ -151,6 +236,34 @@ float& mat4::operator[](const unsigned int a_Index)
 {
     assert(a_Index < 16);
     return v[a_Index];
+}
+
+mat4& mat4::operator=(const mat4& a_Rhs)
+{
+    for (auto i = 0; i < 16; ++i)
+    {
+        v[i] = a_Rhs.v[i];
+    }
+
+    return *this;
+}
+
+bool mat4::operator==(const mat4& a_Rhs)
+{
+    for (auto i = 0; i < 16; ++i)
+    {
+        if (v[i] != a_Rhs.v[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool mat4::operator!=(const mat4& a_Rhs)
+{
+    return !(*this == a_Rhs);
 }
 
 mat4 tabi::math::operator+(const mat4& a_Lhs, const mat4& a_Rhs)

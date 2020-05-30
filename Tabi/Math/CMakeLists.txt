@@ -3,18 +3,20 @@ cmake_minimum_required (VERSION 3.8)
 
 # Set headers for ResourceManager
 set(HEADERS
-    inc/vec2.h
-    inc/vec3.h
-    inc/vec4.h
-    inc/mat4.h
+    inc/Math/vec2.h
+    inc/Math/vec3.h
+    inc/Math/vec4.h
+    inc/Math/mat4.h
+    inc/Math/TabiMath.h
 )
 
 # Set sources for Math
 set(SOURCES
-    src/vec2.cpp
-    src/vec3.cpp
-    src/vec4.cpp
-    src/mat4.cpp
+    src/Math/vec2.cpp
+    src/Math/vec3.cpp
+    src/Math/vec4.cpp
+    src/Math/mat4.cpp
+    src/Math/TabiMath.cpp
 )
 
 # Add source to this project's executable.

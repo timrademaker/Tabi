@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vec3.h>
+#include <Math/vec3.h>
 
 namespace tabi
 {
@@ -15,10 +15,10 @@ namespace tabi
     {
     public:
         ELightType m_LightType;
-        tabi::math::vec3 m_Color;
+        tabi::vec3 m_Color;
         float m_Intensity;
 
-        tabi::math::vec3 m_Position;
-        tabi::math::vec3 m_Direction;
+        tabi::vec3 m_Position;
+        tabi::vec3 m_Direction;
     };
 }

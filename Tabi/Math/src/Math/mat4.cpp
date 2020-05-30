@@ -1,14 +1,14 @@
-#include "mat4.h"
+#include "Math/mat4.h"
 
-#include "vec3.h"
-#include "vec4.h"
+#include "Math/vec3.h"
+#include "Math/vec4.h"
 
 #include <cmath>
 #include <cassert>
 
-using namespace tabi::math;
+using namespace tabi;
 
-tabi::math::mat4::mat4()
+tabi::mat4::mat4()
 {
     for (auto i = 0; i < 4; ++i)
     {
@@ -26,7 +26,7 @@ tabi::math::mat4::mat4()
     }
 }
 
-mat4 tabi::math::mat4::Transpose() const
+mat4 tabi::mat4::Transpose() const
 {
     mat4 transpose;
     for (auto i = 0; i < 4; ++i)
@@ -52,21 +52,21 @@ mat4 mat4::Identity()
     return identity;
 }
 
-void tabi::math::mat4::Scale(const float a_Scale)
+void tabi::mat4::Scale(const float a_Scale)
 {
     m[0][0] *= a_Scale;
     m[1][1] *= a_Scale;
     m[2][2] *= a_Scale;
 }
 
-void tabi::math::mat4::Scale(const vec3& a_Scale)
+void tabi::mat4::Scale(const vec3& a_Scale)
 {
     m[0][0] *= a_Scale.x;
     m[1][1] *= a_Scale.y;
     m[2][2] *= a_Scale.z;
 }
 
-void tabi::math::mat4::Scale(const vec4& a_Scale)
+void tabi::mat4::Scale(const vec4& a_Scale)
 {
     m[0][0] *= a_Scale.x;
     m[1][1] *= a_Scale.y;
@@ -74,7 +74,7 @@ void tabi::math::mat4::Scale(const vec4& a_Scale)
     m[3][3] *= a_Scale.w;
 }
 
-mat4 tabi::math::mat4::Scale(const mat4& a_Matrix, const float a_Scale)
+mat4 tabi::mat4::Scale(const mat4& a_Matrix, const float a_Scale)
 {
     mat4 result = a_Matrix;
 
@@ -85,7 +85,7 @@ mat4 tabi::math::mat4::Scale(const mat4& a_Matrix, const float a_Scale)
     return result;
 }
 
-mat4 tabi::math::mat4::Scale(const mat4& a_Matrix, const vec3& a_Scale)
+mat4 tabi::mat4::Scale(const mat4& a_Matrix, const vec3& a_Scale)
 {
     mat4 result = a_Matrix;
 
@@ -96,7 +96,7 @@ mat4 tabi::math::mat4::Scale(const mat4& a_Matrix, const vec3& a_Scale)
     return result;
 }
 
-mat4 tabi::math::mat4::Scale(const mat4& a_Matrix, const vec4& a_Scale)
+mat4 tabi::mat4::Scale(const mat4& a_Matrix, const vec4& a_Scale)
 {
     mat4 result = a_Matrix;
 
@@ -109,14 +109,14 @@ mat4 tabi::math::mat4::Scale(const mat4& a_Matrix, const vec4& a_Scale)
     return result;
 }
 
-void tabi::math::mat4::Translate(const vec3& a_Translation)
+void tabi::mat4::Translate(const vec3& a_Translation)
 {
     m[0][3] += a_Translation.x;
     m[0][3] += a_Translation.y;
     m[0][3] += a_Translation.z;
 }
 
-void tabi::math::mat4::Translate(const vec4& a_Translation)
+void tabi::mat4::Translate(const vec4& a_Translation)
 {
     assert(a_Translation.w != 0.0f);
     m[0][3] += a_Translation.x / a_Translation.w;
@@ -124,7 +124,7 @@ void tabi::math::mat4::Translate(const vec4& a_Translation)
     m[0][3] += a_Translation.z / a_Translation.w;
 }
 
-mat4 tabi::math::mat4::Translate(const mat4& a_Matrix, const vec3& a_Translation)
+mat4 tabi::mat4::Translate(const mat4& a_Matrix, const vec3& a_Translation)
 {
     mat4 result = a_Matrix;
     
@@ -133,7 +133,7 @@ mat4 tabi::math::mat4::Translate(const mat4& a_Matrix, const vec3& a_Translation
     return result;
 }
 
-mat4 tabi::math::mat4::Translate(const mat4& a_Matrix, const vec4& a_Translation)
+mat4 tabi::mat4::Translate(const mat4& a_Matrix, const vec4& a_Translation)
 {
     assert(a_Translation.w != 0);
     mat4 result = a_Matrix;
@@ -143,7 +143,7 @@ mat4 tabi::math::mat4::Translate(const mat4& a_Matrix, const vec4& a_Translation
     return result;
 }
 
-void tabi::math::mat4::RotateX(const float a_Radians)
+void tabi::mat4::RotateX(const float a_Radians)
 {
     const float c = std::cos(a_Radians);
     const float s = std::sin(a_Radians);
@@ -157,7 +157,7 @@ void tabi::math::mat4::RotateX(const float a_Radians)
     *this *= rotation;
 }
 
-void tabi::math::mat4::RotateY(const float a_Radians)
+void tabi::mat4::RotateY(const float a_Radians)
 {
     const float c = std::cos(a_Radians);
     const float s = std::sin(a_Radians);
@@ -171,7 +171,7 @@ void tabi::math::mat4::RotateY(const float a_Radians)
     *this *= rotation;
 }
 
-void tabi::math::mat4::RotateZ(const float a_Radians)
+void tabi::mat4::RotateZ(const float a_Radians)
 {
     const float c = std::cos(a_Radians);
     const float s = std::sin(a_Radians);
@@ -185,7 +185,7 @@ void tabi::math::mat4::RotateZ(const float a_Radians)
     *this *= rotation;
 }
 
-mat4 tabi::math::mat4::RotateX(const mat4& a_Matrix, const float a_Radians)
+mat4 tabi::mat4::RotateX(const mat4& a_Matrix, const float a_Radians)
 {
     mat4 result = a_Matrix;
     result.RotateX(a_Radians);
@@ -193,7 +193,7 @@ mat4 tabi::math::mat4::RotateX(const mat4& a_Matrix, const float a_Radians)
     return result;
 }
 
-mat4 tabi::math::mat4::RotateY(const mat4& a_Matrix, const float a_Radians)
+mat4 tabi::mat4::RotateY(const mat4& a_Matrix, const float a_Radians)
 {
     mat4 result = a_Matrix;
     result.RotateY(a_Radians);
@@ -201,7 +201,7 @@ mat4 tabi::math::mat4::RotateY(const mat4& a_Matrix, const float a_Radians)
     return result;
 }
 
-mat4 tabi::math::mat4::RotateZ(const mat4& a_Matrix, const float a_Radians)
+mat4 tabi::mat4::RotateZ(const mat4& a_Matrix, const float a_Radians)
 {
     mat4 result = a_Matrix;
     result.RotateZ(a_Radians);
@@ -209,7 +209,7 @@ mat4 tabi::math::mat4::RotateZ(const mat4& a_Matrix, const float a_Radians)
     return result;
 }
 
-float& tabi::math::mat4::Get(const unsigned int a_Row, const unsigned int a_Column)
+float& tabi::mat4::Get(const unsigned int a_Row, const unsigned int a_Column)
 {
     assert(a_Row < 4);
     assert(a_Column < 4);
@@ -217,7 +217,7 @@ float& tabi::math::mat4::Get(const unsigned int a_Row, const unsigned int a_Colu
     return m[a_Row][a_Column];
 }
 
-float tabi::math::mat4::Get(const unsigned int a_Row, const unsigned int a_Column) const
+float tabi::mat4::Get(const unsigned int a_Row, const unsigned int a_Column) const
 {
     assert(a_Row < 4);
     assert(a_Column < 4);
@@ -266,7 +266,7 @@ bool mat4::operator!=(const mat4& a_Rhs)
     return !(*this == a_Rhs);
 }
 
-mat4 tabi::math::operator+(const mat4& a_Lhs, const mat4& a_Rhs)
+mat4 tabi::operator+(const mat4& a_Lhs, const mat4& a_Rhs)
 {
     mat4 res;
 
@@ -278,7 +278,7 @@ mat4 tabi::math::operator+(const mat4& a_Lhs, const mat4& a_Rhs)
     return res;
 }
 
-mat4 tabi::math::operator-(const mat4& a_Lhs, const mat4& a_Rhs)
+mat4 tabi::operator-(const mat4& a_Lhs, const mat4& a_Rhs)
 {
     mat4 res;
     
@@ -290,21 +290,21 @@ mat4 tabi::math::operator-(const mat4& a_Lhs, const mat4& a_Rhs)
     return res;
 }
 
-mat4& tabi::math::mat4::operator+=(const mat4& a_Rhs)
+mat4& tabi::mat4::operator+=(const mat4& a_Rhs)
 {
     *this = *this + a_Rhs;
 
     return *this;
 }
 
-mat4& tabi::math::mat4::operator-=(const mat4& a_Rhs)
+mat4& tabi::mat4::operator-=(const mat4& a_Rhs)
 {
     *this = *this - a_Rhs;
 
     return *this;
 }
 
-mat4 tabi::math::operator*(const mat4& a_Lhs, const float a_Scalar)
+mat4 tabi::operator*(const mat4& a_Lhs, const float a_Scalar)
 {
     mat4 result;
     for (auto i = 0; i < 16; ++i)
@@ -315,13 +315,13 @@ mat4 tabi::math::operator*(const mat4& a_Lhs, const float a_Scalar)
     return result;
 }
 
-vec3 tabi::math::operator*(const mat4& a_Lhs, const vec3& a_Rhs)
+vec3 tabi::operator*(const mat4& a_Lhs, const vec3& a_Rhs)
 {
     vec4 result = a_Lhs * vec4(a_Rhs, 1.0f);
     return vec3(result.x, result.y, result.z);
 }
 
-vec4 tabi::math::operator*(const mat4& a_Lhs, const vec4& a_Rhs)
+vec4 tabi::operator*(const mat4& a_Lhs, const vec4& a_Rhs)
 {
     vec4 result;
 
@@ -336,7 +336,7 @@ vec4 tabi::math::operator*(const mat4& a_Lhs, const vec4& a_Rhs)
     return result;
 }
 
-mat4 tabi::math::operator*(const mat4& a_Lhs, const mat4& a_Rhs)
+mat4 tabi::operator*(const mat4& a_Lhs, const mat4& a_Rhs)
 {
     mat4 result;
 
@@ -356,14 +356,14 @@ mat4 tabi::math::operator*(const mat4& a_Lhs, const mat4& a_Rhs)
     return result;
 }
 
-mat4& tabi::math::mat4::operator*=(const float a_Scalar)
+mat4& tabi::mat4::operator*=(const float a_Scalar)
 {
     *this = *this * a_Scalar;
 
     return *this;
 }
 
-mat4& tabi::math::mat4::operator*=(const mat4& a_Rhs)
+mat4& tabi::mat4::operator*=(const mat4& a_Rhs)
 {
     *this = *this * a_Rhs;
 

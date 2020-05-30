@@ -1,13 +1,13 @@
-#include "vec4.h"
+#include "Math/vec4.h"
 
-#include "vec3.h"
+#include "Math/vec3.h"
 
 #include <cassert>
 
-using namespace tabi::math;
+using namespace tabi;
 
 
-tabi::math::vec4::vec4(const vec3& a_Vec3, float a_W)
+tabi::vec4::vec4(const vec3& a_Vec3, float a_W)
     : x(a_Vec3.x), y(a_Vec3.y), z(a_Vec3.z), w(a_W)
 { }
 

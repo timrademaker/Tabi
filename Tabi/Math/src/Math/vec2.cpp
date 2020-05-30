@@ -1,8 +1,8 @@
-#include "vec2.h"
+#include "Math/vec2.h"
 
 #include <cassert>
 
-using namespace tabi::math;
+using namespace tabi;
 
 /**** Operators ****/
 float& vec2::operator[](const unsigned int a_Index)

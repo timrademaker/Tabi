@@ -1,17 +1,17 @@
-#include "vec3.h"
+#include "Math/vec3.h"
 
 #include <cassert>
 
 #include <cmath>
 
-using namespace tabi::math;
+using namespace tabi;
 
-float tabi::math::vec3::dot(const vec3& a_Other) const
+float tabi::vec3::dot(const vec3& a_Other) const
 {
     return (x * a_Other.x) + (y * a_Other.y) + (z * a_Other.z);
 }
 
-vec3 tabi::math::vec3::cross(const vec3& a_Other) const
+vec3 tabi::vec3::cross(const vec3& a_Other) const
 {
     return vec3(
         y * a_Other.z - z * a_Other.y,
@@ -20,12 +20,12 @@ vec3 tabi::math::vec3::cross(const vec3& a_Other) const
     );
 }
 
-float tabi::math::vec3::length() const
+float tabi::vec3::length() const
 {
     return std::sqrt(lengthSquared());
 }
 
-float tabi::math::vec3::lengthSquared() const
+float tabi::vec3::lengthSquared() const
 {
     return (x * x) + (y * y) + (z * z);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vec3.h>
+#include <Math/vec3.h>
 
 enum class ECameraType
 {
@@ -24,7 +24,7 @@ namespace tabi
 
         ECameraType m_CameraType;
 
-        tabi::math::vec3 m_Position;
+        tabi::vec3 m_Position;
     };
 
 }

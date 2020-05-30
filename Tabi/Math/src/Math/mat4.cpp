@@ -111,17 +111,17 @@ mat4 tabi::mat4::Scale(const mat4& a_Matrix, const vec4& a_Scale)
 
 void tabi::mat4::Translate(const vec3& a_Translation)
 {
-    m[0][3] += a_Translation.x;
-    m[0][3] += a_Translation.y;
-    m[0][3] += a_Translation.z;
+    m[3][0] += a_Translation.x;
+    m[3][0] += a_Translation.y;
+    m[3][0] += a_Translation.z;
 }
 
 void tabi::mat4::Translate(const vec4& a_Translation)
 {
     assert(a_Translation.w != 0.0f);
-    m[0][3] += a_Translation.x / a_Translation.w;
-    m[0][3] += a_Translation.y / a_Translation.w;
-    m[0][3] += a_Translation.z / a_Translation.w;
+    m[3][0] += a_Translation.x / a_Translation.w;
+    m[3][0] += a_Translation.y / a_Translation.w;
+    m[3][0] += a_Translation.z / a_Translation.w;
 }
 
 mat4 tabi::mat4::Translate(const mat4& a_Matrix, const vec3& a_Translation)

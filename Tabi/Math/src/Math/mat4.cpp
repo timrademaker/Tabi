@@ -111,17 +111,17 @@ mat4 tabi::mat4::Scale(const mat4& a_Matrix, const vec4& a_Scale)
 
 void tabi::mat4::Translate(const vec3& a_Translation)
 {
-    m[0][3] += a_Translation.x;
-    m[1][3] += a_Translation.y;
-    m[2][3] += a_Translation.z;
+    m[3][0] += a_Translation.x;
+    m[3][1] += a_Translation.y;
+    m[3][2] += a_Translation.z;
 }
 
 void tabi::mat4::Translate(const vec4& a_Translation)
 {
     assert(a_Translation.w != 0.0f);
-    m[0][3] += a_Translation.x / a_Translation.w;
-    m[1][3] += a_Translation.y / a_Translation.w;
-    m[2][3] += a_Translation.z / a_Translation.w;
+    m[3][0] += a_Translation.x / a_Translation.w;
+    m[3][1] += a_Translation.y / a_Translation.w;
+    m[3][2] += a_Translation.z / a_Translation.w;
 }
 
 mat4 tabi::mat4::Translate(const mat4& a_Matrix, const vec3& a_Translation)
@@ -150,8 +150,8 @@ void tabi::mat4::RotateX(const float a_Radians)
     mat4 rotation = mat4::Identity();
 
     rotation.m[1][1] = c;
-    rotation.m[1][2] = -s;
-    rotation.m[2][1] = s;
+    rotation.m[2][1] = -s;
+    rotation.m[1][2] = s;
     rotation.m[2][2] = c;
 
     *this *= rotation;
@@ -164,8 +164,8 @@ void tabi::mat4::RotateY(const float a_Radians)
     mat4 rotation = mat4::Identity();
 
     rotation.m[0][0] = c;
-    rotation.m[0][2] = s;
-    rotation.m[2][0] = -s;
+    rotation.m[2][0] = s;
+    rotation.m[0][2] = -s;
     rotation.m[2][2] = c;
 
     *this *= rotation;
@@ -178,8 +178,8 @@ void tabi::mat4::RotateZ(const float a_Radians)
     mat4 rotation = mat4::Identity();
 
     rotation.m[0][0] = c;
-    rotation.m[0][1] = -s;
-    rotation.m[1][0] = s;
+    rotation.m[1][0] = -s;
+    rotation.m[0][1] = s;
     rotation.m[1][1] = c;
 
     *this *= rotation;

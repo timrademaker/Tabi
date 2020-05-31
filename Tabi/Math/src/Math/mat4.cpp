@@ -214,6 +214,25 @@ mat4 tabi::mat4::CreateTransformationMatrix(const mat4& a_Translation, const mat
     return a_Translation * a_Rotation * a_Scale;
 }
 
+mat4 tabi::mat4::CreatePerspectiveProjectionMatrix(const float a_FoV, const float a_AspectRatio, const float a_Near, const float a_Far)
+{
+    mat4 result = mat4::Identity();
+
+    const float scaleY = 1.0f / (tan(a_FoV / 2.0f));
+    const float scaleX = scaleY / a_AspectRatio;
+    const float frustumDepth = a_Far - a_Near;
+
+    result.m[0][0] = scaleX;
+    result.m[1][1] = scaleY;
+    result.m[2][2] = -(a_Far + a_Near) / frustumDepth;
+    result.m[2][3] = -1.0f;
+    result.m[3][2] = (-2.0f * a_Far * a_Near) / frustumDepth;
+    result.m[3][3] = 0.0f;
+
+
+    return result;
+}
+
 float& tabi::mat4::Get(const unsigned int a_Row, const unsigned int a_Column)
 {
     assert(a_Row < 4);

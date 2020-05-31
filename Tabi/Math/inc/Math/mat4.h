@@ -43,6 +43,7 @@ namespace tabi
         static mat4 RotateZ(const mat4& a_Matrix, const float a_Radians);
 
         static mat4 CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation);
+        static mat4 CreatePerspectiveProjectionMatrix(const float a_FoV, const float a_AspectRatio, const float a_Near, const float a_Far);
 
         float Get(const unsigned int a_Row, const unsigned int a_Column) const;
         float& Get(const unsigned int a_Row, const unsigned int a_Column);

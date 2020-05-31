@@ -31,7 +31,7 @@ tabi::graphics::Renderer::Renderer()
 
     // Create and set (default) texture sampler params
     glGenSamplers(1, &m_TextureSampler);
-    glBindSampler(GL_TEXTURE_2D, m_TextureSampler);
+    glBindSampler(0, m_TextureSampler);
 
     // Wrapping mode
     glSamplerParameteri(m_TextureSampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);

@@ -28,6 +28,7 @@ tabi::graphics::Renderer::Renderer()
     m_TextureShader = CreateShaderProgram("TabiAssets/Shaders/SingleTextureShader.vert", "TabiAssets/Shaders/SingleTextureShader.frag");
     UseShader(m_TextureShader);
 
+    glEnable(GL_DEPTH_TEST);
 
     // Create and set (default) texture sampler params
     glGenSamplers(1, &m_TextureSampler);
@@ -83,20 +84,20 @@ bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMesh
     glBufferData(GL_ARRAY_BUFFER, a_Mesh.m_Vertices.size() * sizeof(Mesh::Vertex), &a_Mesh.m_Vertices[0], usage);
 
     // Vertex coordinates
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)0);
     glEnableVertexAttribArray(0);
 
     // Vertex normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, m_Normal));
     glEnableVertexAttribArray(1);
 
     // Texture coordinates
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Mesh::Vertex, m_TexCoords));
     glEnableVertexAttribArray(2);
 
     if (!a_Mesh.m_Indices.empty())
     {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_Mesh.m_Indices.size() * sizeof(a_Mesh.m_Indices.at(0)), &a_Mesh.m_Indices[0], usage);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, a_Mesh.m_Indices.size() * sizeof(unsigned int), &a_Mesh.m_Indices[0], usage);
     }
 
     if(!a_Mesh.m_Indices.empty())

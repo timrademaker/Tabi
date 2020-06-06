@@ -211,7 +211,7 @@ mat4 tabi::mat4::RotateZ(const mat4& a_Matrix, const float a_Radians)
 
 mat4 tabi::mat4::CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation)
 {
-    return a_Translation * a_Rotation * a_Scale;
+    return a_Scale * a_Rotation * a_Translation;
 }
 
 mat4 tabi::mat4::CreatePerspectiveProjectionMatrix(const float a_FoV, const float a_AspectRatio, const float a_Near, const float a_Far)

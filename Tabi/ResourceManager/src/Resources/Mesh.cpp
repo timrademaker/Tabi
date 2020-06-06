@@ -37,9 +37,10 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
             assert(a_Model.accessors[attribIter->second].componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
             assert(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC3);
 
-            auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
-            auto count = a_Model.accessors[attribIter->second].count;
-            //m->m_VertexNormals.reserve(count);
+            const auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
+            const auto count = a_Model.accessors[attribIter->second].count;
+            const auto accessorByteOffset = a_Model.accessors[attribIter->second].byteOffset;
+            
             m->m_Vertices.reserve(count);
 
             auto& buffer = a_Model.buffers[bufferView.buffer];
@@ -48,14 +49,13 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             for (std::size_t index = 0; index < count; ++index)
             {
-                tabi::vec3 vertexNormal = *(gltf::GetElementFromBuffer<tabi::vec3>(&buffer.data[0], dataStart, index));
+                tabi::vec3 vertexNormal = *(gltf::GetElementFromBuffer<tabi::vec3>(&buffer.data[accessorByteOffset], dataStart, index));
 
                 if (swapZPositionSign)
                 {
                     vertexNormal.z = -vertexNormal.z;
                 }
 
-                //m->m_VertexNormals.push_back(vertexNormal);
                 if(m->m_Vertices.size() <= index)
                 {
                     Mesh::Vertex v;
@@ -75,10 +75,10 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
             assert(a_Model.accessors[attribIter->second].componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
             assert(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC3);
 
-            auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
-            auto count = a_Model.accessors[attribIter->second].count;
+            const auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
+            const auto count = a_Model.accessors[attribIter->second].count;
+            const auto accessorByteOffset = a_Model.accessors[attribIter->second].byteOffset;
 
-            //m->m_VertexCoordinates.reserve(count);
             if(m->m_Vertices.capacity() < count)
             {
                 m->m_Vertices.reserve(count);
@@ -90,14 +90,13 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
             for (std::size_t index = 0; index < count; ++index)
             {
-                tabi::vec3 vertexPosition = *(gltf::GetElementFromBuffer<tabi::vec3>(&buffer.data[0], dataStart, index));
+                tabi::vec3 vertexPosition = *(gltf::GetElementFromBuffer<tabi::vec3>(&buffer.data[accessorByteOffset], dataStart, index));
 
                 if (swapZPositionSign)
                 {
                     vertexPosition.z = -vertexPosition.z;
                 }
 
-                //m->m_VertexCoordinates.push_back(vertexPosition);
                 if (m->m_Vertices.size() <= index)
                 {
                     Mesh::Vertex v;
@@ -117,8 +116,9 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
         {
             assert(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC2);
 
-            auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
-            auto count = a_Model.accessors[attribIter->second].count;
+            const auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
+            const auto count = a_Model.accessors[attribIter->second].count;
+            const auto accessorByteOffset = a_Model.accessors[attribIter->second].byteOffset;
 
             //m->m_VertexCoordinates.reserve(count);
             if(m->m_Vertices.capacity() <= count)
@@ -138,11 +138,11 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
 
                 if (componentType == TINYGLTF_COMPONENT_TYPE_FLOAT)
                 {
-                    textureCoords = *(gltf::GetElementFromBuffer<tabi::vec2>(&buffer.data[0], dataStart, index));
+                    textureCoords = *(gltf::GetElementFromBuffer<tabi::vec2>(&buffer.data[accessorByteOffset], dataStart, index));
                 }
                 else if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
                 {
-                    auto coords = (gltf::GetElementFromBuffer<unsigned char[2]>(&buffer.data[0], dataStart, index));
+                    auto coords = (gltf::GetElementFromBuffer<unsigned char[2]>(&buffer.data[accessorByteOffset], dataStart, index));
                     textureCoords.x = static_cast<float>(*coords[0]);
                     textureCoords.y = static_cast<float>(*coords[1]);
 
@@ -150,14 +150,13 @@ tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std:
                 }
                 else if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
                 {
-                    auto coords = (gltf::GetElementFromBuffer<unsigned short[2]>(&buffer.data[0], dataStart, index));
+                    auto coords = (gltf::GetElementFromBuffer<unsigned short[2]>(&buffer.data[accessorByteOffset], dataStart, index));
                     textureCoords.x = static_cast<float>(*coords[0]);
                     textureCoords.y = static_cast<float>(*coords[1]);
 
                     m->m_TextureCoordinatesAreNormalized = true;
                 }
 
-                //m->m_VertexTextureCoordinates.push_back(textureCoords);
                 if (m->m_Vertices.size() < index)
                 {
                     Mesh::Vertex v;

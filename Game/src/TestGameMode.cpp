@@ -34,8 +34,15 @@ bool TestGameMode::OnInitialize()
 void TestGameMode::OnRender()
 {
     tabi::graphics::IRenderer& renderer = tabi::graphics::IRenderer::GetInstance();
+    
+    tabi::mat4 rotation = tabi::mat4::Identity();
+
+    tabi::mat4 scale = tabi::mat4::Identity();
+    tabi::mat4 translation = tabi::mat4::Identity();
+    tabi::mat4 transform = tabi::mat4::CreateTransformationMatrix(translation, scale, rotation);
+
     for(auto& mesh : m_Meshes)
     {
-        renderer.RenderMesh(*mesh);
+        renderer.RenderMesh(*mesh, transform);
     }
 }

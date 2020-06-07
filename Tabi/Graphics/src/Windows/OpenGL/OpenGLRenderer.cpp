@@ -1,6 +1,9 @@
 #include "Windows/OpenGL/OpenGLRenderer.h"
 
 #include "Windows/OpenGL/OpenGLHelpers.h"
+
+#include "Camera.h"
+
 #include <TabiMacros.h>
 
 #include <IFile.h>
@@ -8,7 +11,7 @@
 #include <Resources/Texture.h>
 #include <Resources/Material.h>
 
-#include "Logging.h"
+#include <Logging.h>
 
 #include <glad/glad.h>
 
@@ -43,6 +46,9 @@ tabi::graphics::Renderer::Renderer()
     // Filtering
     glSamplerParameteri(m_TextureSampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glSamplerParameteri(m_TextureSampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Create a default camera
+    m_CurrentCamera = tabi::make_shared<Camera>();
 }
 
 bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
@@ -219,7 +225,7 @@ void Renderer::UseShader(const ShaderHandle a_ShaderHandle)
     m_CurrentlyBoundShader = a_ShaderHandle;
 }
 
-void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
+void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Transform)
 {
     // Bind texture if the mesh has one
     if (a_Mesh.m_Material
@@ -247,10 +253,22 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
         }
     }
 
+    mat4 eye = m_CurrentCamera->GetView();
+    mat4 projection = m_CurrentCamera->GetProjection();
+
+    GLint mod = glGetUniformLocation(m_CurrentlyBoundShader, "uModel");
+    GLint vi = glGetUniformLocation(m_CurrentlyBoundShader, "uView");
+    GLint pro = glGetUniformLocation(m_CurrentlyBoundShader, "uProjection");
+
+    glUniformMatrix4fv(mod, 1, GL_FALSE, &a_Transform.v[0]);
+    glUniformMatrix4fv(vi, 1, GL_FALSE, &eye.v[0]);
+    glUniformMatrix4fv(pro, 1, GL_FALSE, &projection.v[0]);
+
+
     glBindVertexArray(a_Mesh.m_VAO);
     if (a_Mesh.m_EBO != 0)
     {
-        glDrawElements(GL_TRIANGLES, a_Mesh.m_VertexCount, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, a_Mesh.m_VertexCount, GL_UNSIGNED_INT, 0);
     }
     else
     {
@@ -259,4 +277,9 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh)
     glBindVertexArray(0);
 
     helpers::CheckForErrors();
+}
+
+void tabi::graphics::Renderer::UseCamera(const tabi::shared_ptr<Camera> a_Camera)
+{
+    m_CurrentCamera = a_Camera;
 }

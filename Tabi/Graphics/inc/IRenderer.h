@@ -2,10 +2,13 @@
 
 #include <TabiTypes.h>
 
+#include <math/mat4.h>
+
 namespace tabi
 {
     class Mesh;
     class Texture;
+    class Camera;
 
     namespace graphics
     {
@@ -63,12 +66,33 @@ namespace tabi
             * @brief Renders a mesh
             * @params a_Mesh The mesh to render
             */
-            virtual void RenderMesh(const Mesh& a_Mesh) = 0;
+            virtual void RenderMesh(const Mesh& a_Mesh, const mat4& a_Transform) = 0;
+
+
+            /**
+            * @brief Set a camera as the camera from which the screen is drawn
+            * @params a_Camera The camera to use
+            */
+            virtual void UseCamera(const tabi::shared_ptr<Camera> a_Camera) = 0;
+
+            /**
+            * @brief Update the known dimensions of the active window. Doesn't resize the window.
+            */
+            void UpdateWindowDimensions(unsigned int a_Width, unsigned int a_Height);
+
+            /**
+            * @brief Get the active window's dimensions
+            * @returns The dimensions of the window
+            */
+            void GetWindowDimensions(unsigned int& a_Width, unsigned int& a_Height) const;
 
         protected:
             IRenderer() = default;
             virtual ~IRenderer() = default;
 
+        protected:
+            unsigned int m_WindowWidth;
+            unsigned int m_WindowHeight;
         };
     }
 }

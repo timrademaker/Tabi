@@ -16,6 +16,7 @@ set(HEADERS
 
 # Set sources for Graphics
 set(SOURCES
+    src/Camera.cpp
     src/IRenderer.cpp
     src/IWindow.cpp
     src/Windows/WindowsWindow.cpp

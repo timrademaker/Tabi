@@ -1,6 +1,7 @@
 #include "Windows/OpenGL/OpenGLContext.h"
 
 #include "Windows/OpenGL/OpenGLHelpers.h"
+#include "IRenderer.h"
 
 #include <Logging.h>
 
@@ -64,4 +65,6 @@ void Context::Resize(unsigned a_Width, unsigned a_Height)
     m_Height = a_Height;
 
     glViewport(0, 0, a_Width, a_Height);
+
+    graphics::IRenderer::GetInstance().UpdateWindowDimensions(a_Width, a_Height);
 }

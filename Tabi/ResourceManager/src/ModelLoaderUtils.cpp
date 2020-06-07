@@ -127,8 +127,8 @@ tabi::vector<tabi::shared_ptr<tabi::Camera>> tabi::gltf::GetCameras(const tinygl
             auto cam = tabi::make_shared<Camera>();
             auto camera = a_Model.cameras.at(node.camera);
 
-            cam->m_Near = static_cast<float>(camera.perspective.znear);
-            cam->m_Far = static_cast<float>(camera.perspective.zfar);
+            cam->SetNear(static_cast<float>(camera.perspective.znear));
+            cam->SetFar(static_cast<float>(camera.perspective.zfar));
             //cam->m_FoV = static_cast<float>(glm::degrees(camera.perspective.yfov));
 
             cameraNodeIndices.push_back(static_cast<int>(i));
@@ -151,18 +151,19 @@ tabi::vector<tabi::shared_ptr<tabi::Camera>> tabi::gltf::GetCameras(const tinygl
                 {
                     auto& cam = cameras.at(j);
 
+                    float zFlip = 1.0f;
+                    if (swapZPositionSign)
+                    {
+                        zFlip = -1.0f;
+                    }
+
                     if (!node.translation.empty())
                     {
-                        cam->m_Position = {
+                        cam->MoveTo({
                             static_cast<float>(node.translation[0])
                             , static_cast<float>(node.translation[1])
-                            , static_cast<float>(node.translation[2])
-                        };
-
-                        if (swapZPositionSign)
-                        {
-                            cam->m_Position.z = -cam->m_Position.z;
-                        }
+                            , static_cast<float>(node.translation[2]) * zFlip
+                        });
                     }
 
                     if (!node.rotation.empty())

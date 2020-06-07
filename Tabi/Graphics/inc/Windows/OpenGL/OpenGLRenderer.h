@@ -19,7 +19,9 @@ namespace tabi
 
             virtual void UseShader(const ShaderHandle a_ShaderHandle) override;
 
-            virtual void RenderMesh(const Mesh& a_Mesh) override;
+            virtual void RenderMesh(const Mesh& a_Mesh, const mat4& a_Transform) override;
+
+            virtual void UseCamera(const tabi::shared_ptr<Camera> a_Camera) override;
 
         private:
             unsigned int m_TextureSampler;
@@ -27,6 +29,8 @@ namespace tabi
             ShaderHandle m_MeshShader;
 
             ShaderHandle m_CurrentlyBoundShader;
+
+            tabi::shared_ptr<Camera> m_CurrentCamera;
         };
     }
 }

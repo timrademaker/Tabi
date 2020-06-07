@@ -49,14 +49,14 @@ namespace tabi
     {
         static_assert(std::is_base_of<IResource, T>::value, "You are trying to load a resource type that is not derived from the correct base class!");
 
-        auto id = CalculateResourceID(tabi::forward(a_Args)...);
+        auto id = tabi::utils::CalculateResourceID(tabi::forward<Args>(a_Args)...);
 
         // Check if resource is already loaded
         ResourceMap::iterator foundRes = m_LoadedResources.find(id);
         if (foundRes == m_LoadedResources.end())
         {
             // Load resource
-            tabi::shared_ptr<T> resource = tabi::make_shared<T>(tabi::forward(a_Args)...);
+            tabi::shared_ptr<T> resource = tabi::make_shared<T>(tabi::forward<Args>(a_Args)...);
             
             // Add resource to loaded resources
             m_LoadedResources.insert(tabi::make_pair(id, resource));
@@ -64,7 +64,7 @@ namespace tabi
         }
         else
         {
-            return foundRes->second;
+            return std::static_pointer_cast<T>(foundRes->second);
         }
     }
 }

@@ -24,16 +24,15 @@ tabi::string tabi::utils::StringReplace(const tabi::string& a_String, const tabi
 // String hashing function
 // Taken from http://www.cse.yorku.ca/~oz/hash.html (public domain)
 ////////////////////////////////////////////////////////////////////////////////
-tabi::resources::ResouceID tabi::utils::CalculateResourceID(tabi::string& a_FilePath)
+tabi::resources::ResouceID tabi::utils::CalculateResourceID(const char* a_FilePath)
 {
     resources::ResouceID hash = 0;
-    const char* cstr = a_FilePath.c_str();
-    int c = *cstr++;
+    int c = *a_FilePath++;
 
     while (c)
     {
         hash = c + (hash << 6) + (hash << 16) - hash;
-        c = *cstr++;
+        c = *a_FilePath++;
     }
 
     return hash;

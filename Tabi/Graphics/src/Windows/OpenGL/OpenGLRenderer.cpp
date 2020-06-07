@@ -256,13 +256,10 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
     mat4 eye = m_CurrentCamera->GetView();
     mat4 projection = m_CurrentCamera->GetProjection();
 
-    GLint mod = glGetUniformLocation(m_CurrentlyBoundShader, "uModel");
-    GLint vi = glGetUniformLocation(m_CurrentlyBoundShader, "uView");
-    GLint pro = glGetUniformLocation(m_CurrentlyBoundShader, "uProjection");
+    mat4 res = a_Transform * eye * projection;
+    GLint tr = glGetUniformLocation(m_CurrentlyBoundShader, "uTransform");
 
-    glUniformMatrix4fv(mod, 1, GL_FALSE, &a_Transform.v[0]);
-    glUniformMatrix4fv(vi, 1, GL_FALSE, &eye.v[0]);
-    glUniformMatrix4fv(pro, 1, GL_FALSE, &projection.v[0]);
+    glUniformMatrix4fv(tr, 1, GL_FALSE, &res.v[0]);
 
 
     glBindVertexArray(a_Mesh.m_VAO);

@@ -5,12 +5,10 @@ layout (location = 2) in vec2 aTexCoords;
 
 out vec4 vertexColor;
 
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProjection;
+uniform mat4 uTransform;
 
 void main()
 {
-	gl_Position = uProjection * uView * uModel * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	gl_Position = uTransform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 	vertexColor = vec4((aNormal.x + 1.0) / 2.0, (aNormal.y + 1.0) / 2.0, (aNormal.z + 1.0) / 2.0, 1.0);
 }

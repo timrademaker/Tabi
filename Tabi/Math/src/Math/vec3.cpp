@@ -145,6 +145,11 @@ vec3 operator-(const vec3& a_Lhs, const float a_Rhs)
     return vec3(a_Lhs.x - a_Rhs, a_Lhs.y - a_Rhs, a_Lhs.z - a_Rhs);
 }
 
+vec3 vec3::operator-()
+{
+    return vec3(-x, -y, -z);
+}
+
 vec3 operator*(const vec3& a_Lhs, const vec3& a_Rhs)
 {
     return vec3(a_Lhs.x * a_Rhs.x, a_Lhs.y * a_Rhs.y, a_Lhs.z * a_Rhs.z);

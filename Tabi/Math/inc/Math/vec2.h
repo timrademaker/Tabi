@@ -39,6 +39,7 @@ namespace tabi
 
         friend vec2 operator-(const vec2& a_Lhs, const vec2& a_Rhs);
         friend vec2 operator-(const vec2& a_Lhs, const float a_Rhs);
+        vec2 operator-();
 
         friend vec2 operator*(const vec2& a_Lhs, const vec2& a_Rhs);
         friend vec2 operator*(const vec2& a_Lhs, const float a_Rhs);

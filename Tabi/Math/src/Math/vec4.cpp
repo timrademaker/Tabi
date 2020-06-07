@@ -136,6 +136,11 @@ vec4 operator-(const vec4& a_Lhs, const float a_Rhs)
     return vec4(a_Lhs.x - a_Rhs, a_Lhs.y - a_Rhs, a_Lhs.z - a_Rhs, a_Lhs.w - a_Rhs);
 }
 
+vec4 vec4::operator-()
+{
+    return vec4(-x, -y, -z, -w);
+}
+
 vec4 operator*(const vec4& a_Lhs, const vec4& a_Rhs)
 {
     return vec4(a_Lhs.x * a_Rhs.x, a_Lhs.y * a_Rhs.y, a_Lhs.z * a_Rhs.z, a_Lhs.w * a_Rhs.w);

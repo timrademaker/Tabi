@@ -5,7 +5,6 @@
 DISABLE_WARNING_PUSH
 DISABLE_NAMELESS_STRUCT_WARNING
 
-
 namespace tabi
 {
     class vec3;
@@ -43,6 +42,7 @@ namespace tabi
 
         friend vec4 operator-(const vec4& a_Lhs, const vec4& a_Rhs);
         friend vec4 operator-(const vec4& a_Lhs, const float a_Rhs);
+        vec4 operator-();
 
         friend vec4 operator*(const vec4& a_Lhs, const vec4& a_Rhs);
         friend vec4 operator*(const vec4& a_Lhs, const float a_Rhs);

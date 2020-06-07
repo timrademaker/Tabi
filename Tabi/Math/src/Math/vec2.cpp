@@ -110,6 +110,11 @@ vec2 operator-(const vec2& a_Lhs, const float a_Rhs)
     return vec2(a_Lhs.x - a_Rhs, a_Lhs.y - a_Rhs);
 }
 
+vec2 vec2::operator-()
+{
+    return vec2(-x, -y);
+}
+
 vec2 operator*(const vec2& a_Lhs, const vec2& a_Rhs)
 {
     return vec2(a_Lhs.x * a_Rhs.x, a_Lhs.x * a_Rhs.x);

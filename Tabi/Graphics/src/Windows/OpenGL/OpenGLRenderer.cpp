@@ -53,6 +53,11 @@ tabi::graphics::Renderer::Renderer()
 
 bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
 {
+    if (a_Mesh.m_VBO != 0)
+    {
+        // Mesh already loaded
+        return false;
+    }
     assert(!a_Mesh.m_Vertices.empty());
 
     GLuint vao;

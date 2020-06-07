@@ -29,15 +29,21 @@ namespace tabi
             tabi::vec2 m_TexCoords;
         };
     public:
+        Mesh() = default;
+        Mesh(const char* a_Path);
+
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
+
+    private:
+        static Mesh LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
 
     public:
         tabi::vector<Vertex> m_Vertices;
         tabi::vector<unsigned> m_Indices;
 
-        GLuint m_VAO;
-        GLuint m_VBO;
-        GLuint m_EBO;
+        GLuint m_VAO = 0;
+        GLuint m_VBO = 0;
+        GLuint m_EBO = 0;
 
         unsigned int m_VertexCount;
 

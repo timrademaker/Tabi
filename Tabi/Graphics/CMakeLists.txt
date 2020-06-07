@@ -8,10 +8,6 @@ set(HEADERS
     inc/IWindow.h
     inc/IRenderer.h
     inc/IContext.h
-    inc/Windows/WindowsWindow.h
-    inc/Windows/OpenGL/OpenGLContext.h
-    inc/Windows/OpenGL/OpenGLRenderer.h
-    inc/Windows/OpenGL/OpenGLHelpers.h
 )
 
 # Set sources for Graphics
@@ -19,11 +15,31 @@ set(SOURCES
     src/Camera.cpp
     src/IRenderer.cpp
     src/IWindow.cpp
-    src/Windows/WindowsWindow.cpp
-    src/Windows/OpenGL/OpenGLContext.cpp
-    src/Windows/OpenGL/OpenGLRenderer.cpp
-    src/Windows/OpenGL/OpenGLHelpers.cpp
 )
+
+if(WINDOWS)
+    list(APPEND HEADERS 
+        inc/Windows/WindowsWindow.h
+    )
+    
+    list(APPEND SOURCES
+        src/Windows/WindowsWindow.cpp
+    )
+
+    if(USE_OPENGL)
+        list(APPEND HEADERS 
+            inc/Windows/OpenGL/OpenGLContext.h
+            inc/Windows/OpenGL/OpenGLRenderer.h
+            inc/Windows/OpenGL/OpenGLHelpers.h
+        )
+    
+        list(APPEND SOURCES
+            src/Windows/OpenGL/OpenGLContext.cpp
+            src/Windows/OpenGL/OpenGLRenderer.cpp
+            src/Windows/OpenGL/OpenGLHelpers.cpp
+        )
+    endif()
+endif()
 
 # Add source to this project's executable.
 add_library(Graphics EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})

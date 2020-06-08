@@ -4,11 +4,13 @@ cmake_minimum_required (VERSION 3.8)
 # Set headers for Input
 set(HEADERS
     inc/IInput.h
+    inc/MouseButtons.h
 )
 
 # Set sources for Input
 set(SOURCES
-    src/IInput.cpp
+    # src/IInput.cpp
+    src/MouseButtons.cpp
 )
 
 if(WINDOWS)

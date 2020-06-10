@@ -18,13 +18,13 @@ void tabi::Camera::MoveTo(tabi::vec3 a_Position)
     m_ViewDirty = true;
 }
 
-void tabi::Camera::RotateBy(RotationType a_Rotation)
+void tabi::Camera::RotateBy(tabi::vec3 a_Rotation)
 {
     m_Rotation += a_Rotation;
     m_ViewDirty = true;
 }
 
-void tabi::Camera::RotateTo(RotationType a_Rotation)
+void tabi::Camera::RotateTo(tabi::vec3 a_Rotation)
 {
     m_Rotation = a_Rotation;
     m_ViewDirty = true;
@@ -35,7 +35,7 @@ tabi::vec3 tabi::Camera::GetPosition() const
     return m_Position;
 }
 
-tabi::Camera::RotationType tabi::Camera::GetRotation() const
+tabi::vec3 tabi::Camera::GetEulerRotation() const
 {
     return m_Rotation;
 }
@@ -98,7 +98,7 @@ void tabi::Camera::GenerateProjection()
             unsigned int height;
             graphics::IRenderer::GetInstance().GetWindowDimensions(width, height);
             const float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-            m_Projection = mat4::CreatePerspectiveProjectionMatrix(DegToRad(m_FoV), aspectRatio, m_Near, m_Far);
+            m_Projection = mat4::CreatePerspectiveProjectionMatrix(m_FoV, aspectRatio, m_Near, m_Far);
         }
         else if(m_CameraType == ECameraType::Orthographic)
         {

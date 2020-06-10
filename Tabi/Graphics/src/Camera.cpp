@@ -8,13 +8,13 @@
 
 void tabi::Camera::MoveBy(tabi::vec3 a_Translation)
 {
-    m_Position -= a_Translation;
+    m_Position += a_Translation;
     m_ViewDirty = true;
 }
 
 void tabi::Camera::MoveTo(tabi::vec3 a_Position)
 {
-    m_Position = -a_Position;
+    m_Position = a_Position;
     m_ViewDirty = true;
 }
 
@@ -75,7 +75,7 @@ void tabi::Camera::GenerateView()
     if (m_ViewDirty)
     {
         tabi::mat4 translation = tabi::mat4::Identity();
-        translation.Translate(m_Position);
+        translation.Translate(-m_Position);
 
         tabi::mat4 rotation = tabi::mat4::Identity();
         rotation.RotateX(m_Rotation.x);

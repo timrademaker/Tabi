@@ -39,17 +39,22 @@ bool tabi::graphics::helpers::CheckShaderProgramError(unsigned int a_Program)
 
     return success;
 }
-void tabi::graphics::helpers::CheckForErrors()
+bool tabi::graphics::helpers::CheckForErrors()
 {
+    bool anyError = false;
     GLenum err = glGetError();
     while (err != GL_NO_ERROR)
     {
+        anyError = true;
+
         const auto errorString = ErrorToString(err);
 
         m_GraphicsLogger->Log(logger::ELogLevel::Error, "Error " + tabi::to_string(err) + ": " + errorString);
 
         err = glGetError();
     }
+
+    return anyError;
 }
 
 tabi::string tabi::graphics::helpers::ErrorToString(GLenum a_Error)

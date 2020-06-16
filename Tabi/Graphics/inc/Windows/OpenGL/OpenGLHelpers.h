@@ -19,7 +19,7 @@ namespace tabi
             static bool CheckShaderProgramError(unsigned int a_Program);
 
             // Check for any OpenGL errors
-            static void CheckForErrors();
+            static bool CheckForErrors();
 
             // Convert an OpenGL error enum to a string
             static tabi::string ErrorToString(GLenum a_Error);

@@ -1,5 +1,6 @@
 #include "Windows/OpenGL/OpenGLRenderer.h"
 
+#include "Windows/OpenGL/OpenGLSampler.h"
 #include "Windows/OpenGL/OpenGLHelpers.h"
 
 #include "Camera.h"
@@ -33,19 +34,10 @@ tabi::graphics::Renderer::Renderer()
 
     glEnable(GL_DEPTH_TEST);
 
-    // Create and set (default) texture sampler params
-    glGenSamplers(1, &m_TextureSampler);
-    glBindSampler(0, m_TextureSampler);
-
-    // Wrapping mode
-    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    // Border color
-    const float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-    glSamplerParameterfv(m_TextureSampler, GL_TEXTURE_BORDER_COLOR, borderColor);
-    // Filtering
-    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glSamplerParameteri(m_TextureSampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // Temporary hack that is probably permanent: Cast to Sampler* to be able to create a shared pointer (because creating a shared ISampler from ISampler* doesn't work for some reason)
+    Sampler* samp = static_cast<Sampler*>(ISampler::CreateSampler(EWrap::Repeat, EWrap::Repeat, EMinFilter::LinearMipmapLinear, EMagFilter::Linear));
+    m_TextureSampler = tabi::shared_ptr<Sampler>(samp);
+    m_TextureSampler->UseSampler();
 
     // Create a default camera
     m_CurrentCamera = tabi::make_shared<Camera>();
@@ -238,16 +230,16 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
         && a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture
         )
     {
-
+    
         if (m_CurrentlyBoundShader != m_TextureShader)
         {
             UseShader(m_TextureShader);
         }
-
+    
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
         glUniform1i(glGetUniformLocation(m_TextureShader, "uTexture"), 0);
-
+    
         
     }
     else
@@ -257,6 +249,8 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
             UseShader(m_MeshShader);
         }
     }
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     mat4 eye = m_CurrentCamera->GetView();
     mat4 projection = m_CurrentCamera->GetProjection();

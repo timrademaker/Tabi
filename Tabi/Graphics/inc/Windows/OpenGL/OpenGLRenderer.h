@@ -4,6 +4,7 @@
 
 namespace tabi
 {
+    class Sampler;
     namespace graphics
     {
         class Renderer : public IRenderer
@@ -24,7 +25,7 @@ namespace tabi
             virtual void UseCamera(const tabi::shared_ptr<Camera> a_Camera) override;
 
         private:
-            unsigned int m_TextureSampler;
+            tabi::shared_ptr<Sampler> m_TextureSampler;
             ShaderHandle m_TextureShader;
             ShaderHandle m_MeshShader;
 

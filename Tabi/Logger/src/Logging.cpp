@@ -40,3 +40,34 @@ void tabi::logger::TabiLog(ELogLevel a_LogLevel, Logger::LogMessage_t a_Message)
         assert(false && "No default logger has been set!");
     }
 }
+
+
+void tabi::logger::TabiTrace(Logger::LogMessage_t a_Message)
+{
+    TabiLog(ELogLevel::Trace, a_Message);
+}
+
+void tabi::logger::TabiDebug(Logger::LogMessage_t a_Message)
+{
+    TabiLog(ELogLevel::Debug, a_Message);
+}
+
+void tabi::logger::TabiInfo(Logger::LogMessage_t a_Message)
+{
+    TabiLog(ELogLevel::Info, a_Message);
+}
+
+void tabi::logger::TabiWarn(Logger::LogMessage_t a_Message)
+{
+    TabiLog(ELogLevel::Warning, a_Message);
+}
+
+void tabi::logger::TabiError(Logger::LogMessage_t a_Message)
+{
+    TabiLog(ELogLevel::Error, a_Message);
+}
+
+void tabi::logger::TabiCritical(Logger::LogMessage_t a_Message)
+{
+    TabiLog(ELogLevel::Critical, a_Message);
+}

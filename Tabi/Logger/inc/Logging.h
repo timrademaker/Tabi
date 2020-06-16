@@ -51,5 +51,12 @@ namespace tabi
         /** Log a message to the engine's default logger
         */
         TABI_EXPORT void TabiLog(ELogLevel a_LogLevel, Logger::LogMessage_t a_Message);
+
+        TABI_EXPORT void TabiTrace(Logger::LogMessage_t a_Message);
+        TABI_EXPORT void TabiDebug(Logger::LogMessage_t a_Message);
+        TABI_EXPORT void TabiInfo(Logger::LogMessage_t a_Message);
+        TABI_EXPORT void TabiWarn(Logger::LogMessage_t a_Message);
+        TABI_EXPORT void TabiError(Logger::LogMessage_t a_Message);
+        TABI_EXPORT void TabiCritical(Logger::LogMessage_t a_Message);
     }
 }

@@ -27,6 +27,7 @@ namespace tabi
             virtual void SetDrawMode(EDrawMode a_DrawMode) override;
 
             void UseSampler(tabi::shared_ptr<ISampler> a_Sampler);
+            void SetCullingEnabled(bool a_Enabled);
 
         private:
             tabi::shared_ptr<ISampler> m_TextureSampler;
@@ -35,6 +36,7 @@ namespace tabi
 
             ShaderHandle m_CurrentlyBoundShader;
             tabi::shared_ptr<ISampler> m_CurrentlyBoundSampler;
+            bool m_BackfaceCullingEnabled = false;
 
             tabi::shared_ptr<Camera> m_CurrentCamera;
         };

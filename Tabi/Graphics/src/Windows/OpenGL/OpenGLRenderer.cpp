@@ -243,6 +243,8 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
 
         auto& sampler = a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_Sampler;
         UseSampler(sampler);
+
+        SetCullingEnabled(!a_Mesh.m_Material->m_DoubleSided);
         
     }
     else
@@ -333,4 +335,23 @@ void Renderer::UseSampler(tabi::shared_ptr<ISampler> a_Sampler)
         m_CurrentlyBoundSampler = m_TextureSampler;
     }
     
+}
+
+void tabi::graphics::Renderer::SetCullingEnabled(bool a_Enabled)
+{
+    if (a_Enabled == m_BackfaceCullingEnabled)
+    {
+        return;
+    }
+
+    if (a_Enabled)
+    {
+        glEnable(GL_CULL_FACE);
+    }
+    else
+    {
+        glDisable(GL_CULL_FACE);
+    }
+
+    m_BackfaceCullingEnabled = a_Enabled;
 }

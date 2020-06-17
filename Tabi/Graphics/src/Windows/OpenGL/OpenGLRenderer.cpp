@@ -279,3 +279,35 @@ void tabi::graphics::Renderer::UseCamera(const tabi::shared_ptr<Camera> a_Camera
 {
     m_CurrentCamera = a_Camera;
 }
+
+void Renderer::SetDrawMode(EDrawMode a_DrawMode)
+{
+    unsigned int mode = 0;
+
+    switch (a_DrawMode)
+    {
+    case EDrawMode::Line:
+    {
+        mode = GL_LINE;
+        break;
+    }
+    case EDrawMode::Point:
+    {
+        mode = GL_POINT;
+        break;
+    }
+    case EDrawMode::Fill:
+    {
+        mode = GL_FILL;
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+    helpers::CheckForErrors();
+}

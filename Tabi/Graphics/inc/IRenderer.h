@@ -19,6 +19,13 @@ namespace tabi
             Stream      // Modified once, used a couple of times
         };
 
+        enum class EDrawMode
+        {
+            Line,
+            Point,
+            Fill
+        };
+
         class IRenderer
         {
         public:
@@ -74,6 +81,13 @@ namespace tabi
             * @params a_Camera The camera to use
             */
             virtual void UseCamera(const tabi::shared_ptr<Camera> a_Camera) = 0;
+
+            
+            /**
+             * @brief Set the draw mode of the renderer
+             * @params a_DrawMode The draw mode to use
+             */
+            virtual void SetDrawMode(EDrawMode a_DrawMode) = 0;
 
             /**
             * @brief Update the known dimensions of the active window. Doesn't resize the window.

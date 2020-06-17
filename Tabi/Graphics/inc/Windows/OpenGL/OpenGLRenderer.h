@@ -24,6 +24,8 @@ namespace tabi
 
             virtual void UseCamera(const tabi::shared_ptr<Camera> a_Camera) override;
 
+            virtual void SetDrawMode(EDrawMode a_DrawMode) override;
+
         private:
             tabi::shared_ptr<Sampler> m_TextureSampler;
             ShaderHandle m_TextureShader;

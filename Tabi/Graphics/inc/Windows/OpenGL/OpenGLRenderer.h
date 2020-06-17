@@ -4,7 +4,7 @@
 
 namespace tabi
 {
-    class Sampler;
+    class ISampler;
     namespace graphics
     {
         class Renderer : public IRenderer
@@ -26,12 +26,15 @@ namespace tabi
 
             virtual void SetDrawMode(EDrawMode a_DrawMode) override;
 
+            void UseSampler(tabi::shared_ptr<ISampler> a_Sampler);
+
         private:
-            tabi::shared_ptr<Sampler> m_TextureSampler;
+            tabi::shared_ptr<ISampler> m_TextureSampler;
             ShaderHandle m_TextureShader;
             ShaderHandle m_MeshShader;
 
             ShaderHandle m_CurrentlyBoundShader;
+            tabi::shared_ptr<ISampler> m_CurrentlyBoundSampler;
 
             tabi::shared_ptr<Camera> m_CurrentCamera;
         };

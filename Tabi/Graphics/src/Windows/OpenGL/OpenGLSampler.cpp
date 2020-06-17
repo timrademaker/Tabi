@@ -14,7 +14,7 @@ bool tabi::Sampler::UseSampler()
 {
     glBindSampler(0, m_SamplerID);
 
-    return tabi::graphics::helpers::CheckForErrors();
+    return !tabi::graphics::helpers::CheckForErrors();
 }
 
 bool tabi::Sampler::Initialize(tabi::EWrap a_WrapModeS, tabi::EWrap a_WrapModeT, tabi::EMinFilter a_MinFilter, tabi::EMagFilter a_MagFilter)
@@ -30,7 +30,7 @@ bool tabi::Sampler::Initialize(tabi::EWrap a_WrapModeS, tabi::EWrap a_WrapModeT,
     glSamplerParameteri(m_SamplerID, GL_TEXTURE_MIN_FILTER, ConvertMinFilter(a_MinFilter));
     glSamplerParameteri(m_SamplerID, GL_TEXTURE_MAG_FILTER, ConvertMagFilter(a_MagFilter));
 
-    return tabi::graphics::helpers::CheckForErrors();
+    return !tabi::graphics::helpers::CheckForErrors();
 }
 
 void tabi::Sampler::Unload()

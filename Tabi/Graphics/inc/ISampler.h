@@ -1,4 +1,5 @@
 #pragma once
+#include "TabiPointers.h"
 
 namespace tabi
 {
@@ -40,8 +41,16 @@ namespace tabi
         * @returns The created sampler
         */
         static ISampler* CreateSampler(EWrap a_WrapModeS, EWrap a_WrapModeT, EMinFilter a_MinFilter, EMagFilter a_MagFilter);
-        
+        static tabi::shared_ptr<ISampler> CreateSharedSampler(EWrap a_WrapModeS, EWrap a_WrapModeT, EMinFilter a_MinFilter, EMagFilter a_MagFilter);
+
         /**
+         * @brief Turns a raw sampler pointer into a shared pointer
+         * @params a_Rhs The pointer to convert to a shared pointer. Do not use afterwards.
+         * @returns The shared pointer
+         */
+        static tabi::shared_ptr<ISampler> ToShared(ISampler*& a_Rhs);
+
+            /**
         * @brief Use the current sampler
         * @returns True if binding the sampler was successful
         */

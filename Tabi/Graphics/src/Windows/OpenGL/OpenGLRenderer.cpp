@@ -1,6 +1,6 @@
 #include "Windows/OpenGL/OpenGLRenderer.h"
 
-#include "Windows/OpenGL/OpenGLSampler.h"
+#include "ISampler.h"
 #include "Windows/OpenGL/OpenGLHelpers.h"
 
 #include "Camera.h"
@@ -19,6 +19,7 @@
 #include <cassert>
 
 using namespace tabi::graphics;
+using tabi::ISampler;
 
 tabi::graphics::Renderer::Renderer()
 {
@@ -34,10 +35,8 @@ tabi::graphics::Renderer::Renderer()
 
     glEnable(GL_DEPTH_TEST);
 
-    // Temporary hack that is probably permanent: Cast to Sampler* to be able to create a shared pointer (because creating a shared ISampler from ISampler* doesn't work for some reason)
-    Sampler* samp = static_cast<Sampler*>(ISampler::CreateSampler(EWrap::Repeat, EWrap::Repeat, EMinFilter::LinearMipmapLinear, EMagFilter::Linear));
-    m_TextureSampler = tabi::shared_ptr<Sampler>(samp);
-    m_TextureSampler->UseSampler();
+    m_TextureSampler = ISampler::CreateSharedSampler(EWrap::ClampToEdge, EWrap::ClampToEdge, EMinFilter::LinearMipmapLinear, EMagFilter::Linear);
+    UseSampler(m_TextureSampler);
 
     // Create a default camera
     m_CurrentCamera = tabi::make_shared<Camera>();
@@ -239,7 +238,9 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
         glUniform1i(glGetUniformLocation(m_TextureShader, "uTexture"), 0);
-    
+
+        auto& sampler = a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_Sampler;
+        UseSampler(sampler);
         
     }
     else
@@ -249,8 +250,6 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
             UseShader(m_MeshShader);
         }
     }
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     mat4 eye = m_CurrentCamera->GetView();
     mat4 projection = m_CurrentCamera->GetProjection();
@@ -310,4 +309,26 @@ void Renderer::SetDrawMode(EDrawMode a_DrawMode)
     glPolygonMode(GL_FRONT_AND_BACK, mode);
 
     helpers::CheckForErrors();
+}
+
+void Renderer::UseSampler(tabi::shared_ptr<ISampler> a_Sampler)
+{
+    if(a_Sampler == m_CurrentlyBoundSampler)
+    {
+        return;
+    }
+
+    if(a_Sampler)
+    {
+        if (a_Sampler->UseSampler())
+        {
+            m_CurrentlyBoundSampler = a_Sampler;
+        }
+    }
+    else
+    {
+        m_TextureSampler->UseSampler();
+        m_CurrentlyBoundSampler = m_TextureSampler;
+    }
+    
 }

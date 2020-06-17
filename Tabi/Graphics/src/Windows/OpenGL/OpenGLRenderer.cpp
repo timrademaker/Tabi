@@ -238,6 +238,8 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
         glUniform1i(glGetUniformLocation(m_TextureShader, "uTexture"), 0);
+        const auto bcf = glGetUniformLocation(m_TextureShader, "uBaseColorFactor");
+        glUniform4fv(bcf, 1, &a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorFactor[0]);
 
         auto& sampler = a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_Sampler;
         UseSampler(sampler);

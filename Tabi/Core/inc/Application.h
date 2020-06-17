@@ -32,7 +32,7 @@ namespace tabi
         Application(const Application&) = delete;
         Application& operator=(const Application&) = delete;
     
-        void Initialize();
+        void Initialize(const char* a_WindowTitle, unsigned int a_Width, unsigned int a_Height);
 
         void Destroy();
 

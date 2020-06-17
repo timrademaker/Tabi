@@ -20,13 +20,14 @@ using tabi::logger::TabiLog;
 Application& Application::Get()
 {
     static Application instance;
-    instance.Initialize();
 
     return instance;
 }
 
 int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 {
+    Get().Initialize(a_Game->GetWindowName(), a_Game->GetWindowWidth(), a_Game->GetWindowHeight());
+
     if (!a_Game->OnInitialize()) {
         TabiLog(ELogLevel::Error, "Failed to initialize game!");
         return 1;
@@ -72,12 +73,12 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
     return 0;
 }
 
-void Application::Initialize()
+void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, unsigned int a_Height)
 {
     if (!m_Initialized)
     {
         // Create window
-        m_Window = graphics::IWindow::OpenWindow("Test Window", 640, 480);
+        m_Window = graphics::IWindow::OpenWindow(a_WindowTitle, a_Width, a_Height);
 
         m_Initialized = true;
     }

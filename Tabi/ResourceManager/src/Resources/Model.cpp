@@ -7,6 +7,25 @@
 
 using namespace tabi;
 
+tabi::Model::Model(const char* a_Path)
+{
+    auto path = tabi::string(a_Path);
+    auto dotInd = path.find_last_of(".");
+    tabi::string fileExt = path.substr(dotInd + 1);
+
+    tinygltf::Model model;
+
+    if (fileExt == "glb")
+    {
+        model = tabi::gltf::LoadGLBModelFromPath(a_Path);
+    }
+    else if (fileExt == "gltf")
+    {
+        model = tabi::gltf::LoadGLTFModelFromPath(a_Path);
+    }
+
+    *this = LoadModelRaw(model);
+}
 
 tabi::shared_ptr<Model> tabi::Model::LoadModelFromPath(const char* a_Path)
 {
@@ -24,12 +43,20 @@ tabi::shared_ptr<Model> tabi::Model::LoadBinaryModelFromPath(const char * a_Path
 
 tabi::shared_ptr<Model> tabi::Model::LoadModel(tinygltf::Model & a_GLTFModel)
 {
-    tabi::shared_ptr<Model> loadedModel = tabi::make_shared<Model>();
+    auto model = LoadModelRaw(a_GLTFModel);
 
+    tabi::shared_ptr<Model> loadedModel = tabi::shared_ptr<Model>(&model);
 
-    loadedModel->m_Cameras = gltf::GetCameras(a_GLTFModel, &loadedModel->m_MainCamera);
-    loadedModel->m_Lights = gltf::GetLights(a_GLTFModel);
-    loadedModel->m_Meshes = gltf::GetMeshes(a_GLTFModel);
+    return loadedModel;
+}
+
+Model tabi::Model::LoadModelRaw(const tinygltf::Model& a_Model)
+{
+    Model loadedModel;
+
+    loadedModel.m_Cameras = gltf::GetCameras(a_Model, &loadedModel.m_MainCamera);
+    loadedModel.m_Lights = gltf::GetLights(a_Model);
+    loadedModel.m_Meshes = gltf::GetMeshes(a_Model);
 
     //loadedModel->m_BaseNodes = levelloader::GetBaseNodes(a_GLTFModel, &(loadedModel->m_Nodes));
 

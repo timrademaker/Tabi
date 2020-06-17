@@ -18,6 +18,9 @@ namespace tabi
     class Model : public IResource
     {
     public:
+        Model() = default;
+        Model(const char* a_Path);
+
         static tabi::shared_ptr<Model> LoadModelFromPath(const char* a_Path);
         static tabi::shared_ptr<Model> LoadBinaryModelFromPath(const char* a_Path);
 
@@ -30,6 +33,8 @@ namespace tabi
         //static bool WriteRegisteredTypeNameToFile(tabi::string a_Name);
 
         static tabi::shared_ptr<Model> LoadModel(tinygltf::Model& a_GLTFModel);
+
+        static Model LoadModelRaw(const tinygltf::Model& a_Model);
 
     public:
         //tabi::vector<tabi::shared_ptr<Node>> m_BaseNodes;

@@ -203,33 +203,38 @@ Mesh tabi::Mesh::LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a
         // Load indices
         {
             int accessorIndex = gltfMesh.primitives[j].indices;
-            assert(a_Model.accessors[accessorIndex].type == TINYGLTF_TYPE_SCALAR);
-
-            auto& bufferView = a_Model.bufferViews[a_Model.accessors[accessorIndex].bufferView];
-            auto count = a_Model.accessors[accessorIndex].count;
-            m.m_Indices.reserve(count);
-
-            auto& buffer = a_Model.buffers[bufferView.buffer];
-
-            auto dataStart = bufferView.byteOffset;
-            auto componentType = a_Model.accessors[accessorIndex].componentType;
-
-            for (std::size_t index = 0; index < count; ++index)
+            if (accessorIndex != -1)
             {
-                unsigned int ind = 0;
-                if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+                assert(a_Model.accessors[accessorIndex].type == TINYGLTF_TYPE_SCALAR);
+
+                auto& bufferView = a_Model.bufferViews[a_Model.accessors[accessorIndex].bufferView];
+                auto count = a_Model.accessors[accessorIndex].count;
+                const auto accessorByteOffset = a_Model.accessors[accessorIndex].byteOffset;
+
+                m.m_Indices.reserve(count);
+
+                auto& buffer = a_Model.buffers[bufferView.buffer];
+
+                auto dataStart = bufferView.byteOffset;
+                auto componentType = a_Model.accessors[accessorIndex].componentType;
+
+                for (std::size_t index = 0; index < count; ++index)
                 {
-                    ind = static_cast<unsigned int>(*(gltf::GetElementFromBuffer<unsigned short>(&buffer.data[0], dataStart, index)));
+                    unsigned int ind = 0;
+                    if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+                    {
+                        ind = static_cast<unsigned int>(*(gltf::GetElementFromBuffer<unsigned short>(&buffer.data[accessorByteOffset], dataStart, index)));
+                    }
+                    else if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
+                    {
+                        ind = *(gltf::GetElementFromBuffer<unsigned int>(&buffer.data[0], dataStart, index));
+                    }
+                    else if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
+                    {
+                        ind = static_cast<unsigned int>(*(gltf::GetElementFromBuffer<unsigned char>(&buffer.data[accessorByteOffset], dataStart, index)));
+                    }
+                    m.m_Indices.push_back(static_cast<unsigned>(ind));
                 }
-                else if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
-                {
-                    ind = *(gltf::GetElementFromBuffer<unsigned int>(&buffer.data[0], dataStart, index));
-                }
-                else if (componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
-                {
-                    ind = static_cast<unsigned int>(*(gltf::GetElementFromBuffer<unsigned char>(&buffer.data[0], dataStart, index)));
-                }
-                m.m_Indices.push_back(static_cast<unsigned>(ind));
             }
         }
     }

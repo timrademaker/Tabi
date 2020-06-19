@@ -3,23 +3,26 @@ cmake_minimum_required (VERSION 3.8)
 
 # Set headers for Input
 set(HEADERS
-    inc/IInput.h
-    inc/MouseButtons.h
+    inc/InputManager.h
+    inc/IInputHandler.h
+    inc/Enums/EMouse.h
+    inc/Enums/EInputDevice.h
 )
 
 # Set sources for Input
 set(SOURCES
     # src/IInput.cpp
-    src/MouseButtons.cpp
+    src/InputManager.cpp
+    src/IInputHandler.cpp
 )
 
 if(WINDOWS)
     list(APPEND HEADERS 
-        #inc/Windows/WindowsInput.h
+        inc/Windows/WindowsInputHandler.h
     )
     
     list(APPEND SOURCES
-        #src/Windows/FileWindows.cpp
+        src/Windows/WindowsInputHandler.cpp
     )
 endif()
 

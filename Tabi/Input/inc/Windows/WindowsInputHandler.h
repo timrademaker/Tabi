@@ -30,22 +30,27 @@ namespace tabi
         virtual void Update() override;
 
         virtual void BindButton(unsigned int a_Button) override;
+        virtual void UnbindButton(unsigned int a_Button) override;
         virtual void BindAxis(unsigned int a_Axis) override;
+        virtual void UnbindAxis(unsigned int a_Axis) override;
 
-        // Determine device type internally
-        virtual bool IsButtonDown(unsigned int a_Button) override;
+        virtual bool IsButtonDown(unsigned int a_Button, bool* a_DownLastFrame = nullptr) override;
 
-        virtual float GetAxisValue(unsigned int a_Axis) override;
+        virtual bool AnyButtonDown() override;
+
+        virtual float GetAxisValue(unsigned int a_Axis, float* a_Delta = nullptr) override;
 
         void HandleMsg(const MSG& a_Msg);
 
 
     private:
+        // Convert buttons to their internal equivalent (gainput)
         static unsigned int ConvertButton(unsigned int a_Button);
         static unsigned int ConvertButton(EMouse a_Button);
         static unsigned int ConvertButton(EKeyboard a_Button);
         static unsigned int ConvertButton(EController a_Button);
         
+        // Convert device type to its internal equivalent (gainput)
         unsigned int ConvertDeviceType(EInputDevice a_Device);
 
         static EInputDevice DetermineDeviceType(unsigned int a_Button);

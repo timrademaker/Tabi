@@ -81,14 +81,16 @@ namespace tabi
         /**
         * @brief Updates user input and calls callback functions if a button was pressed
         */
-        static void Update();  // std::invoke(callback, object, args);
+        static void Update();
 
     private:
         InputManager() = default;
         ~InputManager() = default;
 
         void BindButtonInternal(unsigned int a_Button, UserClass* a_Object, ButtonHandlerSignature a_Callback);
+        void UnbindButtonInternal(unsigned int a_Button, UserClass* a_Object);
         void BindAxisInternal(unsigned int a_Axis, UserClass* a_Object, AxisHandlerSignature a_Callback);
+        void UnbindAxisInternal(unsigned int a_Axis, UserClass* a_Object);
 
         static InputManager& GetInstance(); // Used for the internal instance
 

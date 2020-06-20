@@ -60,42 +60,83 @@ void tabi::InputHandler::Update()
 
 void tabi::InputHandler::BindButton(unsigned int a_Button)
 {
-    EInputDevice deviceType = DetermineDeviceType(a_Button);
-    auto device = ConvertDeviceType(deviceType);
-    unsigned int convertedButton = ConvertButton(a_Button);
+    if (!IsBound(a_Button))
+    {
+        EInputDevice deviceType = DetermineDeviceType(a_Button);
+        auto device = ConvertDeviceType(deviceType);
+        unsigned int convertedButton = ConvertButton(a_Button);
 
-    m_InputMap.MapBool(a_Button, device, convertedButton);
+        m_InputMap.MapBool(a_Button, device, convertedButton);
+    }
+}
+
+void tabi::InputHandler::UnbindButton(unsigned int a_Button)
+{
+    if (IsBound(a_Button))
+    {
+        m_InputMap.Unmap(a_Button);
+    }
+
 }
 
 void tabi::InputHandler::BindAxis(unsigned int a_Axis)
 {
-    EInputDevice deviceType = DetermineDeviceType(a_Axis);
-    auto device = ConvertDeviceType(deviceType);
-    unsigned int convertedButton = ConvertButton(a_Axis);
+    if (!IsBound(a_Axis))
+    {
+        EInputDevice deviceType = DetermineDeviceType(a_Axis);
+        auto device = ConvertDeviceType(deviceType);
+        unsigned int convertedButton = ConvertButton(a_Axis);
 
-    m_InputMap.MapFloat(a_Axis, device, convertedButton);
+        m_InputMap.MapFloat(a_Axis, device, convertedButton);
+    }
 }
 
-bool tabi::InputHandler::IsButtonDown(unsigned int a_Button)
+void tabi::InputHandler::UnbindAxis(unsigned int a_Axis)
+{
+    if (IsBound(a_Axis))
+    {
+        m_InputMap.Unmap(a_Axis);
+    }
+}
+
+bool tabi::InputHandler::IsButtonDown(unsigned int a_Button, bool* a_DownLastFrame)
 {
     if (IsBound(a_Button))
     {
+        if (a_DownLastFrame)
+        {
+            *a_DownLastFrame = m_InputMap.GetBoolIsNew(a_Button);
+        }
+
         return m_InputMap.GetBool(a_Button);
     }
     else
     {
+        logger::TabiWarn("Trying to get button state for an unbound button: " + tabi::to_string(a_Button));
         return false;
     }
 }
 
-float tabi::InputHandler::GetAxisValue(unsigned int a_Axis)
+bool tabi::InputHandler::AnyButtonDown()
+{
+    gainput::DeviceButtonSpec spec;
+    return m_GaInputManager.GetAnyButtonDown(&spec, 1) > 0;
+}
+
+float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
 {
     if (IsBound(a_Axis))
     {
+        if (a_Delta)
+        {
+            *a_Delta = m_InputMap.GetFloatDelta(a_Axis);
+        }
+
         return m_InputMap.GetFloat(a_Axis);
     }
     else
     {
+        logger::TabiWarn("Trying to get button state for an unbound axis: " + tabi::to_string(a_Axis));
         return 0.0f;
     }
 }
@@ -200,15 +241,7 @@ EInputDevice tabi::InputHandler::DetermineDeviceType(unsigned int a_Button)
 
 bool tabi::InputHandler::IsBound(unsigned int a_Button)
 {
-    if (m_InputMap.IsMapped(a_Button))
-    {
-        return true;
-    }
-    else
-    {
-        logger::TabiWarn("Trying to get button state for an unbound button: " + tabi::to_string(a_Button));
-        return false;
-    }
+    return m_InputMap.IsMapped(a_Button);
 }
 
 unsigned int tabi::InputHandler::ConvertDeviceType(EInputDevice a_Device)

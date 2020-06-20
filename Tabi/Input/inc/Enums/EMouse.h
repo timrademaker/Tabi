@@ -13,6 +13,7 @@ namespace tabi
         Mouse5 = 6 | static_cast<unsigned>(EInputDevice::Mouse),
         MouseX,
         MouseY,
-        Wheel
+        WheelUp,
+        WheelDown
     };
 }

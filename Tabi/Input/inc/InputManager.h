@@ -16,7 +16,7 @@ namespace tabi
     {
         using UserClass = void;
         
-        // TODO: Change the vector of pairs to a(n unordered) set
+        // TODO: Change the vector of pairs to a(n unordered) set (First test if this is slower, as iterating through a set is generally slower than through vectors)
         using ButtonHandlerSignature = std::function<void(bool a_First)>;
         using BoundButtonMap = tabi::unordered_map<unsigned int, tabi::vector<tabi::pair<UserClass*, ButtonHandlerSignature>>>;
         

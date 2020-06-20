@@ -39,6 +39,7 @@ void InputManager::Update()
 {
     auto& manager = GetInstance();
     auto& handler = IInputHandler::GetInstance();
+    handler.Update();
 
     for (BoundButtonMap::iterator buttonIter = manager.m_BoundButtons.begin(); buttonIter != manager.m_BoundButtons.end(); ++buttonIter)
     {
@@ -47,7 +48,8 @@ void InputManager::Update()
             for (auto& callbackPair : buttonIter->second)
             {
                 // TODO: Check if button went down last frame (store keystate?)
-                callbackPair.second(true);
+                bool downLastFrame = false;
+                callbackPair.second(downLastFrame);
             }
         }
     }
@@ -67,12 +69,14 @@ void InputManager::Update()
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, UserClass* a_Object, ButtonHandlerSignature a_Callback)
 {
     // TODO: If debugging, check if the callback is already registered for the object
+    IInputHandler::GetInstance().BindButton(a_Button);
     m_BoundButtons[a_Button].push_back(tabi::make_pair(a_Object, a_Callback));
 };
 
 void tabi::InputManager::BindAxisInternal(unsigned int a_Axis, UserClass* a_Object, AxisHandlerSignature a_Callback)
 {
     // TODO: If debugging, check if the callback is already registered for the object
+    IInputHandler::GetInstance().BindAxis(a_Axis);
     m_BoundAxes[a_Axis].push_back(tabi::make_pair(a_Object, a_Callback));
 }
 

@@ -1,6 +1,9 @@
 #include <Application.h>
 #include <GameBase.h>
 
+#include <InputManager.h>
+#include <IInputHandler.h>
+
 #include <Logging.h>
 
 #include <cassert>
@@ -8,6 +11,7 @@
 
 #if defined(_WINDOWS)
 #include "Windows/WindowsWindow.h"
+#include "Windows/WindowsInputHandler.h"
 #endif
 
 
@@ -51,6 +55,8 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 
         m_Window->SwapBuffer();
 
+        InputManager::Update();
+
         auto frameEnd = std::chrono::high_resolution_clock::now();
         deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(frameEnd - frameStart).count();
         TabiLog(ELogLevel::Trace, "DeltaTime: " + std::to_string(deltaTime));
@@ -59,6 +65,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         MSG msg = MSG();
         while(PeekMessage(&msg, m_Window->GetHandle(), NULL, NULL, PM_REMOVE))
         {
+            reinterpret_cast<InputHandler*>(&IInputHandler::GetInstance())->HandleMsg(msg);
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }

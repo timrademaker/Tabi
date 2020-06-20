@@ -39,4 +39,5 @@ add_library(Input EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 target_include_directories(Input PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(Input PUBLIC TabiCommon Logger)
+target_link_libraries(Input PUBLIC TabiCommon Logger gainput)
+target_link_libraries(Input PRIVATE Graphics)

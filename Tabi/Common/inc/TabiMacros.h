@@ -15,6 +15,9 @@
 #define DISABLE_WARNING(warningNumber) __pragma(warning( disable : warningNumber ))
 
 #define DISABLE_NAMELESS_STRUCT_WARNING DISABLE_WARNING(4201)
+#define DISABLE_SIGNED_UNSIGNED_MISMATCH_WARNING DISABLE_WARNING(4245)
+#define DISABLE_POSSIBLE_LOSS_OF_DATA_WARNING DISABLE_WARNING(4267)
+#define DISABLE_ALL_WARNINGS __pragma(warning(push, 0))
 
 #elif defined(__GNUC__) || defined(__clang__)
 #define DO_PRAGMA(X) _Pragma(#X)

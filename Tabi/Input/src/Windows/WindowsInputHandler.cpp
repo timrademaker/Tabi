@@ -28,8 +28,8 @@ tabi::unordered_map<tabi::EMouse, unsigned int> tabi::InputHandler::ms_MouseTabl
     {EMouse::Middle, gainput::MouseButton::MouseButtonMiddle},
     {EMouse::Mouse4, gainput::MouseButton::MouseButton5},
     {EMouse::Mouse5, gainput::MouseButton::MouseButton6},
-    {EMouse::MouseX, gainput::MouseButton::MouseButtonRight},
-    {EMouse::MouseY, gainput::MouseButton::MouseButtonRight},
+    {EMouse::MouseX, gainput::MouseButton::MouseAxisX},
+    {EMouse::MouseY, gainput::MouseButton::MouseAxisY},
     {EMouse::WheelUp, gainput::MouseButton::MouseButtonWheelUp},
     {EMouse::WheelDown, gainput::MouseButton::MouseButtonWheelDown}
 };

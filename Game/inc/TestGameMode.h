@@ -3,6 +3,8 @@
 #include  <GameBase.h>
 #include <Resources/Mesh.h>
 
+#include "MovableCamera.h"
+
 class TestGameMode : public tabi::GameBase
 {
 public:
@@ -12,8 +14,10 @@ public:
     virtual ~TestGameMode() = default;
 
     virtual bool OnInitialize() override;
+    virtual void OnUpdate(float a_DeltaTime) override;
     virtual void OnRender() override;
 
 private:
     tabi::vector<tabi::shared_ptr<tabi::Mesh>> m_Meshes;
+    tabi::shared_ptr<MovableCamera> m_Camera;
 };

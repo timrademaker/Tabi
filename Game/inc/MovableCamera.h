@@ -28,5 +28,6 @@ public:
     tabi::shared_ptr<tabi::Camera> m_Camera;
 
     float m_DeltaTime;
-    float m_Speed = 10.0f;
+    const float m_Speed = 10.0f;
+    const float m_Sensitivity = 100.0f;
 };

@@ -45,13 +45,13 @@ void MovableCamera::MoveBackwards(bool)
 void MovableCamera::RotateVertical(float a_Curr, float a_Delta)
 {
     TABI_UNUSED(a_Curr);
-    m_Camera->RotateBy(tabi::vec3(m_Speed * m_DeltaTime * a_Delta, 0, 0));
+    m_Camera->RotateBy(tabi::vec3(m_Sensitivity * m_DeltaTime * a_Delta, 0, 0));
 }
 
 void MovableCamera::RotateHorizontal(float a_Curr, float a_Delta)
 {
     TABI_UNUSED(a_Curr);
-    m_Camera->RotateBy(tabi::vec3(0, m_Speed * m_DeltaTime * a_Delta, 0));
+    m_Camera->RotateBy(tabi::vec3(0, m_Sensitivity * m_DeltaTime * a_Delta, 0));
 }
 
 void MovableCamera::Update(float a_DeltaTime)

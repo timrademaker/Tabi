@@ -82,6 +82,8 @@ namespace tabi
         bool m_CaptureMouse = false;
         bool m_HideCursor = false;
 
+        bool m_CursorVisible = true;
+
         ::gainput::InputManager m_GaInputManager;
         ::gainput::InputMap m_InputMap;
     };

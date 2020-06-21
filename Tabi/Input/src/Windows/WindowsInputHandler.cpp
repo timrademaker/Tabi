@@ -8,6 +8,7 @@
 #include <TabiMacros.h>
 
 #include <IRenderer.h>
+#include <IWindow.h>
 
 DISABLE_WARNING_PUSH
 DISABLE_ALL_WARNINGS
@@ -270,20 +271,29 @@ bool tabi::InputHandler::IsBound(unsigned int a_Button)
 
 void tabi::InputHandler::SetCursorVisible(bool a_Visible)
 {
+    if (m_CursorVisible == a_Visible)
+    {
+        return;
+    }
+
     if (a_Visible)
     {
         while (ShowCursor(true) < 0);
+        m_CursorVisible = true;
     }
     else
     {
         while (ShowCursor(false) >= 0);
+        m_CursorVisible = false;
     }
 }
 
 void tabi::InputHandler::CaptureCursor()
 {
-    // TODO: Find a better way to find the window
-    HWND window = FindWindow("TabiWindowClass", "Tabi");
+    auto& renderer = graphics::IRenderer::GetInstance();
+
+    //HWND window = FindWindow(graphics::Window::GetWindowClassName(), renderer.GetWindow().GetWindowName());
+    HWND window = renderer.GetWindow().GetHandle();
     if (window)
     {
         if (GetFocus() != window)
@@ -291,8 +301,11 @@ void tabi::InputHandler::CaptureCursor()
             // Don't capture if the window doesn't have focus
             m_MouseDeltaX = 0.0f;
             m_MouseDeltaY = 0.0f;
+
+            SetCursorVisible(true);
             return;
         }
+        SetCursorVisible(false);
 
         POINT beforePos = { 0 };
         GetCursorPos(&beforePos);

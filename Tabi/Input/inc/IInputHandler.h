@@ -37,6 +37,14 @@ namespace tabi
         */
         virtual float GetAxisValue(unsigned int a_Axis, float* a_Delta = nullptr) = 0;
 
+
+        /**
+        * @brief Set the cursor mode for the mouse cursor
+        * @params a_Visible Whether the mouse cursor should be visible or not
+        * @params a_Capture Whether the mouse cursor should be locked to the window or not
+        */
+        virtual void SetMouseCursorMode(bool a_Visible, bool a_Capture) = 0;
+
     protected:
         IInputHandler() = default;
         ~IInputHandler() = default;

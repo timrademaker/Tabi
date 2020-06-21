@@ -40,22 +40,26 @@ tabi::unordered_map<EController, unsigned int> tabi::InputHandler::ms_Controller
 
 tabi::InputHandler::InputHandler()
     : m_InputMap(m_GaInputManager)
+    , m_MouseDeltaX(0.0f)
+    , m_MouseDeltaY(0.0f)
 {
-    unsigned int width;
-    unsigned int height;
-    tabi::graphics::IRenderer::GetInstance().GetWindowDimensions(width, height);
+    tabi::graphics::IRenderer::GetInstance().GetWindowDimensions(m_WindowWidth, m_WindowHeight);
 
-    m_GaInputManager.SetDisplaySize(width, height);
+    m_GaInputManager.SetDisplaySize(m_WindowWidth, m_WindowHeight);
 
     //m_InputDeviceTable[EInputDevice::Controller] = m_GaInputManager.CreateDevice<gainput::InputDevicePad>();
     m_InputDeviceTable[EInputDevice::Keyboard] = m_GaInputManager.CreateDevice<gainput::InputDeviceKeyboard>();
     m_InputDeviceTable[EInputDevice::Mouse] = m_GaInputManager.CreateDevice<gainput::InputDeviceMouse>();
 }
 
-
 void tabi::InputHandler::Update()
 {
     m_GaInputManager.Update();
+
+    if (m_CaptureMouse)
+    {
+        CaptureCursor();
+    }
 }
 
 void tabi::InputHandler::BindButton(unsigned int a_Button)
@@ -127,18 +131,38 @@ float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
 {
     if (IsBound(a_Axis))
     {
+        float pos = m_InputMap.GetFloat(a_Axis);
         if (a_Delta)
         {
-            *a_Delta = m_InputMap.GetFloatDelta(a_Axis);
+            if (a_Axis == static_cast<unsigned>(EMouse::MouseX) && m_CaptureMouse)
+            {
+                *a_Delta = m_MouseDeltaX;
+            }
+            else if (a_Axis == static_cast<unsigned>(EMouse::MouseY) && m_CaptureMouse)
+            {
+                *a_Delta = m_MouseDeltaY;
+            }
+            else
+            {
+                *a_Delta = m_InputMap.GetFloatDelta(a_Axis);
+            }
         }
 
-        return m_InputMap.GetFloat(a_Axis);
+        return pos;
     }
     else
     {
         logger::TabiWarn("Trying to get button state for an unbound axis: " + tabi::to_string(a_Axis));
         return 0.0f;
     }
+}
+
+void tabi::InputHandler::SetMouseCursorMode(bool a_Visible, bool a_Capture)
+{
+    m_HideCursor = a_Visible;
+    m_CaptureMouse = a_Capture;
+
+    SetCursorVisible(a_Visible);
 }
 
 void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
@@ -242,6 +266,50 @@ EInputDevice tabi::InputHandler::DetermineDeviceType(unsigned int a_Button)
 bool tabi::InputHandler::IsBound(unsigned int a_Button)
 {
     return m_InputMap.IsMapped(a_Button);
+}
+
+void tabi::InputHandler::SetCursorVisible(bool a_Visible)
+{
+    if (a_Visible)
+    {
+        while (ShowCursor(true) < 0);
+    }
+    else
+    {
+        while (ShowCursor(false) >= 0);
+    }
+}
+
+void tabi::InputHandler::CaptureCursor()
+{
+    // TODO: Find a better way to find the window
+    HWND window = FindWindow("TabiWindowClass", "Tabi");
+    if (window)
+    {
+        if (GetFocus() != window)
+        {
+            // Don't capture if the window doesn't have focus
+            m_MouseDeltaX = 0.0f;
+            m_MouseDeltaY = 0.0f;
+            return;
+        }
+
+        POINT beforePos = { 0 };
+        GetCursorPos(&beforePos);
+
+        RECT rect = { 0 };
+        GetWindowRect(window, &rect);
+        SetCursorPos(rect.right - (m_WindowWidth / 2), rect.bottom - (m_WindowHeight / 2));
+
+        m_WindowWidth = rect.right - rect.left;
+        m_WindowHeight = rect.bottom - rect.top;
+
+        POINT afterPos = { 0 };
+        GetCursorPos(&afterPos);
+
+        m_MouseDeltaX = (float(beforePos.x - afterPos.x) / float(m_WindowWidth));
+        m_MouseDeltaY = (float(beforePos.y - afterPos.y) / float(m_WindowHeight));
+    }
 }
 
 unsigned int tabi::InputHandler::ConvertDeviceType(EInputDevice a_Device)

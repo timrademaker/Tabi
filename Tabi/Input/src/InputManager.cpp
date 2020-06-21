@@ -121,6 +121,11 @@ void InputManager::Update()
     }
 }
 
+void tabi::InputManager::SetCursorMode(bool a_Visible, bool a_CaptureCursor)
+{
+    IInputHandler::GetInstance().SetMouseCursorMode(a_Visible, a_CaptureCursor);
+}
+
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, UserClass* a_Object, ButtonHandlerSignature a_Callback)
 {
     // TODO: If debugging, check if the callback is already registered for the object

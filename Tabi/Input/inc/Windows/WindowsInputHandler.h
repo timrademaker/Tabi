@@ -40,6 +40,9 @@ namespace tabi
 
         virtual float GetAxisValue(unsigned int a_Axis, float* a_Delta = nullptr) override;
 
+        virtual void SetMouseCursorMode(bool a_Visible, bool a_Capture) override;
+        
+        
         void HandleMsg(const MSG& a_Msg);
 
 
@@ -57,6 +60,11 @@ namespace tabi
 
         bool IsBound(unsigned int a_Button);
 
+        void SetCursorVisible(bool a_Visible);
+        void CaptureCursor();
+
+
+
     private:
 
         static tabi::unordered_map<EMouse, unsigned int> ms_MouseTable;
@@ -64,6 +72,15 @@ namespace tabi
         static tabi::unordered_map<EController, unsigned int> ms_ControllerTable;
 
         tabi::unordered_map<EInputDevice, unsigned int> m_InputDeviceTable;
+
+        unsigned int m_WindowWidth;
+        unsigned int m_WindowHeight;
+
+        float m_MouseDeltaX;
+        float m_MouseDeltaY;
+
+        bool m_CaptureMouse = false;
+        bool m_HideCursor = false;
 
         ::gainput::InputManager m_GaInputManager;
         ::gainput::InputMap m_InputMap;

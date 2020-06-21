@@ -23,7 +23,23 @@ using tabi::ISampler;
 
 tabi::graphics::Renderer::Renderer()
 {
-    if(!helpers::IsOpenGLVersionSupported(MINIMUM_OGL_VERSION))
+    // Create a default camera
+    m_CurrentCamera = tabi::make_shared<Camera>();
+}
+
+void tabi::graphics::Renderer::Initialize(tabi::shared_ptr<IWindow> a_Window)
+{
+    if (m_Initialized)
+    {
+        logger::TabiWarn("Renderer already initialized!");
+        return;
+    }
+
+    m_Initialized = true;
+
+    IRenderer::Initialize(a_Window);
+
+    if (!helpers::IsOpenGLVersionSupported(MINIMUM_OGL_VERSION))
     {
         assert(false);
     }
@@ -38,12 +54,16 @@ tabi::graphics::Renderer::Renderer()
     m_TextureSampler = ISampler::CreateSharedSampler(EWrap::ClampToEdge, EWrap::ClampToEdge, EMinFilter::LinearMipmapLinear, EMagFilter::Linear);
     UseSampler(m_TextureSampler);
 
-    // Create a default camera
-    m_CurrentCamera = tabi::make_shared<Camera>();
 }
 
 bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMeshDataAfterBuffering, EBufferMode a_BufferMode) const
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to buffer a mesh!");
+        return false;
+    }
+
     if (a_Mesh.m_VBO != 0)
     {
         // Mesh already loaded
@@ -140,6 +160,12 @@ bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMesh
 
 bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture, const bool a_CleanUpTextureDataAfterBuffering) const
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to buffer a texture!");
+        return false;
+    }
+
     // TODO: Store color mode in texture (RGB(A))
     // TODO: Support 1D and 3D textures as well?
 
@@ -162,6 +188,12 @@ bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture, const bool a_Cl
 
 ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexShader, const int a_VertexShaderLength, const char* a_FragmentShader, const int a_FragmentShaderLength) const
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to create a shader program!");
+        return 0;
+    }
+
     // Load vertex shader
     auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &a_VertexShader, &a_VertexShaderLength);
@@ -191,6 +223,12 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
 
 ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexShaderPath, const char* a_FragmentShaderPath) const
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to create a shader program!");
+        return 0;
+    }
+
     FSize fileLen = 0;
 
     // Load vertex shader
@@ -200,6 +238,7 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
     
     tabi::vector<char> vertexShaderBuffer(fileLen);
     vertShadFile->Read(&vertexShaderBuffer[0], fileLen, &vertShaderBytesRead);
+    vertShadFile->Close();
 
     // Load fragment shader
     auto fragShadFile = IFile::OpenFile(a_FragmentShaderPath, EFileOpenFlags::Read);
@@ -208,6 +247,7 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
 
     tabi::vector<char> fragmentShaderBuffer(fileLen);
     fragShadFile->Read(&fragmentShaderBuffer[0], fileLen, &fragShaderBytesRead);
+    fragShadFile->Close();
 
     logger::TabiLog(logger::ELogLevel::Info, tabi::string(&vertexShaderBuffer[0]));
     logger::TabiLog(logger::ELogLevel::Info, tabi::string(&fragmentShaderBuffer[0]));
@@ -217,12 +257,24 @@ ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexS
 
 void Renderer::UseShader(const ShaderHandle a_ShaderHandle)
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to use a shader!");
+        return;
+    }
+
     glUseProgram(a_ShaderHandle);
     m_CurrentlyBoundShader = a_ShaderHandle;
 }
 
 void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Transform)
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to render!");
+        return;
+    }
+
     // Bind texture if the mesh has one
     if (a_Mesh.m_Material
         && a_Mesh.m_Material->m_MetalicRoughness
@@ -285,6 +337,12 @@ void tabi::graphics::Renderer::UseCamera(const tabi::shared_ptr<Camera> a_Camera
 
 void Renderer::SetDrawMode(EDrawMode a_DrawMode)
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to set the draw mode!");
+        return;
+    }
+
     unsigned int mode = 0;
 
     switch (a_DrawMode)
@@ -317,6 +375,12 @@ void Renderer::SetDrawMode(EDrawMode a_DrawMode)
 
 void Renderer::UseSampler(tabi::shared_ptr<ISampler> a_Sampler)
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to use a sampler!");
+        return;
+    }
+
     if(a_Sampler == m_CurrentlyBoundSampler)
     {
         return;
@@ -339,6 +403,12 @@ void Renderer::UseSampler(tabi::shared_ptr<ISampler> a_Sampler)
 
 void tabi::graphics::Renderer::SetCullingEnabled(bool a_Enabled)
 {
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to enable or disable culling!");
+        return;
+    }
+
     if (a_Enabled == m_BackfaceCullingEnabled)
     {
         return;

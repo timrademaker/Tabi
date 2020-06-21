@@ -12,6 +12,8 @@ namespace tabi
 
     namespace graphics
     {
+        class IWindow;
+
         enum class EBufferMode
         {
             Static,     // Modified once, used often
@@ -30,6 +32,8 @@ namespace tabi
         {
         public:
             static IRenderer& GetInstance();
+
+            virtual void Initialize(tabi::shared_ptr<IWindow> a_Window);
 
             /**
             * @brief Load a mesh into a buffer, and updates the mesh with necessary data
@@ -100,13 +104,14 @@ namespace tabi
             */
             void GetWindowDimensions(unsigned int& a_Width, unsigned int& a_Height) const;
 
+            const IWindow& GetWindow() const;
+
         protected:
             IRenderer() = default;
             virtual ~IRenderer() = default;
 
         protected:
-            unsigned int m_WindowWidth;
-            unsigned int m_WindowHeight;
+            tabi::shared_ptr<IWindow> m_Window;
         };
     }
 }

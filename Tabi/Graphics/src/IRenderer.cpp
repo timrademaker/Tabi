@@ -1,5 +1,7 @@
 #include "IRenderer.h"
 
+#include "IWindow.h"
+
 #if defined(_WINDOWS)
 #include "Windows/OpenGL/OpenGLRenderer.h"
 #endif
@@ -18,14 +20,28 @@ IRenderer& IRenderer::GetInstance()
     return *instance;
 }
 
+void tabi::graphics::IRenderer::Initialize(tabi::shared_ptr<IWindow> a_Window)
+{
+    m_Window = a_Window;
+}
+
 void tabi::graphics::IRenderer::UpdateWindowDimensions(unsigned int a_Width, unsigned int a_Height)
 {
-    m_WindowWidth = a_Width;
-    m_WindowHeight = a_Height;
+    if (m_Window)
+    {
+        m_Window->GetContext()->Resize(a_Width, a_Height);
+    }
 }
 
 void tabi::graphics::IRenderer::GetWindowDimensions(unsigned int& a_Width, unsigned int& a_Height) const
 {
-    a_Width = m_WindowWidth;
-    a_Height = m_WindowHeight;
+    if (m_Window)
+    {
+        m_Window->GetContext()->GetContextDimensions(a_Width, a_Height);
+    }
+}
+
+const IWindow& tabi::graphics::IRenderer::GetWindow() const
+{
+    return *m_Window;
 }

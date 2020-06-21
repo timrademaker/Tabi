@@ -4,6 +4,8 @@
 #include <InputManager.h>
 #include <IInputHandler.h>
 
+#include <IRenderer.h>
+
 #include <Logging.h>
 
 #include <cassert>
@@ -86,6 +88,7 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
     {
         // Create window
         m_Window = graphics::IWindow::OpenWindow(a_WindowTitle, a_Width, a_Height);
+        graphics::IRenderer::GetInstance().Initialize(m_Window);
 
         m_Initialized = true;
     }

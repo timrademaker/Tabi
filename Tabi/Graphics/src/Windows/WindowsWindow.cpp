@@ -19,17 +19,17 @@
 
 using namespace tabi::graphics;
 
+const char* Window::ms_WindowClassName = "TabiWindowClass";
+
 tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height)
 {
     WindowHandle handle;
     {
-        const LPCSTR windowClassName = "TabiWindowClass";
-
         WNDCLASS wc = { 0 };
         // Window procedure function - Handles messages
         wc.lpfnWndProc = ProcessMessages;
         wc.hInstance = nullptr;
-        wc.lpszClassName = windowClassName;
+        wc.lpszClassName = ms_WindowClassName;
         wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
         wc.style = CS_OWNDC;
 
@@ -48,12 +48,12 @@ tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, u
     }
     m_WindowName = a_WindowName;
     m_WindowHandle = handle;
-    m_Context = new Context(handle, a_Width, a_Height);
+    m_Context = tabi::make_shared<Context>(handle, a_Width, a_Height);
 }
 
-Window::~Window()
+const char* tabi::graphics::Window::GetWindowClassName()
 {
-    delete m_Context;
+    return ms_WindowClassName;
 }
 
 LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -63,8 +63,16 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
     case WM_CLOSE:
     {
         Application::Get().ExitGame();
+        break;
     }
-    break;
+    case WM_SIZE:
+    {
+        unsigned int width = LOWORD(lParam);
+        unsigned int height = HIWORD(lParam);
+        IRenderer::GetInstance().UpdateWindowDimensions(width, height);
+
+        break;
+    }
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

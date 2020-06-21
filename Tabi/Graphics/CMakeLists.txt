@@ -15,6 +15,7 @@ set(HEADERS
 set(SOURCES
     src/Camera.cpp
     src/IRenderer.cpp
+    src/IContext.cpp
     src/IWindow.cpp
     src/ISampler.cpp
 )

@@ -1,13 +1,20 @@
 #include "MovableCamera.h"
 
+#include <Enums/EMouse.h>
+#include <Enums/EKeyboard.h>
+
 MovableCamera::MovableCamera()
     : m_Camera(tabi::make_shared<tabi::Camera>())
     , m_DeltaTime(0.0f)
 {
     tabi::InputManager::BindButton(tabi::EMouse::Left, this, BUTTON_CALLBACK(*this, MovableCamera::MoveUp));
+    tabi::InputManager::BindButton(tabi::EKeyboard::LSHIFT, this, BUTTON_CALLBACK(*this, MovableCamera::MoveUp));
     tabi::InputManager::BindButton(tabi::EMouse::Right, this, BUTTON_CALLBACK(*this, MovableCamera::MoveDown));
-    tabi::InputManager::BindButton(tabi::EMouse::Mouse4, this, BUTTON_CALLBACK(*this, MovableCamera::MoveForward));
-    tabi::InputManager::BindButton(tabi::EMouse::Mouse5, this, BUTTON_CALLBACK(*this, MovableCamera::MoveBackwards));
+    tabi::InputManager::BindButton(tabi::EKeyboard::LCTRL, this, BUTTON_CALLBACK(*this, MovableCamera::MoveDown));
+    tabi::InputManager::BindButton(tabi::EKeyboard::W, this, BUTTON_CALLBACK(*this, MovableCamera::MoveForward));
+    tabi::InputManager::BindButton(tabi::EKeyboard::S, this, BUTTON_CALLBACK(*this, MovableCamera::MoveBackwards));
+    tabi::InputManager::BindButton(tabi::EKeyboard::A, this, BUTTON_CALLBACK(*this, MovableCamera::MoveLeft));
+    tabi::InputManager::BindButton(tabi::EKeyboard::D, this, BUTTON_CALLBACK(*this, MovableCamera::MoveRight));
     tabi::InputManager::BindAxis(tabi::EMouse::MouseX, this, AXIS_CALLBACK(*this, MovableCamera::RotateHorizontal));
     tabi::InputManager::BindAxis(tabi::EMouse::MouseY, this, AXIS_CALLBACK(*this, MovableCamera::RotateVertical));
 }
@@ -34,12 +41,12 @@ void MovableCamera::MoveRight(bool)
 
 void MovableCamera::MoveForward(bool)
 {
-    m_Camera->MoveBy(tabi::vec3(0, 0, m_Speed * m_DeltaTime));
+    m_Camera->MoveBy(tabi::vec3(0, 0, -m_Speed * m_DeltaTime));
 }
 
 void MovableCamera::MoveBackwards(bool)
 {
-    m_Camera->MoveBy(tabi::vec3(0, 0, -m_Speed * m_DeltaTime));
+    m_Camera->MoveBy(tabi::vec3(0, 0, m_Speed * m_DeltaTime));
 }
 
 void MovableCamera::RotateVertical(float a_Curr, float a_Delta)

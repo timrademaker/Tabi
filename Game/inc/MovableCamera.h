@@ -3,7 +3,6 @@
 #include <TabiPointers.h>
 #include <Camera.h>
 
-#include <Enums/EMouse.h>
 #include <InputManager.h>
 
 class MovableCamera

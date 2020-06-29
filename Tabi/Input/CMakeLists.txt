@@ -6,6 +6,7 @@ set(HEADERS
     inc/InputManager.h
     inc/IInputHandler.h
     inc/Enums/EMouse.h
+    inc/Enums/EKeyboard.h
     inc/Enums/EInputDevice.h
 )
 
@@ -23,6 +24,7 @@ if(WINDOWS)
     
     list(APPEND SOURCES
         src/Windows/WindowsInputHandler.cpp
+        src/Windows/WindowsKeyTables.cpp
     )
 endif()
 

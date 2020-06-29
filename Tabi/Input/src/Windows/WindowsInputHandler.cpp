@@ -1,6 +1,9 @@
+#pragma once
+
 #include "Windows/WindowsInputHandler.h"
 
 #include "Enums/EMouse.h"
+#include "Enums/EKeyboard.h"
 #include "Enums/EInputDevice.h"
 
 #include <Logging.h>
@@ -21,23 +24,6 @@ using tabi::EMouse;
 using tabi::EKeyboard;
 using tabi::EController;
 using tabi::EInputDevice;
-
-tabi::unordered_map<tabi::EMouse, unsigned int> tabi::InputHandler::ms_MouseTable =
-{
-    {EMouse::Left, gainput::MouseButton::MouseButtonLeft},
-    {EMouse::Right, gainput::MouseButton::MouseButtonRight},
-    {EMouse::Middle, gainput::MouseButton::MouseButtonMiddle},
-    {EMouse::Mouse4, gainput::MouseButton::MouseButton5},
-    {EMouse::Mouse5, gainput::MouseButton::MouseButton6},
-    {EMouse::MouseX, gainput::MouseButton::MouseAxisX},
-    {EMouse::MouseY, gainput::MouseButton::MouseAxisY},
-    {EMouse::WheelUp, gainput::MouseButton::MouseButtonWheelUp},
-    {EMouse::WheelDown, gainput::MouseButton::MouseButtonWheelDown}
-};
-
-tabi::unordered_map<EKeyboard, unsigned int> tabi::InputHandler::ms_KeyboardTable = {};
-tabi::unordered_map<EController, unsigned int> tabi::InputHandler::ms_ControllerTable = {};
-
 
 tabi::InputHandler::InputHandler()
     : m_InputMap(m_GaInputManager)
@@ -247,17 +233,17 @@ unsigned int tabi::InputHandler::ConvertButton(EController a_Button)
 
 EInputDevice tabi::InputHandler::DetermineDeviceType(unsigned int a_Button)
 {
-    if (a_Button & static_cast<unsigned>(EInputDevice::Mouse))
+    if (a_Button & static_cast<unsigned>(EInputDevice::Controller))
     {
-        return EInputDevice::Mouse;
+        return EInputDevice::Controller;
     }
     else if (a_Button & static_cast<unsigned>(EInputDevice::Keyboard))
     {
         return EInputDevice::Keyboard;
     }
-    else if (a_Button & static_cast<unsigned>(EInputDevice::Controller))
+    else if (a_Button & static_cast<unsigned>(EInputDevice::Mouse))
     {
-        return EInputDevice::Controller;
+        return EInputDevice::Mouse;
     }
 
     logger::TabiWarn("Unable to determine device type for button " + tabi::to_string(a_Button));

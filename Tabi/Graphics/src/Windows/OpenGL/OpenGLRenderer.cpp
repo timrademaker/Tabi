@@ -275,26 +275,37 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
         return;
     }
 
-    // Bind texture if the mesh has one
-    if (a_Mesh.m_Material
-        && a_Mesh.m_Material->m_MetalicRoughness
-        && a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture
-        )
+    // Use the material if the mesh has one
+    if (a_Mesh.m_Material)
     {
-    
-        if (m_CurrentlyBoundShader != m_TextureShader)
-        {
-            UseShader(m_TextureShader);
-        }
-    
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
-        glUniform1i(glGetUniformLocation(m_TextureShader, "uTexture"), 0);
-        const auto bcf = glGetUniformLocation(m_TextureShader, "uBaseColorFactor");
-        glUniform4fv(bcf, 1, &a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorFactor[0]);
 
-        auto& sampler = a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_Sampler;
-        UseSampler(sampler);
+        if(a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture)
+        {
+            if (m_CurrentlyBoundShader != m_TextureShader)
+            {
+                UseShader(m_TextureShader);
+            }
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
+            const GLint textureLocation = glGetUniformLocation(m_TextureShader, "uTexture");
+            if(textureLocation != -1)
+            {
+                glUniform1i(textureLocation, 0);
+            }
+
+            auto& sampler = a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_Sampler;
+            UseSampler(sampler);
+        }
+
+        if(a_Mesh.m_Material->m_MetalicRoughness)
+        {
+            const GLint bcf = glGetUniformLocation(m_TextureShader, "uBaseColorFactor");
+            if(bcf != -1)
+            {
+                glUniform4fv(bcf, 1, &a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorFactor[0]);
+            }
+        }
 
         SetCullingEnabled(!a_Mesh.m_Material->m_DoubleSided);
         
@@ -311,9 +322,15 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
     mat4 projection = m_CurrentCamera->GetProjection();
 
     mat4 res = a_Transform * eye * projection;
-    GLint tr = glGetUniformLocation(m_CurrentlyBoundShader, "uTransform");
-
-    glUniformMatrix4fv(tr, 1, GL_FALSE, &res.v[0]);
+    const GLint tr = glGetUniformLocation(m_CurrentlyBoundShader, "uTransform");
+    if(tr != -1)
+    {
+        glUniformMatrix4fv(tr, 1, GL_FALSE, &res.v[0]);
+    }
+    else
+    {
+        logger::TabiError("Unable to find uniform location for uTransform!");
+    }
 
 
     glBindVertexArray(a_Mesh.m_VAO);

@@ -127,4 +127,9 @@ add_library(gainput EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 # Add include directories
 target_include_directories(gainput PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
+if (WINDOWS)
+    target_link_libraries(gainput PUBLIC xinput.lib)
+endif()
+
+
 # Generated on 2020-06-20 15:16

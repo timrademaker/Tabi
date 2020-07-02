@@ -5,6 +5,7 @@ cmake_minimum_required (VERSION 3.8)
 set(HEADERS
     inc/InputManager.h
     inc/IInputHandler.h
+    inc/Enums/EController.h
     inc/Enums/EMouse.h
     inc/Enums/EKeyboard.h
     inc/Enums/EInputDevice.h

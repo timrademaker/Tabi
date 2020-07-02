@@ -2,6 +2,7 @@
 
 #include "Enums/EMouse.h"
 #include "Enums/EKeyboard.h"
+#include "Enums/EController.h"
 
 #include <TabiMacros.h>
 
@@ -115,7 +116,43 @@ tabi::unordered_map<EKeyboard, unsigned int> tabi::InputHandler::ms_KeyboardTabl
     {EKeyboard::F9, gainput::Key::KeyF9},
     {EKeyboard::F10, gainput::Key::KeyF10},
     {EKeyboard::F11, gainput::Key::KeyF11},
-    {EKeyboard::F12, gainput::Key::KeyF12},
+    {EKeyboard::F12, gainput::Key::KeyF12}
 };
 
-tabi::unordered_map<EController, unsigned int> tabi::InputHandler::ms_ControllerTable = {};
+tabi::unordered_map<EController, unsigned int> tabi::InputHandler::ms_ControllerTable =
+{
+    // D-Pad
+    {EController::DPadLeft, gainput::PadButton::PadButtonLeft},
+    {EController::DPadRight, gainput::PadButton::PadButtonRight},
+    {EController::DPadUp, gainput::PadButton::PadButtonUp},
+    {EController::DPadDown, gainput::PadButton::PadButtonDown},
+    // Face buttons
+    {EController::FaceLeft, gainput::PadButton::PadButtonX},
+    {EController::FaceRight, gainput::PadButton::PadButtonB},
+    {EController::FaceUp, gainput::PadButton::PadButtonY},
+    {EController::FaceDown, gainput::PadButton::PadButtonA},
+    // Special
+    {EController::SpecialLeft, gainput::PadButton::PadButtonSelect},
+    {EController::SpecialRight, gainput::PadButton::PadButtonStart},
+    {EController::Home, gainput::PadButton::PadButtonHome},
+    // Shoulder buttons/bumpers
+    {EController::L1, gainput::PadButton::PadButtonL1},
+    {EController::L2, gainput::PadButton::PadButtonL3},
+    {EController::L3, gainput::PadButton::PadButtonL3},
+    {EController::R1, gainput::PadButton::PadButtonR1},
+    {EController::R2, gainput::PadButton::PadButtonR2},
+    {EController::R3, gainput::PadButton::PadButtonR3},
+    // Sticks
+    {EController::LeftStickX, gainput::PadButton::PadButtonLeftStickX},
+    {EController::LeftStickY, gainput::PadButton::PadButtonLeftStickY},
+    {EController::RightStickX, gainput::PadButton::PadButtonRightStickX},
+    {EController::RightStickY, gainput::PadButton::PadButtonRightStickY},
+    // Gyroscope
+    {EController::GyroscopeX, gainput::PadButton::PadButtonGyroscopeX},
+    {EController::GyroscopeY, gainput::PadButton::PadButtonGyroscopeY},
+    {EController::GyroscopeZ, gainput::PadButton::PadButtonGyroscopeZ},
+    // Magnetic field
+    {EController::MagneticFieldX, gainput::PadButton::PadButtonMagneticFieldX},
+    {EController::MagneticFieldY, gainput::PadButton::PadButtonMagneticFieldY},
+    {EController::MagneticFieldZ, gainput::PadButton::PadButtonMagneticFieldZ}
+};

@@ -18,8 +18,12 @@ public:
     void MoveBackwards(bool);
 
     void RotateHorizontal(float a_Curr, float a_Delta);
-
     void RotateVertical(float a_Curr, float a_Delta);
+
+    void MoveForwardController(float a_Curr, float a_Delta);
+    void MoveRightController(float a_Curr, float a_Delta);
+    void RotateHorizontalController(float a_Curr, float a_Delta);
+    void RotateVerticalController(float a_Curr, float a_Delta);
 
     void Update(float a_DeltaTime);
     
@@ -28,5 +32,6 @@ public:
 
     float m_DeltaTime;
     const float m_Speed = 10.0f;
-    const float m_Sensitivity = 100.0f;
+    const float m_MouseSensitivity = 100.0f;
+    const float m_ControllerSensitivity = 10.0f;
 };

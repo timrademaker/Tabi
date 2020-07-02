@@ -2,11 +2,13 @@
 
 #include <Enums/EMouse.h>
 #include <Enums/EKeyboard.h>
+#include <Enums/EController.h>
 
 MovableCamera::MovableCamera()
     : m_Camera(tabi::make_shared<tabi::Camera>())
     , m_DeltaTime(0.0f)
 {
+    // Keyboard and mouse
     tabi::InputManager::BindButton(tabi::EMouse::Left, this, BUTTON_CALLBACK(*this, MovableCamera::MoveUp));
     tabi::InputManager::BindButton(tabi::EKeyboard::LSHIFT, this, BUTTON_CALLBACK(*this, MovableCamera::MoveUp));
     tabi::InputManager::BindButton(tabi::EMouse::Right, this, BUTTON_CALLBACK(*this, MovableCamera::MoveDown));
@@ -17,6 +19,14 @@ MovableCamera::MovableCamera()
     tabi::InputManager::BindButton(tabi::EKeyboard::D, this, BUTTON_CALLBACK(*this, MovableCamera::MoveRight));
     tabi::InputManager::BindAxis(tabi::EMouse::MouseX, this, AXIS_CALLBACK(*this, MovableCamera::RotateHorizontal));
     tabi::InputManager::BindAxis(tabi::EMouse::MouseY, this, AXIS_CALLBACK(*this, MovableCamera::RotateVertical));
+    
+    // Controller
+    tabi::InputManager::BindButton(tabi::EController::R1, this, BUTTON_CALLBACK(*this, MovableCamera::MoveUp));
+    tabi::InputManager::BindButton(tabi::EController::R2, this, BUTTON_CALLBACK(*this, MovableCamera::MoveDown));
+    tabi::InputManager::BindAxis(tabi::EController::LeftStickX, this, AXIS_CALLBACK(*this, MovableCamera::MoveRightController));
+    tabi::InputManager::BindAxis(tabi::EController::LeftStickY, this, AXIS_CALLBACK(*this, MovableCamera::MoveForwardController));
+    tabi::InputManager::BindAxis(tabi::EController::RightStickX, this, AXIS_CALLBACK(*this, MovableCamera::RotateHorizontalController));
+    tabi::InputManager::BindAxis(tabi::EController::RightStickY, this, AXIS_CALLBACK(*this, MovableCamera::RotateVerticalController));
 }
 
 void MovableCamera::MoveUp(bool)
@@ -49,16 +59,41 @@ void MovableCamera::MoveBackwards(bool)
     m_Camera->MoveBy(tabi::vec3(0, 0, m_Speed * m_DeltaTime));
 }
 
-void MovableCamera::RotateVertical(float a_Curr, float a_Delta)
-{
-    TABI_UNUSED(a_Curr);
-    m_Camera->RotateBy(tabi::vec3(m_Sensitivity * m_DeltaTime * a_Delta, 0, 0));
-}
-
 void MovableCamera::RotateHorizontal(float a_Curr, float a_Delta)
 {
     TABI_UNUSED(a_Curr);
-    m_Camera->RotateBy(tabi::vec3(0, m_Sensitivity * m_DeltaTime * a_Delta, 0));
+    m_Camera->RotateBy(tabi::vec3(0, m_MouseSensitivity * m_DeltaTime * a_Delta, 0));
+}
+
+void MovableCamera::RotateVertical(float a_Curr, float a_Delta)
+{
+    TABI_UNUSED(a_Curr);
+    m_Camera->RotateBy(tabi::vec3(m_MouseSensitivity * m_DeltaTime * a_Delta, 0, 0));
+}
+
+void MovableCamera::MoveForwardController(float a_Curr, float a_Delta)
+{
+    TABI_UNUSED(a_Delta);
+    m_Camera->MoveBy(tabi::vec3(0, 0, -m_Speed * a_Curr * m_DeltaTime));
+}
+
+void MovableCamera::MoveRightController(float a_Curr, float a_Delta)
+{
+    TABI_UNUSED(a_Delta);
+    m_Camera->MoveBy(tabi::vec3(m_Speed * a_Curr * m_DeltaTime, 0, 0));
+}
+
+void MovableCamera::RotateHorizontalController(float a_Curr, float a_Delta)
+{
+
+    TABI_UNUSED(a_Delta);
+    m_Camera->RotateBy(tabi::vec3(0, m_ControllerSensitivity * m_DeltaTime * a_Curr, 0));
+}
+
+void MovableCamera::RotateVerticalController(float a_Curr, float a_Delta)
+{
+    TABI_UNUSED(a_Delta);
+    m_Camera->RotateBy(tabi::vec3(-m_ControllerSensitivity * m_DeltaTime * a_Curr, 0, 0));
 }
 
 void MovableCamera::Update(float a_DeltaTime)

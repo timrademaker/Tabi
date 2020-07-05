@@ -5,13 +5,20 @@
 #endif
 
 #include <TabiTypes.h>
+#include <Logging.h>
 
 using namespace tabi;
 
 tabi::ISampler* tabi::ISampler::CreateSampler(tabi::EWrap a_WrapModeS, tabi::EWrap a_WrapModeT, tabi::EMinFilter a_MinFilter, tabi::EMagFilter a_MagFilter)
 {
     ISampler* sampler = new tabi::Sampler();
-    sampler->Initialize(a_WrapModeS, a_WrapModeT, a_MinFilter, a_MagFilter);
+    if (!sampler->Initialize(a_WrapModeS, a_WrapModeT, a_MinFilter, a_MagFilter))
+    {
+        delete sampler;
+        sampler = nullptr;
+
+        tabi::logger::TabiError("Failed to create sampler!");
+    }
    
     return sampler;
 }
@@ -25,6 +32,7 @@ tabi::shared_ptr<ISampler> ISampler::CreateSharedSampler(EWrap a_WrapModeS, EWra
 
 shared_ptr<ISampler> ISampler::ToShared(ISampler*& a_Rhs)
 {
+    TABI_ASSERT(a_Rhs);
     auto shared = tabi::shared_ptr<Sampler>(static_cast<Sampler*>(a_Rhs));
     a_Rhs = nullptr;
     return std::move(shared);

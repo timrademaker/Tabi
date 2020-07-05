@@ -237,7 +237,7 @@ mat4 tabi::mat4::CreateLookAtMatrix(const vec3& a_Eye, const vec3& a_Target, con
 {
     mat4 result = mat4::Identity();
 
-    vec3 forward = vec3::Normalize(a_Eye - a_Target);
+    vec3 forward = vec3::Normalize(a_Target - a_Eye);
     vec3 right = vec3::Normalize(vec3::Cross(a_Up, forward));
     vec3 up = vec3::Cross(forward, right);
 

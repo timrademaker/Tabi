@@ -21,3 +21,8 @@ tabi::unique_ptr<IFile> tabi::IFile::OpenFile(const char* a_FilePath, const EFil
 
     return std::move(file);
 }
+
+bool tabi::IFile::IsSuccess(const EFileResult& a_Result)
+{
+    return ((a_Result & EFileResult::Ok) == EFileResult::Ok);
+}

@@ -59,8 +59,10 @@ namespace tabi
         */
         static tabi::unique_ptr<IFile> OpenFile(const char* a_FilePath, const EFileOpenFlags a_OpenFlags);
 
+        static bool IsSuccess(const EFileResult& a_Result);
+
         virtual EFileResult Close(const bool a_CancelPendingOperations = false) = 0;
-        virtual EFileResult Read(char* a_ReadBuffer, FSize a_BufferSize, FSize* a_BytesRead) = 0;
+        virtual EFileResult Read(char* a_ReadBuffer, FSize a_BufferSize, FSize* a_BytesRead = nullptr) = 0;
         virtual EFileResult Write(const char* a_WriteBuffer, FSize a_BufferSize) = 0;
         virtual EFileResult Seek(const EFileSeekOrigin a_SeekOrigin, FSize a_SeekPos, FSize* a_NewPosition = nullptr) = 0;
         virtual EFileResult GetLength(FSize& a_FileLength) = 0;

@@ -9,6 +9,8 @@
 
 #define TABI_UNUSED(var) (var)
 
+#define TABI_ASSERT(expression) assert(expression)
+
 #if defined(_MSC_VER)
 #define DISABLE_WARNING_PUSH __pragma(warning(push))
 #define DISABLE_WARNING_POP __pragma(warning(pop))

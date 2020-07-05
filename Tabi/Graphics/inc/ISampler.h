@@ -44,14 +44,14 @@ namespace tabi
         static tabi::shared_ptr<ISampler> CreateSharedSampler(EWrap a_WrapModeS, EWrap a_WrapModeT, EMinFilter a_MinFilter, EMagFilter a_MagFilter);
 
         /**
-         * @brief Turns a raw sampler pointer into a shared pointer
+         * @brief Turns a raw ISampler pointer into a shared pointer
          * @params a_Rhs The pointer to convert to a shared pointer. Do not use afterwards.
-         * @returns The shared pointer
+         * @returns The created shared pointer
          */
         static tabi::shared_ptr<ISampler> ToShared(ISampler*& a_Rhs);
 
-            /**
-        * @brief Use the current sampler
+        /**
+        * @brief Use this sampler
         * @returns True if binding the sampler was successful
         */
         virtual bool UseSampler() = 0;
@@ -60,6 +60,14 @@ namespace tabi
         ISampler() = default;
         ~ISampler() = default;
 
+        /**
+        * @brief Internal creation of the shader
+        * @params a_WrapModeS The wrap mode for the S texture coordinates
+        * @params a_WrapModeT The wrap mode for the T texture coordinates
+        * @params a_MinFilter The minification filter used
+        * @params a_MagFilter The magnification filter used
+        * @returns True if the sampler was created successfully
+        */
         virtual bool Initialize(EWrap a_WrapModeS, EWrap a_WrapModeT, EMinFilter a_MinFilter, EMagFilter a_MagFilter) = 0;
 
     };

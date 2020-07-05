@@ -12,13 +12,22 @@ namespace tabi
         class helpers
         {
         public:
-            // Check if shader compilation resulted in an error
-            static bool CheckShaderLoadError(unsigned int a_Shader);
+            /**
+            * @brief Check if shader loading resulted in an error
+            * @returns True if no errors were found
+            */
+            static bool CheckShaderLoadSuccess(unsigned int a_Shader);
 
-            // Check if shader program compilation resulted in an error
-            static bool CheckShaderProgramError(unsigned int a_Program);
+            /**
+            * @brief Check if shader program compilation resulted in an error
+            * @returns True if no errors were found
+            */
+            static bool CheckShaderProgramSuccess(unsigned int a_Program);
 
-            // Check for any OpenGL errors
+            /**
+            * @brief Check for any OpenGL errors
+            * @returns True if an error is found
+            */
             static bool CheckForErrors();
 
             // Convert an OpenGL error enum to a string

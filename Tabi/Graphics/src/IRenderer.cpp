@@ -25,6 +25,11 @@ void tabi::graphics::IRenderer::Initialize(tabi::shared_ptr<IWindow> a_Window)
     m_Window = a_Window;
 }
 
+bool tabi::graphics::IRenderer::HasBeenInitialized() const
+{
+    return m_Initialized;
+}
+
 void tabi::graphics::IRenderer::UpdateWindowDimensions(unsigned int a_Width, unsigned int a_Height)
 {
     if (m_Window)

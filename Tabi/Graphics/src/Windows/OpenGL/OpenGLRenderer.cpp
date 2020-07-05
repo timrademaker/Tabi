@@ -1,6 +1,7 @@
 #include "Windows/OpenGL/OpenGLRenderer.h"
 
 #include "ISampler.h"
+#include "IShader.h"
 #include "Windows/OpenGL/OpenGLHelpers.h"
 
 #include "Camera.h"
@@ -45,8 +46,8 @@ void tabi::graphics::Renderer::Initialize(tabi::shared_ptr<IWindow> a_Window)
     }
 
     // Load shaders
-    m_MeshShader = CreateShaderProgram("TabiAssets/Shaders/VertexShader.vert", "TabiAssets/Shaders/FragmentShader.frag");
-    m_TextureShader = CreateShaderProgram("TabiAssets/Shaders/SingleTextureShader.vert", "TabiAssets/Shaders/SingleTextureShader.frag");
+    m_MeshShader = IShader::CreateSharedShader("TabiAssets/Shaders/VertexShader.vert", "TabiAssets/Shaders/FragmentShader.frag");
+    m_TextureShader = IShader::CreateSharedShader("TabiAssets/Shaders/SingleTextureShader.vert", "TabiAssets/Shaders/SingleTextureShader.frag");
     UseShader(m_TextureShader);
 
     glEnable(GL_DEPTH_TEST);
@@ -186,87 +187,6 @@ bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture, const bool a_Cl
     return true;
 }
 
-ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexShader, const int a_VertexShaderLength, const char* a_FragmentShader, const int a_FragmentShaderLength) const
-{
-    if (!m_Initialized)
-    {
-        tabi::logger::TabiError("Please initialize the renderer before trying to create a shader program!");
-        return 0;
-    }
-
-    // Load vertex shader
-    auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &a_VertexShader, &a_VertexShaderLength);
-    glCompileShader(vertexShader);
-    helpers::CheckShaderLoadError(vertexShader);
-
-    // Load fragment shader
-    auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &a_FragmentShader, &a_FragmentShaderLength);
-    glCompileShader(fragmentShader);
-    helpers::CheckShaderLoadError(fragmentShader);
-
-    // Create shader program
-    ShaderHandle program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    glLinkProgram(program);
-
-    helpers::CheckShaderProgramError(program);
-
-    // Delete loaded shaders
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    return program;
-}
-
-ShaderHandle tabi::graphics::Renderer::CreateShaderProgram(const char* a_VertexShaderPath, const char* a_FragmentShaderPath) const
-{
-    if (!m_Initialized)
-    {
-        tabi::logger::TabiError("Please initialize the renderer before trying to create a shader program!");
-        return 0;
-    }
-
-    FSize fileLen = 0;
-
-    // Load vertex shader
-    auto vertShadFile = IFile::OpenFile(a_VertexShaderPath, EFileOpenFlags::Read);
-    FSize vertShaderBytesRead = 0;
-    vertShadFile->GetLength(fileLen);
-    
-    tabi::vector<char> vertexShaderBuffer(fileLen);
-    vertShadFile->Read(&vertexShaderBuffer[0], fileLen, &vertShaderBytesRead);
-    vertShadFile->Close();
-
-    // Load fragment shader
-    auto fragShadFile = IFile::OpenFile(a_FragmentShaderPath, EFileOpenFlags::Read);
-    FSize fragShaderBytesRead = 0;
-    fragShadFile->GetLength(fileLen);
-
-    tabi::vector<char> fragmentShaderBuffer(fileLen);
-    fragShadFile->Read(&fragmentShaderBuffer[0], fileLen, &fragShaderBytesRead);
-    fragShadFile->Close();
-
-    logger::TabiLog(logger::ELogLevel::Info, tabi::string(&vertexShaderBuffer[0]));
-    logger::TabiLog(logger::ELogLevel::Info, tabi::string(&fragmentShaderBuffer[0]));
-
-    return CreateShaderProgram(&vertexShaderBuffer[0], static_cast<int>(vertShaderBytesRead), &fragmentShaderBuffer[0], static_cast<int>(fragShaderBytesRead));
-}
-
-void Renderer::UseShader(const ShaderHandle a_ShaderHandle)
-{
-    if (!m_Initialized)
-    {
-        tabi::logger::TabiError("Please initialize the renderer before trying to use a shader!");
-        return;
-    }
-
-    glUseProgram(a_ShaderHandle);
-    m_CurrentlyBoundShader = a_ShaderHandle;
-}
-
 void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Transform)
 {
     if (!m_Initialized)
@@ -288,11 +208,7 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_TextureHandle);
-            const GLint textureLocation = glGetUniformLocation(m_TextureShader, "uTexture");
-            if(textureLocation != -1)
-            {
-                glUniform1i(textureLocation, 0);
-            }
+            m_CurrentlyBoundShader->SetUniformInt("uTexture", 0);
 
             auto& sampler = a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_Sampler;
             UseSampler(sampler);
@@ -300,11 +216,7 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
 
         if(a_Mesh.m_Material->m_MetalicRoughness)
         {
-            const GLint bcf = glGetUniformLocation(m_TextureShader, "uBaseColorFactor");
-            if(bcf != -1)
-            {
-                glUniform4fv(bcf, 1, &a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorFactor[0]);
-            }
+            m_CurrentlyBoundShader->SetUniformVec4f("uBaseColorFactor", 1, &a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorFactor);
         }
 
         SetCullingEnabled(!a_Mesh.m_Material->m_DoubleSided);
@@ -322,15 +234,7 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
     mat4 projection = m_CurrentCamera->GetProjection();
 
     mat4 res = a_Transform * eye * projection;
-    const GLint tr = glGetUniformLocation(m_CurrentlyBoundShader, "uTransform");
-    if(tr != -1)
-    {
-        glUniformMatrix4fv(tr, 1, GL_FALSE, &res.v[0]);
-    }
-    else
-    {
-        logger::TabiError("Unable to find uniform location for uTransform!");
-    }
+    m_CurrentlyBoundShader->SetUniformMat4f("uTransform", 1, GL_FALSE, &res);
 
 
     glBindVertexArray(a_Mesh.m_VAO);
@@ -390,6 +294,32 @@ void Renderer::SetDrawMode(EDrawMode a_DrawMode)
     helpers::CheckForErrors();
 }
 
+void tabi::graphics::Renderer::UseShader(tabi::shared_ptr<IShader> a_Shader)
+{
+    if (!m_Initialized)
+    {
+        tabi::logger::TabiError("Please initialize the renderer before trying to use a sampler!");
+        return;
+    }
+
+    if (a_Shader == m_CurrentlyBoundShader)
+    {
+        return;
+    }
+
+    if (a_Shader)
+    {
+        if (a_Shader->UseShader())
+        {
+            m_CurrentlyBoundShader = a_Shader;
+        }
+    }
+    else
+    {
+        UseShader(m_MeshShader);
+    }
+}
+
 void Renderer::UseSampler(tabi::shared_ptr<ISampler> a_Sampler)
 {
     if (!m_Initialized)
@@ -412,8 +342,7 @@ void Renderer::UseSampler(tabi::shared_ptr<ISampler> a_Sampler)
     }
     else
     {
-        m_TextureSampler->UseSampler();
-        m_CurrentlyBoundSampler = m_TextureSampler;
+        UseSampler(m_TextureSampler);
     }
     
 }

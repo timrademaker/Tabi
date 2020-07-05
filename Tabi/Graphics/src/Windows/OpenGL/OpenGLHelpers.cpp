@@ -10,7 +10,7 @@
 
 tabi::logger::LoggerPtr tabi::graphics::helpers::m_GraphicsLogger = tabi::logger::CreateTabiLogger<tabi::logger::ConsoleSink>("TabiGraphics");
 
-bool tabi::graphics::helpers::CheckShaderLoadError(unsigned int a_Shader)
+bool tabi::graphics::helpers::CheckShaderLoadSuccess(unsigned int a_Shader)
 {
     int success;
     glGetShaderiv(a_Shader, GL_COMPILE_STATUS, &success);
@@ -25,7 +25,7 @@ bool tabi::graphics::helpers::CheckShaderLoadError(unsigned int a_Shader)
     return success;
 }
 
-bool tabi::graphics::helpers::CheckShaderProgramError(unsigned int a_Program)
+bool tabi::graphics::helpers::CheckShaderProgramSuccess(unsigned int a_Program)
 {
     int success;
     glGetProgramiv(a_Program, GL_LINK_STATUS, &success);

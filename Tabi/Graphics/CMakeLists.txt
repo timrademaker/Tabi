@@ -9,6 +9,7 @@ set(HEADERS
     inc/IRenderer.h
     inc/IContext.h
     inc/ISampler.h
+    inc/IShader.h
 )
 
 # Set sources for Graphics
@@ -18,6 +19,7 @@ set(SOURCES
     src/IContext.cpp
     src/IWindow.cpp
     src/ISampler.cpp
+    src/IShader.cpp
 )
 
 if(WINDOWS)
@@ -34,6 +36,7 @@ if(WINDOWS)
             inc/Windows/OpenGL/OpenGLContext.h
             inc/Windows/OpenGL/OpenGLRenderer.h
             inc/Windows/OpenGL/OpenGLSampler.h
+            inc/Windows/OpenGL/OpenGLShader.h
             inc/Windows/OpenGL/OpenGLHelpers.h
         )
     
@@ -41,6 +44,7 @@ if(WINDOWS)
             src/Windows/OpenGL/OpenGLContext.cpp
             src/Windows/OpenGL/OpenGLRenderer.cpp
             src/Windows/OpenGL/OpenGLSampler.cpp
+            src/Windows/OpenGL/OpenGLShader.cpp
             src/Windows/OpenGL/OpenGLHelpers.cpp
         )
     endif()

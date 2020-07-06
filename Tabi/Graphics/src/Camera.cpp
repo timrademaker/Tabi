@@ -37,6 +37,11 @@ tabi::vec3 tabi::Camera::GetPosition() const
 
 tabi::vec3 tabi::Camera::GetEulerRotation() const
 {
+    return tabi::vec3(RadToDeg(m_Rotation.x), RadToDeg(m_Rotation.y), RadToDeg(m_Rotation.z));
+}
+
+tabi::vec3 tabi::Camera::GetRotation() const
+{
     return m_Rotation;
 }
 
@@ -70,19 +75,31 @@ void tabi::Camera::SetFoV(const float a_FoV)
     m_ProjectionDirty = true;
 }
 
+tabi::vec3 tabi::Camera::GetForward() const
+{
+    tabi::vec3 dir;
+    dir.x = cos(m_Rotation.y) * cos(m_Rotation.x);
+    dir.y = sin(m_Rotation.x);
+    dir.z = sin(m_Rotation.y) * cos(m_Rotation.x);
+    dir.Normalize();
+    return dir;
+}
+
+tabi::vec3 tabi::Camera::GetRight() const
+{
+    return tabi::vec3::Normalize(tabi::vec3::Cross(GetForward(), tabi::vec3(0.0f, 1.0f, 0.0f)));
+}
+
+tabi::vec3 tabi::Camera::GetUp() const
+{
+    return tabi::vec3::Normalize(tabi::vec3::Cross(GetRight(), GetForward()));
+}
+
 void tabi::Camera::GenerateView()
 {
     if (m_ViewDirty)
     {
-        tabi::mat4 translation = tabi::mat4::Identity();
-        translation.Translate(-m_Position);
-
-        tabi::mat4 rotation = tabi::mat4::Identity();
-        rotation.RotateX(m_Rotation.x);
-        rotation.RotateY(m_Rotation.y);
-        rotation.RotateZ(m_Rotation.z);
-
-        m_View = mat4::CreateTransformationMatrix(translation, mat4::Identity(), rotation);
+        m_View = mat4::CreateLookAtMatrix(m_Position, m_Position + GetForward(), tabi::vec3(0, 1, 0));
 
         m_ViewDirty = false;
     }

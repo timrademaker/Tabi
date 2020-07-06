@@ -51,6 +51,11 @@ namespace tabi
          * @returns The rotation of the camera
          */
         tabi::vec3 GetEulerRotation() const;
+        /**
+         * @brief Get the current rotation of the camera in radians
+         * @returns The rotation of the camera
+         */
+        tabi::vec3 GetRotation() const;
 
         /**
          * @brief Get the current view matrix of the camera
@@ -78,6 +83,10 @@ namespace tabi
          * @params a_FoV The new FoV of the camera (in radians)
          */
         void SetFoV(const float a_FoV);
+
+        tabi::vec3 GetForward() const;
+        tabi::vec3 GetRight() const;
+        tabi::vec3 GetUp() const;
 
     private:
         void GenerateView();

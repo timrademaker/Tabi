@@ -233,13 +233,14 @@ mat4 tabi::mat4::CreatePerspectiveProjectionMatrix(const float a_FoV, const floa
     return result;
 }
 
+// RHS lookat
 mat4 tabi::mat4::CreateLookAtMatrix(const vec3& a_Eye, const vec3& a_Target, const vec3& a_Up)
 {
     mat4 result = mat4::Identity();
 
-    vec3 forward = vec3::Normalize(a_Eye - a_Target);
-    vec3 right = vec3::Normalize(vec3::Cross(a_Up, forward));
-    vec3 up = vec3::Cross(forward, right);
+    vec3 forward = vec3::Normalize(a_Target - a_Eye);
+    vec3 right = vec3::Normalize(vec3::Cross(forward, a_Up));
+    vec3 up = vec3::Cross(right, forward);
 
     result.m[0][0] = right.x;
     result.m[1][0] = right.y;
@@ -247,13 +248,13 @@ mat4 tabi::mat4::CreateLookAtMatrix(const vec3& a_Eye, const vec3& a_Target, con
     result.m[0][1] = up.x;
     result.m[1][1] = up.y;
     result.m[2][1] = up.z;
-    result.m[0][2] = forward.x;
-    result.m[1][2] = forward.y;
-    result.m[2][2] = forward.z;
+    result.m[0][2] = -forward.x;
+    result.m[1][2] = -forward.y;
+    result.m[2][2] = -forward.z;
 
-    mat4 translation = mat4::Identity();
-    translation.Translate(-a_Eye);
-    result *= translation;
+    result.m[3][0] = -vec3::Dot(right, a_Eye);
+    result.m[3][1] = -vec3::Dot(up, a_Eye);
+    result.m[3][2] =  vec3::Dot(forward, a_Eye);
 
     return result;
 }

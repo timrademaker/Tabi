@@ -28,6 +28,10 @@ public:
     void Update(float a_DeltaTime);
     
 
+private:
+    void ConstrainRotation();
+
+public:
     tabi::shared_ptr<tabi::Camera> m_Camera;
 
     float m_DeltaTime;

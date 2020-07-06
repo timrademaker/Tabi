@@ -22,6 +22,6 @@ namespace tabi
     private:
         unsigned int m_ShaderProgram;
 
-        static tabi::map<tabi::string, int> ms_KnownUniformLocations;
+        tabi::map<tabi::string, int> m_KnownUniformLocations;
     };
 }

@@ -10,8 +10,6 @@
 
 #include <glad/glad.h>
 
-tabi::map<tabi::string, int> tabi::Shader::ms_KnownUniformLocations;
-
 bool tabi::Shader::UseShader()
 {
     if (!tabi::graphics::IRenderer::GetInstance().HasBeenInitialized())
@@ -88,15 +86,15 @@ bool tabi::Shader::Initialize(const char* a_VertexShaderString, const size_t a_V
 
 int tabi::Shader::GetUniformLocation(const char* a_UniformName)
 {
-    auto iter = ms_KnownUniformLocations.find(a_UniformName);
-    if (iter != ms_KnownUniformLocations.end())
+    auto iter = m_KnownUniformLocations.find(a_UniformName);
+    if (iter != m_KnownUniformLocations.end())
     {
         return iter->second;
     }
     else
     {
         const GLint loc = glGetUniformLocation(m_ShaderProgram, a_UniformName);   
-        ms_KnownUniformLocations.emplace(tabi::make_pair(a_UniformName, loc));
+        m_KnownUniformLocations.emplace(tabi::make_pair(a_UniformName, loc));
 
         tabi::graphics::helpers::CheckForErrors();
         return loc;

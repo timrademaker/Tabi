@@ -10,9 +10,25 @@ namespace tabi
         // No virtual function to handle messages - this could differ per platform. Application should deal with making sure the correct function is called, with the correct arguments.
         virtual void Update() = 0;
 
+        /**
+        * @brief Binds a button in the input handler (i.e. makes sure the button state will be checked on update)
+        * @params a_Button The button identifier of the button to bind
+        */
         virtual void BindButton(unsigned int a_Button) = 0;
+        /**
+        * @brief Unbinds a button in the input handler (i.e. could make sure the button state is no longer checked on update)
+        * @params a_Button The button identifier of the button to unbind
+        */
         virtual void UnbindButton(unsigned int a_Button) = 0;
+        /**
+        * @brief Binds an axis in the input handler (i.e. makes sure the axis state will be checked on update)
+        * @params a_Axis The axis identifier of the axis to bind
+        */
         virtual void BindAxis(unsigned int a_Axis) = 0;
+        /**
+        * @brief Unbinds an axis in the input handler (i.e. could make sure the axis state is no longer checked on update)
+        * @params a_Button The axis identifier of the axis to unbind
+        */
         virtual void UnbindAxis(unsigned int a_Axis) = 0;
 
         /**

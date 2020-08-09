@@ -20,10 +20,26 @@ namespace tabi
         DelegateBase() = default;
         ~DelegateBase() = default;
 
-        void Add(UserClass* a_Object, DelegateType a_Func);
+        /**
+        * @brief Subscribe an object to an event
+        * @params a_Object The object subscribing to the event
+        * @params a_Callback The callback function to send events to
+        */
+        void Add(UserClass* a_Object, DelegateType a_Callback);
+        /**
+        * @brief Unsubscribes an object from events
+        * @params a_Object The object to unsubscribe
+        */
         void Remove(UserClass* a_Object);
+        /**
+        * @brief Removes all subscribers
+        */
         void RemoveAll();
 
+        /**
+        * @brief Broadcasts an event to all subscribers
+        * @params a_Args The values sent to all subscribers' callback functions
+        */
         void Broadcast(DelegateArgs... a_Args);
 
     private:
@@ -33,9 +49,9 @@ namespace tabi
 
 
     template<typename ...DelegateArgs>
-    inline void DelegateBase<DelegateArgs...>::Add(UserClass* a_Object, DelegateType a_Func)
+    inline void DelegateBase<DelegateArgs...>::Add(UserClass* a_Object, DelegateType a_Callback)
     {
-        m_Delegates[a_Object].push_back(a_Func);
+        m_Delegates[a_Object].push_back(a_Callback);
     }
 
 

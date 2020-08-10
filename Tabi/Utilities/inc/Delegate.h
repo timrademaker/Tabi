@@ -7,6 +7,19 @@
 #define DECLARE_DELEGATE(DelegateName, ...) \
     using DelegateName = tabi::DelegateBase<__VA_ARGS__>;
 
+/**
+* @brief Helper macros to subscribe to events
+* @params Subscriber The object subscribing to the event
+* @params Callback The callback function to send events to
+*/
+#define Subscribe(Subscriber, Callback)             Add(&Subscriber, std::bind(&Callback, &Subscriber))
+#define Subscribe_OneParam(Subscriber, Callback)    Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1))
+#define Subscribe_TwoParams(Subscriber, Callback)   Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2))
+#define Subscribe_ThreeParams(Subscriber, Callback) Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
+#define Subscribe_FourParams(Subscriber, Callback)  Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4))
+#define Subscribe_FiveParams(Subscriber, Callback)  Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))
+#define Subscribe_SixParams(Subscriber, Callback)   Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6))
+
 namespace tabi
 {
     template<typename... DelegateArgs>

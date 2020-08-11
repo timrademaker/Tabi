@@ -40,10 +40,19 @@ namespace tabi
         */
         void Add(UserClass* a_Object, DelegateType a_Callback);
         /**
+        * @brief Subscribe a static function to an event
+        * @params a_Callback The callback function to send events to
+        */
+        void AddStatic(DelegateType a_Callback);
+        /**
         * @brief Unsubscribes an object from events
         * @params a_Object The object to unsubscribe
         */
         void Remove(UserClass* a_Object);
+        /**
+        * @brief Removes all static subscribers
+        */
+        void RemoveStatic();
         /**
         * @brief Removes all subscribers
         */
@@ -64,7 +73,23 @@ namespace tabi
     template<typename ...DelegateArgs>
     inline void DelegateBase<DelegateArgs...>::Add(UserClass* a_Object, DelegateType a_Callback)
     {
-        m_Delegates[a_Object].push_back(a_Callback);
+        if (a_Callback)
+        {
+            m_Delegates[a_Object].push_back(a_Callback);
+        }
+#if defined(_DEBUG)
+        else
+        {
+            tabi::logger::TabiWarn("[Delegate] Trying to add a callback that isn't valid!");
+        }
+#endif
+
+    }
+
+    template<typename ...DelegateArgs>
+    inline void DelegateBase<DelegateArgs...>::AddStatic(DelegateType a_Callback)
+    {
+        return Add(nullptr, a_Callback);
     }
 
 
@@ -79,9 +104,15 @@ namespace tabi
 #if defined(_DEBUG)
         else
         {
-            tabi::logger::TabiWarn("Tried to unbind a delegate, but nothing was bound!");
+            tabi::logger::TabiWarn("Tried to unbind all delegates from an object, but nothing was bound!");
         }
 #endif
+    }
+
+    template<typename ...DelegateArgs>
+    inline void DelegateBase<DelegateArgs...>::RemoveStatic()
+    {
+        return Remove(nullptr);
     }
 
     template<typename ...DelegateArgs>

@@ -4,37 +4,32 @@
 
 #include <functional>
 
-#define DECLARE_DELEGATE(DelegateName, ...) \
-    using DelegateName = tabi::DelegateBase<__VA_ARGS__>;
+#define DECLARE_DELEGATE(DelegateName, EventClass) \
+    using DelegateName = tabi::DelegateBase<EventClass>
 
 /**
 * @brief Helper macros to subscribe to events
 * @params Subscriber The object subscribing to the event
 * @params Callback The callback function to send events to
 */
-#define Subscribe(Subscriber, Callback)             Add(&Subscriber, std::bind(&Callback, &Subscriber))
-#define Subscribe_OneParam(Subscriber, Callback)    Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1))
-#define Subscribe_TwoParams(Subscriber, Callback)   Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2))
-#define Subscribe_ThreeParams(Subscriber, Callback) Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3))
-#define Subscribe_FourParams(Subscriber, Callback)  Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4))
-#define Subscribe_FiveParams(Subscriber, Callback)  Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5))
-#define Subscribe_SixParams(Subscriber, Callback)   Add(&Subscriber, std::bind(&Callback, &Subscriber, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6))
+#define Subscribe(Subscriber, Callback)             Add(&Subscriber, std::bind(&Callback, Subscriber))
+#define Subscribe_OneParam(Subscriber, Callback)    Add(&Subscriber, std::bind(&Callback, Subscriber, std::placeholders::_1))
 
 namespace tabi
 {
-    template<typename... DelegateArgs>
+    template<typename EventInfo>
     class DelegateBase
     {
         using UserClass = void;
 
-        using DelegateType = std::function<void(DelegateArgs...)>;
+        using DelegateType = std::function<void(EventInfo)>;
         using DelegateMap = tabi::unordered_map<UserClass*, tabi::vector<DelegateType>>;
     public:
         DelegateBase() = default;
         ~DelegateBase() = default;
 
         /**
-        * @brief Subscribe an object to an event
+        * @brief Subscribe an object to an event. Note: It is easier to use the Subscribe-macro rather than this function directly
         * @params a_Object The object subscribing to the event
         * @params a_Callback The callback function to send events to
         */
@@ -60,9 +55,9 @@ namespace tabi
 
         /**
         * @brief Broadcasts an event to all subscribers
-        * @params a_Args The values sent to all subscribers' callback functions
+        * @params a_Event The message sent to all subscribers' callback functions
         */
-        void Broadcast(DelegateArgs... a_Args);
+        void Broadcast(EventInfo a_Event = {});
 
     private:
         DelegateMap m_Delegates;
@@ -70,8 +65,8 @@ namespace tabi
     };
 
 
-    template<typename ...DelegateArgs>
-    inline void DelegateBase<DelegateArgs...>::Add(UserClass* a_Object, DelegateType a_Callback)
+    template<typename EventInfo>
+    inline void DelegateBase<EventInfo>::Add(UserClass* a_Object, DelegateType a_Callback)
     {
         if (a_Callback)
         {
@@ -86,15 +81,15 @@ namespace tabi
 
     }
 
-    template<typename ...DelegateArgs>
-    inline void DelegateBase<DelegateArgs...>::AddStatic(DelegateType a_Callback)
+    template<typename EventInfo>
+    inline void DelegateBase<EventInfo>::AddStatic(DelegateType a_Callback)
     {
         return Add(nullptr, a_Callback);
     }
 
 
-    template<typename ...DelegateArgs>
-    inline void DelegateBase<DelegateArgs...>::Remove(UserClass* a_Object)
+    template<typename EventInfo>
+    inline void DelegateBase<EventInfo>::Remove(UserClass* a_Object)
     {
         auto iter = m_Delegates.find(a_Object);
         if (iter != m_Delegates.end())
@@ -109,27 +104,30 @@ namespace tabi
 #endif
     }
 
-    template<typename ...DelegateArgs>
-    inline void DelegateBase<DelegateArgs...>::RemoveStatic()
+    template<typename EventInfo>
+    inline void DelegateBase<EventInfo>::RemoveStatic()
     {
         return Remove(nullptr);
     }
 
-    template<typename ...DelegateArgs>
-    inline void DelegateBase<DelegateArgs...>::RemoveAll()
+    template<typename EventInfo>
+    inline void DelegateBase<EventInfo>::RemoveAll()
     {
         m_Delegates.clear();
     }
 
-    template<typename ...DelegateArgs>
-    inline void DelegateBase<DelegateArgs...>::Broadcast(DelegateArgs ...a_Args)
+    template<typename EventInfo>
+    inline void DelegateBase<EventInfo>::Broadcast(EventInfo a_Event)
     {
         for (auto iter = m_Delegates.begin(); iter != m_Delegates.end(); ++iter)
         {
             for (DelegateType& d : iter->second)
             {
-                d(a_Args...);
+                d(a_Event);
             }
         }
     }
+
+    struct EmptyEvent {};
+    using Delegate = tabi::DelegateBase<EmptyEvent>;    
 }

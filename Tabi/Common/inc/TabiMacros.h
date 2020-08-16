@@ -11,6 +11,9 @@
 
 #define TABI_ASSERT(expression) assert(expression)
 
+#define TABI_BIND(Object, Function)             std::bind(&Function, Object)
+#define TABI_BIND_OneParam(Object, Function)    std::bind(&Function, Object, std::placeholders::_1)
+
 #if defined(_MSC_VER)
 #define DISABLE_WARNING_PUSH __pragma(warning(push))
 #define DISABLE_WARNING_POP __pragma(warning(pop))

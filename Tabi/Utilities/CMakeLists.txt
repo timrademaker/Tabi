@@ -4,6 +4,7 @@ cmake_minimum_required (VERSION 3.8)
 # Set headers for ResourceManager
 set(HEADERS
     inc/TabiUtilities.h
+    inc/Delegate.h
 )
 
 # Set sources for Utilities

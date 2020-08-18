@@ -7,62 +7,32 @@
 using tabi::InputManager;
 
 
-void tabi::InputManager::BindButton(EMouse a_Button, UserClass* a_Object, ButtonHandlerSignature a_Callback)
-{
-    GetInstance().BindButtonInternal(static_cast<unsigned>(a_Button), a_Object, a_Callback);
-}
-
-void tabi::InputManager::BindButton(EKeyboard a_Button, UserClass* a_Object, ButtonHandlerSignature a_Callback)
-{
-    GetInstance().BindButtonInternal(static_cast<unsigned>(a_Button), a_Object, a_Callback);
-}
-
-void tabi::InputManager::BindButton(EController a_Button, UserClass* a_Object, ButtonHandlerSignature a_Callback)
-{
-    GetInstance().BindButtonInternal(static_cast<unsigned>(a_Button), a_Object, a_Callback);
-}
-
-void tabi::InputManager::BindAxis(EMouse a_Axis, UserClass* a_Object, AxisHandlerSignature a_Callback)
-{
-    GetInstance().BindAxisInternal(static_cast<unsigned>(a_Axis), a_Object, a_Callback);
-}
-
-void tabi::InputManager::BindAxis(EKeyboard a_Axis, UserClass* a_Object, AxisHandlerSignature a_Callback)
-{
-    GetInstance().BindAxisInternal(static_cast<unsigned>(a_Axis), a_Object, a_Callback);
-}
-
-void tabi::InputManager::BindAxis(EController a_Axis, UserClass* a_Object, AxisHandlerSignature a_Callback)
-{
-    GetInstance().BindAxisInternal(static_cast<unsigned>(a_Axis), a_Object, a_Callback);
-}
-
-void tabi::InputManager::UnbindButton(EMouse a_Button, UserClass* a_Object)
+void tabi::InputManager::UnbindButton(EMouse a_Button, void* a_Object)
 {
     GetInstance().UnbindButtonInternal(static_cast<unsigned>(a_Button), a_Object);
 }
 
-void tabi::InputManager::UnbindButton(EKeyboard a_Button, UserClass* a_Object)
+void tabi::InputManager::UnbindButton(EKeyboard a_Button, void* a_Object)
 {
     GetInstance().UnbindButtonInternal(static_cast<unsigned>(a_Button), a_Object);
 }
 
-void tabi::InputManager::UnbindButton(EController a_Button, UserClass* a_Object)
+void tabi::InputManager::UnbindButton(EController a_Button, void* a_Object)
 {
     GetInstance().UnbindButtonInternal(static_cast<unsigned>(a_Button), a_Object);
 }
 
-void tabi::InputManager::UnbindAxis(EMouse a_Axis, UserClass* a_Object)
+void tabi::InputManager::UnbindAxis(EMouse a_Axis, void* a_Object)
 {
     GetInstance().UnbindAxisInternal(static_cast<unsigned>(a_Axis), a_Object);
 }
 
-void tabi::InputManager::UnbindAxis(EKeyboard a_Axis, UserClass* a_Object)
+void tabi::InputManager::UnbindAxis(EKeyboard a_Axis, void* a_Object)
 {
     GetInstance().UnbindAxisInternal(static_cast<unsigned>(a_Axis), a_Object);
 }
 
-void tabi::InputManager::UnbindAxis(EController a_Axis, UserClass* a_Object)
+void tabi::InputManager::UnbindAxis(EController a_Axis, void* a_Object)
 {
     GetInstance().UnbindAxisInternal(static_cast<unsigned>(a_Axis), a_Object);
 }
@@ -126,14 +96,14 @@ void tabi::InputManager::SetCursorMode(bool a_Visible, bool a_CaptureCursor)
     IInputHandler::GetInstance().SetMouseCursorMode(a_Visible, a_CaptureCursor);
 }
 
-void tabi::InputManager::BindButtonInternal(unsigned int a_Button, UserClass* a_Object, ButtonHandlerSignature a_Callback)
+void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)
 {
     // TODO: If debugging, check if the callback is already registered for the object
     IInputHandler::GetInstance().BindButton(a_Button);
     m_BoundButtons[a_Button].push_back(tabi::make_pair(a_Object, a_Callback));
 };
 
-void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, UserClass* a_Object)
+void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Object)
 {
     // Check if the button is bound
     auto iter = m_BoundButtons.find(a_Button);
@@ -177,14 +147,14 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, UserClass* 
     }
 }
 
-void tabi::InputManager::BindAxisInternal(unsigned int a_Axis, UserClass* a_Object, AxisHandlerSignature a_Callback)
+void tabi::InputManager::BindAxisInternal(unsigned int a_Axis, void* a_Object, AxisHandlerSignature a_Callback)
 {
     // TODO: If debugging, check if the callback is already registered for the object
     IInputHandler::GetInstance().BindAxis(a_Axis);
     m_BoundAxes[a_Axis].push_back(tabi::make_pair(a_Object, a_Callback));
 }
 
-void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, UserClass* a_Object)
+void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
 {
     // Check if the axis is bound
     auto iter = m_BoundAxes.find(a_Axis);

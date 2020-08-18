@@ -98,7 +98,6 @@ void tabi::InputManager::SetCursorMode(bool a_Visible, bool a_CaptureCursor)
 
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)
 {
-    // TODO: If debugging, check if the callback is already registered for the object
     IInputHandler::GetInstance().BindButton(a_Button);
     m_BoundButtons[a_Button].push_back(tabi::make_pair(a_Object, a_Callback));
 };
@@ -149,7 +148,6 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
 
 void tabi::InputManager::BindAxisInternal(unsigned int a_Axis, void* a_Object, AxisHandlerSignature a_Callback)
 {
-    // TODO: If debugging, check if the callback is already registered for the object
     IInputHandler::GetInstance().BindAxis(a_Axis);
     m_BoundAxes[a_Axis].push_back(tabi::make_pair(a_Object, a_Callback));
 }

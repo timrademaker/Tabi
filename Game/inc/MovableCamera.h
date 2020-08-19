@@ -10,20 +10,20 @@ class MovableCamera
 public:
     MovableCamera();
 
-    void MoveUp(bool);
-    void MoveDown(bool);
-    void MoveLeft(bool);
-    void MoveRight(bool);
-    void MoveForward(bool);
-    void MoveBackwards(bool);
+    void MoveUp         (tabi::ButtonEvent);
+    void MoveDown       (tabi::ButtonEvent);
+    void MoveLeft       (tabi::ButtonEvent);
+    void MoveRight      (tabi::ButtonEvent);
+    void MoveForward    (tabi::ButtonEvent);
+    void MoveBackwards  (tabi::ButtonEvent);
 
-    void RotateHorizontal(float a_Curr, float a_Delta);
-    void RotateVertical(float a_Curr, float a_Delta);
+    void RotateHorizontal(tabi::AxisEvent a_Event);
+    void RotateVertical(tabi::AxisEvent a_Event);
 
-    void MoveForwardController(float a_Curr, float a_Delta);
-    void MoveRightController(float a_Curr, float a_Delta);
-    void RotateHorizontalController(float a_Curr, float a_Delta);
-    void RotateVerticalController(float a_Curr, float a_Delta);
+    void MoveForwardController      (tabi::AxisEvent a_Event);
+    void MoveRightController        (tabi::AxisEvent a_Event);
+    void RotateHorizontalController (tabi::AxisEvent a_Event);
+    void RotateVerticalController   (tabi::AxisEvent a_Event);
 
     void Update(float a_DeltaTime);
     

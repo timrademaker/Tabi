@@ -28,6 +28,12 @@ namespace tabi
         template<typename UserClass>
         void Add(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo));
         /**
+        * @brief Subscribe a callback to an event
+        * @params a_Object The object subscribing to the event
+        * @params a_Callback The callback function to send events to
+        */
+        void Add(void* a_Object, CallbackType a_Callback);
+        /**
         * @brief Subscribe an object's callback to an event
         * @params a_Object The object subscribing to the event
         * @params a_Callback The callback function to send events to
@@ -42,23 +48,30 @@ namespace tabi
         /**
         * @brief Unsubscribes an object from events
         * @params a_Object The object to unsubscribe
+        * @returns True if any callback was removed, false if none were found
         */
-        void Remove(void* a_Object);
+        bool Remove(void* a_Object);
         /**
         * @brief Removes all static subscribers
+        * @returns True if any callback was removed, false if none were found
         */
-        void RemoveStatic();
+        bool RemoveStatic();
         /**
         * @brief Removes all subscribers
         */
         void RemoveAll();
 
         /**
-        * Broadcasts an event to all subscribers. If ReturnType is bool, a return value of "true", it means the event has been consumed and should not be sent out to other delegates.
         * @brief Broadcasts an event to all subscribers
         * @params a_Event The message sent to all subscribers' callback functions
         */
         void Broadcast(EventInfo a_Event = {});
+
+        /**
+        * @brief Checks if this event has any subscribers
+        * @returns True if this event has any subscribers
+        */
+        bool HasSubscribers();
 
     private:
         /**
@@ -85,6 +98,12 @@ namespace tabi
     }
 
     template<typename EventInfo>
+    inline void EventBase<EventInfo>::Add(void* a_Object, CallbackType a_Callback)
+    {
+        Add_Internal(a_Object, a_Callback);
+    }
+
+    template<typename EventInfo>
     template<typename UserClass>
     inline void tabi::EventBase<EventInfo>::Add(UserClass* a_Object, void(UserClass::* a_Callback)())
     {
@@ -103,12 +122,13 @@ namespace tabi
 
 
     template<typename EventInfo>
-    inline void EventBase<EventInfo>::Remove(void* a_Object)
+    inline bool EventBase<EventInfo>::Remove(void* a_Object)
     {
         auto iter = m_Callbacks.find(a_Object);
         if (iter != m_Callbacks.end())
         {
             m_Callbacks.erase(iter);
+            return true;
         }
 #if defined(_DEBUG)
         else
@@ -116,10 +136,11 @@ namespace tabi
             tabi::logger::TabiWarn("Tried to unbind all delegates from an object, but nothing was bound!");
         }
 #endif
+        return false;
     }
 
     template<typename EventInfo>
-    inline void EventBase<EventInfo>::RemoveStatic()
+    inline bool EventBase<EventInfo>::RemoveStatic()
     {
         return Remove(nullptr);
     }
@@ -143,6 +164,12 @@ namespace tabi
     }
 
     template<typename EventInfo>
+    inline bool EventBase<EventInfo>::HasSubscribers()
+    {
+        return m_Callbacks.size() > 0;
+    }
+
+    template<typename EventInfo>
     inline void EventBase<EventInfo>::Add_Internal(void* a_Object, CallbackType a_Callback)
     {
         if (a_Callback)
@@ -158,5 +185,5 @@ namespace tabi
     }
 
     struct EmptyEvent {};
-    using Delegate = tabi::EventBase<EmptyEvent>;
+    using Event = tabi::EventBase<EmptyEvent>;
 }

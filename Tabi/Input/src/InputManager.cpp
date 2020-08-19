@@ -73,10 +73,7 @@ void InputManager::Update()
         bool downLastFrame = false;
         if (handler.IsButtonDown(buttonIter->first, &downLastFrame))
         {
-            for (auto& callbackPair : buttonIter->second)
-            {                
-                callbackPair.second(downLastFrame);
-            }
+            buttonIter->second.Broadcast(tabi::ButtonEvent{ downLastFrame });
         }
     }
 
@@ -84,10 +81,7 @@ void InputManager::Update()
     {
         float delta = 0.0f;
         float val = handler.GetAxisValue(axisIter->first, &delta);
-        for (auto& callbackPair : axisIter->second)
-        {
-            callbackPair.second(val, delta);
-        }
+        axisIter->second.Broadcast(tabi::AxisEvent{ val, delta });
     }
 }
 
@@ -99,7 +93,7 @@ void tabi::InputManager::SetCursorMode(bool a_Visible, bool a_CaptureCursor)
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)
 {
     IInputHandler::GetInstance().BindButton(a_Button);
-    m_BoundButtons[a_Button].push_back(tabi::make_pair(a_Object, a_Callback));
+    m_BoundButtons[a_Button].Add(a_Object, a_Callback);
 };
 
 void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Object)
@@ -108,48 +102,28 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
     auto iter = m_BoundButtons.find(a_Button);
     if (iter != m_BoundButtons.end())
     {
-        // Find the object
-        auto& vec = iter->second;
-
-#if defined(_DEBUG)
-        bool foundAny = false;
-#endif
-
-        for (size_t i = 0; i < vec.size(); ++i)
-        {
-            if (vec.at(i).first == a_Object)
-            {
-                // Move value to the end before removing
-                std::swap(vec.at(i), vec.back());
-                vec.pop_back();
-
-#if defined(_DEBUG)
-                foundAny = true;
-#endif
-                break;
-            }
-        }
+        auto& buttonEvent = iter->second;
+        bool foundAny = buttonEvent.Remove(a_Object);
 
 #if defined(_DEBUG)
         if (!foundAny)
         {
-            tabi::logger::TabiWarn("Unable to unbind button " + tabi::to_string(a_Button));
+            tabi::logger::TabiWarn("Unable to unbind button " + tabi::to_string(a_Button) + " as it wasn't bound");
         }
 #endif
         
-        // If the vector is empty, unbind in IInputHandler
-        if (vec.empty())
+        // If there's no more subscribers, unbind in IInputHandler
+        if (!buttonEvent.HasSubscribers())
         {
             IInputHandler::GetInstance().UnbindButton(a_Button);
         }
-
     }
 }
 
 void tabi::InputManager::BindAxisInternal(unsigned int a_Axis, void* a_Object, AxisHandlerSignature a_Callback)
 {
     IInputHandler::GetInstance().BindAxis(a_Axis);
-    m_BoundAxes[a_Axis].push_back(tabi::make_pair(a_Object, a_Callback));
+    m_BoundAxes[a_Axis].Add(a_Object, a_Callback);
 }
 
 void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
@@ -158,41 +132,21 @@ void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
     auto iter = m_BoundAxes.find(a_Axis);
     if (iter != m_BoundAxes.end())
     {
-        // Find the object
-        auto& vec = iter->second;
-
-#if defined(_DEBUG)
-        bool foundAny = false;
-#endif
-
-        for (size_t i = 0; i < vec.size(); ++i)
-        {
-            if (vec.at(i).first == a_Object)
-            {
-                // Move value to the end before removing
-                std::swap(vec.at(i), vec.back());
-                vec.pop_back();
-
-#if defined(_DEBUG)
-                foundAny = true;
-#endif
-                break;
-            }
-        }
+        auto& axisEvent = iter->second;
+        bool foundAny = axisEvent.Remove(a_Object);
 
 #if defined(_DEBUG)
         if (!foundAny)
         {
-            tabi::logger::TabiWarn("Unable to unbind axis " + tabi::to_string(a_Axis));
+            tabi::logger::TabiWarn("Unable to unbind axis " + tabi::to_string(a_Axis) + " as it wasn't bound");
         }
 #endif
 
-        // If the vector is empty, unbind in IInputHandler
-        if (vec.empty())
+        // If there's no more subscribers, unbind in IInputHandler
+        if (!axisEvent.HasSubscribers())
         {
             IInputHandler::GetInstance().UnbindAxis(a_Axis);
         }
-
     }
 }
 

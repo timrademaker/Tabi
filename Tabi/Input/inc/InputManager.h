@@ -1,6 +1,8 @@
 #pragma once
 
 #include <TabiContainers.h>
+#include <TabiEvent.h>
+
 #include <functional>
 
 namespace tabi
@@ -9,14 +11,31 @@ namespace tabi
     enum class EKeyboard;
     enum class EController;
 
+    struct ButtonEvent
+    {
+        /// True if the button went down between last frame and this frame
+        bool m_FirstDown;
+    };
+
+    struct AxisEvent
+    {
+        /// The current position on the axis, in range [-1.0, 1.0]
+        float m_AxisValue;
+        /// The difference in position on the axis between the previous frame and this frame
+        float m_Delta;
+    };
+
     class InputManager
     {
+        DECLARE_EVENT(ButtonCallbackEvent, ButtonEvent);
+        DECLARE_EVENT(AxisCallbackEvent, AxisEvent);
+
         // TODO: Change the vector of pairs to a(n unordered) set (First test if this is slower, as iterating through a set is generally slower than through vectors)
-        using ButtonHandlerSignature = std::function<void(bool a_First)>;
-        using BoundButtonMap = tabi::unordered_map<unsigned int, tabi::vector<tabi::pair<void*, ButtonHandlerSignature>>>;
+        using ButtonHandlerSignature = std::function<void(ButtonEvent)>;
+        using BoundButtonMap = tabi::unordered_map<unsigned int, ButtonCallbackEvent>;
         
-        using AxisHandlerSignature = std::function<void(float a_AxisValue, float a_Delta)>;
-        using BoundAxesMap = tabi::unordered_map<unsigned int, tabi::vector<tabi::pair<void*, AxisHandlerSignature>>>;
+        using AxisHandlerSignature = std::function<void(AxisEvent)>;
+        using BoundAxesMap = tabi::unordered_map<unsigned int, AxisCallbackEvent>;
 
     public:
         /**
@@ -26,11 +45,11 @@ namespace tabi
         * @params a_Callback The function that should be called when the specified button is pressed
         */
         template<typename UserClass>
-        static void BindButton(EMouse a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(bool a_First));
+        static void BindButton(EMouse a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(ButtonEvent));
         template<typename UserClass>
-        static void BindButton(EKeyboard a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(bool a_First));
+        static void BindButton(EKeyboard a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(ButtonEvent));
         template<typename UserClass>
-        static void BindButton(EController a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(bool a_First));
+        static void BindButton(EController a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(ButtonEvent));
 
         /**
         * @brief Bind an object to receive events if a specific axis is moved
@@ -39,11 +58,11 @@ namespace tabi
         * @params a_Callback The function that should be called when the specified axis is moved
         */
         template<typename UserClass>
-        static void BindAxis(EMouse a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(float a_AxisValue, float a_Delta));
+        static void BindAxis(EMouse a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(AxisEvent));
         template<typename UserClass>
-        static void BindAxis(EKeyboard a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(float a_AxisValue, float a_Delta));
+        static void BindAxis(EKeyboard a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(AxisEvent));
         template<typename UserClass>
-        static void BindAxis(EController a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(float a_AxisValue, float a_Delta));
+        static void BindAxis(EController a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(AxisEvent));
 
         /**
         * @brief Unbind a specific button for an object
@@ -113,44 +132,44 @@ namespace tabi
     };
 
     template<typename UserClass>
-    inline void InputManager::BindButton(EMouse a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(bool a_First))
+    inline void InputManager::BindButton(EMouse a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(ButtonEvent))
     {
         auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1);
         GetInstance().BindButtonInternal(static_cast<unsigned>(a_Button), a_Object, boundFunction);
     }
 
     template<typename UserClass>
-    inline void InputManager::BindButton(EKeyboard a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(bool a_First))
+    inline void InputManager::BindButton(EKeyboard a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(ButtonEvent))
     {
         auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1);
         GetInstance().BindButtonInternal(static_cast<unsigned>(a_Button), a_Object, boundFunction);
     }
 
     template<typename UserClass>
-    inline void InputManager::BindButton(EController a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(bool a_First))
+    inline void InputManager::BindButton(EController a_Button, UserClass* a_Object, void(UserClass::* a_Callback)(ButtonEvent))
     {
         auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1);
         GetInstance().BindButtonInternal(static_cast<unsigned>(a_Button), a_Object, boundFunction);
     }
 
     template<typename UserClass>
-    inline void InputManager::BindAxis(EMouse a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(float a_AxisValue, float a_Delta))
+    inline void InputManager::BindAxis(EMouse a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(AxisEvent))
     {
-        auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1, std::placeholders::_2);
+        auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1);
         GetInstance().BindAxisInternal(static_cast<unsigned>(a_Axis), a_Object, boundFunction);
     }
 
     template<typename UserClass>
-    inline void InputManager::BindAxis(EKeyboard a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(float a_AxisValue, float a_Delta))
+    inline void InputManager::BindAxis(EKeyboard a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(AxisEvent))
     {
-        auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1, std::placeholders::_2);
+        auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1);
         GetInstance().BindAxisInternal(static_cast<unsigned>(a_Axis), a_Object, boundFunction);
     }
 
     template<typename UserClass>
-    inline void InputManager::BindAxis(EController a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(float a_AxisValue, float a_Delta))
+    inline void InputManager::BindAxis(EController a_Axis, UserClass* a_Object, void(UserClass::* a_Callback)(AxisEvent))
     {
-        auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1, std::placeholders::_2);
+        auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1);
         GetInstance().BindAxisInternal(static_cast<unsigned>(a_Axis), a_Object, boundFunction);
     }
 

@@ -27,8 +27,9 @@ namespace tabi
         * @params a_Object The object subscribing to the event
         * @params a_Callback The callback function to send events to
         */
-        template<typename UserClass>
-        void Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo));
+        template<typename UserClass, typename T = EventInfo>
+        typename typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type 
+            Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo));
         /**
         * @brief Subscribe a callback to an event
         * @params a_Object The object subscribing to the event
@@ -40,8 +41,9 @@ namespace tabi
         * @params a_Object The object subscribing to the event
         * @params a_Callback The callback function to send events to
         */
-        template<typename UserClass>
-        void Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)());
+        template<typename UserClass, typename T = EventInfo>
+        typename typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type 
+            Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)());
         /**
         * @brief Subscribe a static function to an event
         * @params a_Callback The callback function to send events to
@@ -95,12 +97,12 @@ namespace tabi
     };
 
     template<typename EventInfo>
-    template<typename UserClass>
-    inline void tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo))
+    template<typename UserClass, typename T>
+    inline typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo))
     {
         assert(a_Object);
         assert(a_Callback);
-
+    
         auto bound = std::bind(a_Callback, a_Object, std::placeholders::_1);
         Subscribe_Internal(a_Object, bound);
     }
@@ -112,8 +114,8 @@ namespace tabi
     }
 
     template<typename EventInfo>
-    template<typename UserClass>
-    inline void tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)())
+    template<typename UserClass, typename T>
+    inline typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)())
     {
         assert(a_Object);
         assert(a_Callback);

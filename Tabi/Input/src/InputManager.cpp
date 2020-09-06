@@ -93,7 +93,7 @@ void tabi::InputManager::SetCursorMode(bool a_Visible, bool a_CaptureCursor)
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)
 {
     IInputHandler::GetInstance().BindButton(a_Button);
-    m_BoundButtons[a_Button].Add(a_Object, a_Callback);
+    m_BoundButtons[a_Button].Subscribe(a_Object, a_Callback);
 };
 
 void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Object)
@@ -103,7 +103,7 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
     if (iter != m_BoundButtons.end())
     {
         auto& buttonEvent = iter->second;
-        bool foundAny = buttonEvent.Remove(a_Object);
+        bool foundAny = buttonEvent.Unsubscribe(a_Object);
 
 #if defined(_DEBUG)
         if (!foundAny)
@@ -123,7 +123,7 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
 void tabi::InputManager::BindAxisInternal(unsigned int a_Axis, void* a_Object, AxisHandlerSignature a_Callback)
 {
     IInputHandler::GetInstance().BindAxis(a_Axis);
-    m_BoundAxes[a_Axis].Add(a_Object, a_Callback);
+    m_BoundAxes[a_Axis].Subscribe(a_Object, a_Callback);
 }
 
 void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
@@ -133,7 +133,7 @@ void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
     if (iter != m_BoundAxes.end())
     {
         auto& axisEvent = iter->second;
-        bool foundAny = axisEvent.Remove(a_Object);
+        bool foundAny = axisEvent.Unsubscribe(a_Object);
 
 #if defined(_DEBUG)
         if (!foundAny)

@@ -3,8 +3,14 @@ cmake_minimum_required (VERSION 3.8)
 
 # Set headers for ECS
 set(HEADERS
+    inc/IComponentArray.h
+    inc/ComponentArray.h
+    inc/ComponentManager.h
+    inc/ECS_Constants.h
     inc/Entity.h
     inc/EntityManager.h
+    inc/ISystem.h
+    inc/SystemManager.h
 )
 
 # Set sources for ECS

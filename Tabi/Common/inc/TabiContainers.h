@@ -42,4 +42,7 @@ namespace tabi
 
     template<typename T, size_t Size>
     using array = std::array < T, Size>;
+
+    template<size_t Bits>
+    using bitset = std::bitset<Bits>;
 }

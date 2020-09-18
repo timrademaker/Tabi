@@ -1,11 +1,19 @@
 #pragma once
 
-#include <bitset>
+#include "ECS_Constants.h"
+
+#include <TabiContainers.h>
 
 namespace tabi
 {
-    constexpr size_t MAX_COMPONENTS = 32;
+    class Entity
+    {
+    public:
+        using ID_t = size_t;
 
-    using Entity = size_t;
-    using EntitySignature = std::bitset<MAX_COMPONENTS>;
+    public:
+        ID_t m_ID;
+    };
+    
+    using EntitySignature = tabi::bitset<MAX_COMPONENTS>;
 }

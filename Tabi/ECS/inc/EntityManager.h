@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "ECS_Constants.h"
 
 #include <TabiContainers.h>
 
@@ -8,9 +9,6 @@ namespace tabi
 {
     class EntityManager
     {
-        /// The maximum number of entities that can exist at a time
-        static constexpr size_t MAX_ENTITIES = 1024;
-
     public:
         // Fill the available ID list
         EntityManager();
@@ -41,7 +39,7 @@ namespace tabi
 
     public:
         tabi::array<EntitySignature, MAX_ENTITIES> m_Entities;
-        tabi::queue<size_t> m_AvailableIDs;
+        tabi::queue<Entity::ID_t> m_AvailableIDs;
         size_t m_LivingEntityCount;
     };
 }

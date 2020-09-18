@@ -3,6 +3,7 @@
 #include "ECS_Constants.h"
 
 #include <TabiContainers.h>
+#include "TabiMacros.h"
 
 namespace tabi
 {
@@ -11,10 +12,10 @@ namespace tabi
     class ISystem
     {
     public:
-        void OnUpdate(float a_DeltaTime);
+        virtual void OnUpdate(float a_DeltaTime) { TABI_UNUSED(a_DeltaTime); }
 
     public:
-        tabi::set<Entity> m_Entities;
+        tabi::set<Entity::ID_t> m_Entities;
 
         SystemSignature m_RequiredComponents;
     };

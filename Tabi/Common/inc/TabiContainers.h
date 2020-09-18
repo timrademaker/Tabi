@@ -5,6 +5,9 @@
 #include <map>
 #include <unordered_map>
 #include <utility>
+#include <array>
+#include <bitset>
+#include <queue>
 
 
 namespace tabi
@@ -33,4 +36,10 @@ namespace tabi
     {
         return std::pair<T1, T2>(std::forward<T1>(a_X), std::forward<T2>(a_Y));
     }
+
+    template<typename T, typename Container = std::deque<T>>
+    using queue = std::queue<T, Container>;
+
+    template<typename T, size_t Size>
+    using array = std::array < T, Size>;
 }

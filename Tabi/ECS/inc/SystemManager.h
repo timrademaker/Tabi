@@ -22,8 +22,10 @@ namespace tabi
         template<typename SystemType>
         void SetSystemSignature(const SystemSignature& a_Signature);
 
-        void OnEntityDestroyed(const Entity& a_Entity);
-        void OnEntitySignatureChanged(const Entity& a_Entity, EntitySignature a_Signature);
+        void OnEntityDestroyed(const Entity::ID_t a_EntityID);
+        void OnEntitySignatureChanged(const Entity::ID_t a_EntityID, EntitySignature a_Signature);
+
+        void Update(ComponentManager& a_ComponentManager, float a_DeltaTime);
 
     private:
         template<typename SystemType>
@@ -45,13 +47,13 @@ namespace tabi
         assert(m_Systems.find(hash) == m_Systems.end());
 
         auto system = tabi::make_shared<SystemType>();
-        m_Systems.insert({ hash, system });
+        m_Systems.insert(tabi::make_pair(hash, system));
 
         return system;
     }
 
     template <typename SystemType>
-    void SystemManager::SetSystemSignature(const SystemSignature& a_Signature)
+    inline void SystemManager::SetSystemSignature(const SystemSignature& a_Signature)
     {
         const SystemTypeHash hash = CreateHash<SystemType>();
 
@@ -62,7 +64,7 @@ namespace tabi
     }
 
     template <typename SystemType>
-    SystemManager::SystemTypeHash SystemManager::CreateHash()
+    inline SystemManager::SystemTypeHash SystemManager::CreateHash()
     {
         return typeid(SystemType).name();
     }

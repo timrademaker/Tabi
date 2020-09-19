@@ -16,6 +16,7 @@ set(HEADERS
 # Set sources for ECS
 set(SOURCES
     src/SystemManager.cpp
+    src/ComponentManager.cpp
 )
 
 # Add source to this project's executable.

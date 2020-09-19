@@ -7,7 +7,7 @@
 
 namespace tabi
 {
-    constexpr size_t INVALID_ENTITY_ID = -1;
+    constexpr size_t INVALID_ENTITY_ID = static_cast<size_t>(-1);
 
     class EntityManager
     {

@@ -1,14 +1,14 @@
 #pragma once
 
+#include "Entity.h"
+
 namespace tabi
 {
-    class Entity;
-
     class IComponentArray
     {
     public:
         virtual ~IComponentArray() = default;
 
-        virtual void OnEntityDestroyed(const Entity& a_Entity) = 0;
+        virtual void OnEntityDestroyed(const Entity::ID_t a_EntityID) = 0;
     };
 }

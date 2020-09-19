@@ -2,15 +2,15 @@
 
 using namespace tabi;
 
-void SystemManager::OnEntityDestroyed(const Entity& a_Entity)
+void SystemManager::OnEntityDestroyed(const Entity::ID_t a_EntityID)
 {
     for(const auto& pair : m_Systems)
     {
-        pair.second->m_Entities.erase(a_Entity.m_ID);
+        pair.second->m_Entities.erase(a_EntityID);
     }
 }
 
-void SystemManager::OnEntitySignatureChanged(const Entity& a_Entity, EntitySignature a_Signature)
+void SystemManager::OnEntitySignatureChanged(const Entity::ID_t a_EntityID, EntitySignature a_Signature)
 {
     for(const auto& pair : m_Systems)
     {
@@ -20,11 +20,19 @@ void SystemManager::OnEntitySignatureChanged(const Entity& a_Entity, EntitySigna
 
         if((a_Signature & systemSignature) == systemSignature)
         {
-            system->m_Entities.insert(a_Entity.m_ID);
+            system->m_Entities.insert(a_EntityID);
         }
         else
         {
-            system->m_Entities.erase(a_Entity.m_ID);
+            system->m_Entities.erase(a_EntityID);
         }
+    }
+}
+
+void tabi::SystemManager::Update(ComponentManager& a_ComponentManager, float a_DeltaTime)
+{
+    for (const auto& pair : m_Systems)
+    {
+        pair.second->OnUpdate(a_ComponentManager, a_DeltaTime);
     }
 }

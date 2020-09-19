@@ -2,10 +2,10 @@
 
 using namespace tabi;
 
-void tabi::ComponentManager::OnEntityDestroyed(const Entity& a_Entity)
+void tabi::ComponentManager::OnEntityDestroyed(const Entity::ID_t a_EntityID)
 {
     for (const auto& pair : m_ComponentArrays)
     {
-        pair.second->OnEntityDestroyed(a_Entity);
+        pair.second->OnEntityDestroyed(a_EntityID);
     }
 }

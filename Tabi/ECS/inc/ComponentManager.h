@@ -26,20 +26,20 @@ namespace tabi
         ComponentTypeID GetComponentType();
 
         template<typename ComponentType>
-        void AddComponent(const Entity& a_Entity, ComponentType& a_Component);
+        void AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component);
 
         template<typename ComponentType>
-        ComponentType& GetComponent(const Entity& a_Entity);
+        ComponentType& GetComponent(const Entity::ID_t a_EntityID);
 
         template<typename ComponentType>
-        void RemoveComponent(Entity& a_Entity);
+        void RemoveComponent(Entity::ID_t a_EntityID);
 
-        void OnEntityDestroyed(const Entity& a_Entity);
+        void OnEntityDestroyed(const Entity::ID_t a_EntityID);
+
+        template<typename ComponentType>
+        static ComponentTypeHash HashComponentType();
 
     private:
-        template<typename ComponentType>
-        ComponentTypeHash HashComponentType();
-
         template<typename ComponentType>
         tabi::shared_ptr<ComponentArray<ComponentType>> GetComponentArray();
 
@@ -60,7 +60,7 @@ namespace tabi
         assert(m_ComponentTypes.find(hash) == m_ComponentTypes.end());
 
         m_ComponentTypes.insert(tabi::make_pair(hash, m_NextComponentType));
-        m_ComponentArrays.insert(tabi::make_pair(hash, tabi::make_shared <ComponentArray<ComponentType>()));
+        m_ComponentArrays.insert(tabi::make_pair(hash, tabi::make_shared<ComponentArray<ComponentType>>()));
 
         ++m_NextComponentType;
     }
@@ -73,25 +73,25 @@ namespace tabi
         // Make sure the component type has been registered
         assert(m_ComponentTypes.find(hash) != m_ComponentTypes.end());
 
-        return m_ComponentArrays[hash];
+        return m_ComponentTypes[hash];
     }
 
     template<typename ComponentType>
-    inline void ComponentManager::AddComponent(const Entity& a_Entity, ComponentType& a_Component)
+    inline void ComponentManager::AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component)
     {
-        GetComponentArray<ComponentType>()->AddComponent(a_Entity, a_Component);
+        GetComponentArray<ComponentType>()->AddComponent(a_EntityID, a_Component);
     }
 
     template<typename ComponentType>
-    inline ComponentType& ComponentManager::GetComponent(const Entity& a_Entity)
+    inline ComponentType& ComponentManager::GetComponent(const Entity::ID_t a_EntityID)
     {
-        return GetComponentArray<ComponentType>()->GetComponent(a_Entity);
+        return GetComponentArray<ComponentType>()->GetComponent(a_EntityID);
     }
 
     template<typename ComponentType>
-    inline void ComponentManager::RemoveComponent(Entity& a_Entity)
+    inline void ComponentManager::RemoveComponent(Entity::ID_t a_EntityID)
     {
-        GetComponentArray<ComponentType>()->RemoveComponent(a_Entity);
+        GetComponentArray<ComponentType>()->RemoveComponent(a_EntityID);
     }
 
     template<typename ComponentType>

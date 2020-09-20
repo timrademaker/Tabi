@@ -13,7 +13,9 @@ namespace tabi
     {
     public:
         EntityManager();
-        ~EntityManager() = default;
+        EntityManager(EntityManager&) = delete;
+        EntityManager(const EntityManager&) = delete;
+        ~EntityManager() = default;        
 
         /**
          * @brief Create an entity
@@ -58,9 +60,10 @@ namespace tabi
          */
         void SetSignature(const Entity::ID_t a_EntityID, const EntitySignature& a_Signature);
 
-    public:
+    private:
+        /// The signatures of all the entities
         tabi::array<EntitySignature, MAX_ENTITIES> m_EntitySignatures;
+        /// EntityIDs which are not currently taken
         tabi::queue<Entity::ID_t> m_AvailableIDs;
-        size_t m_LivingEntityCount;
     };
 }

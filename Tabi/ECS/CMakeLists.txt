@@ -11,6 +11,7 @@ set(HEADERS
     inc/EntityManager.h
     inc/ISystem.h
     inc/SystemManager.h
+    inc/ECS.h
 )
 
 # Set sources for ECS
@@ -18,6 +19,7 @@ set(SOURCES
     src/EntityManager.cpp
     src/ComponentManager.cpp
     src/SystemManager.cpp
+    src/ECS.cpp
 )
 
 # Add source to this project's executable.

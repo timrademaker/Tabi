@@ -12,6 +12,8 @@ set(HEADERS
     inc/ISystem.h
     inc/SystemManager.h
     inc/ECS.h
+    
+    inc/Components/Transform.h
 )
 
 # Set sources for ECS
@@ -30,4 +32,4 @@ add_library(ECS EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 target_include_directories(ECS PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(ECS PUBLIC TabiCommon Logger)
+target_link_libraries(ECS PUBLIC TabiCommon Logger Math)

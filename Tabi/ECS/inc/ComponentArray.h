@@ -40,64 +40,44 @@ namespace tabi
         virtual void OnEntityDestroyed(const Entity::ID_t a_EntityID) override;
 
     private:
-        tabi::map<Entity::ID_t, size_t> m_EntityToIndex;
-        tabi::map<size_t, Entity::ID_t> m_IndexToEntity;
         tabi::array<ComponentType, MAX_ENTITIES> m_Components;
-
-        size_t m_NextComponentIndex = 0;
+        tabi::set<Entity::ID_t> m_EntitiesWithComponent;
     };
 
     template <typename ComponentType>
     void ComponentArray<ComponentType>::AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component)
     {
-        // Check if the entity already has this component
-        assert(m_EntityToIndex.find(a_EntityID) == m_EntityToIndex.end());
+        // Check if the entity alrady has this component
+        assert(m_EntitiesWithComponent.find(a_EntityID) == m_EntitiesWithComponent.end());
 
-        size_t assignedIndex = m_NextComponentIndex;
-        m_Components[assignedIndex] = a_Component;
-
-        m_EntityToIndex[a_EntityID] = assignedIndex;
-        m_IndexToEntity[assignedIndex] = a_EntityID;
-
-        ++m_NextComponentIndex;
+        m_Components[a_EntityID] = a_Component;
+        m_EntitiesWithComponent.insert(a_EntityID);
     }
 
     template <typename ComponentType>
     ComponentType& ComponentArray<ComponentType>::GetComponent(const Entity::ID_t a_EntityID)
     {
         // Check if the entity has this component
-        assert(m_EntityToIndex.find(a_EntityID) != m_EntityToIndex.end());
+        assert(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
 
-        return m_Components[m_EntityToIndex[a_EntityID]];
+        return m_Components[a_EntityID];
     }
 
     template <typename ComponentType>
     void ComponentArray<ComponentType>::RemoveComponent(const Entity::ID_t a_EntityID)
     {
         // Check if the entity has this component
-        assert(m_EntityToIndex.find(a_EntityID) != m_EntityToIndex.end());
+        assert(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
 
-        // Find index in array
-        size_t componentIndex = m_EntityToIndex[a_EntityID];
-        size_t lastComponentIndex = m_NextComponentIndex - 1;
-
-        // Move the last component to the component that is being removed
-        m_Components[componentIndex] = m_Components[lastComponentIndex];
-        size_t lastComponentOwner = m_IndexToEntity[lastComponentIndex];
-        m_EntityToIndex[lastComponentOwner] = componentIndex;
-        m_IndexToEntity[componentIndex] = lastComponentIndex;
-
-        // Remove entity from maps
-        m_EntityToIndex.erase(a_EntityID);
-        m_IndexToEntity.erase(lastComponentIndex);
-
-        --m_NextComponentIndex;
+        // Zero out memory
+        std::memset(&m_Components[a_EntityID], 0, sizeof(ComponentType));      
+        m_EntitiesWithComponent.erase(a_EntityID);
     }
 
     template <typename ComponentType>
     void ComponentArray<ComponentType>::OnEntityDestroyed(const Entity::ID_t a_EntityID)
     {
-        if(m_EntityToIndex.find(a_EntityID) != m_EntityToIndex.end())
+        if(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end())
         {
             RemoveComponent(a_EntityID);
         }

@@ -15,10 +15,26 @@ namespace tabi
     {
     public:
         ComponentArray() = default;
+        ComponentArray(ComponentArray&) = delete;
+        ComponentArray(const ComponentArray&) = delete;
         virtual ~ComponentArray() override = default;
 
+        /**
+        * @brief Add a component to an entity
+        * @params a_EntityID The ID of the entity to add the component to
+        * @params a_Component The component to add to the entity
+        */
         void AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component);
+        /**
+        * @brief Get a component from an entity
+        * @params a_EntityID The ID of the entity to retrieve the component from
+        * @returns A reference to the component attached to the entity. The reference might be invalidated whenever a component of this type is removed
+        */
         ComponentType& GetComponent(const Entity::ID_t a_EntityID);
+        /** Remove a component from an entity. This operation can invalidate references to retrieved entities.
+        * @brief Remove a component from an entity
+        * @params a_EntityID The ID of the entity to remove the component from
+        */
         void RemoveComponent(const Entity::ID_t a_EntityID);
 
         virtual void OnEntityDestroyed(const Entity::ID_t a_EntityID) override;
@@ -26,7 +42,7 @@ namespace tabi
     private:
         tabi::map<Entity::ID_t, size_t> m_EntityToIndex;
         tabi::map<size_t, Entity::ID_t> m_IndexToEntity;
-        tabi::array<ComponentType, MAX_COMPONENTS> m_Components;
+        tabi::array<ComponentType, MAX_ENTITIES> m_Components;
 
         size_t m_NextComponentIndex = 0;
     };
@@ -38,7 +54,7 @@ namespace tabi
         assert(m_EntityToIndex.find(a_EntityID) == m_EntityToIndex.end());
 
         size_t assignedIndex = m_NextComponentIndex;
-        m_Components[assignedIndex] = std::move(a_Component);
+        m_Components[assignedIndex] = a_Component;
 
         m_EntityToIndex[a_EntityID] = assignedIndex;
         m_IndexToEntity[assignedIndex] = a_EntityID;
@@ -65,10 +81,11 @@ namespace tabi
         size_t componentIndex = m_EntityToIndex[a_EntityID];
         size_t lastComponentIndex = m_NextComponentIndex - 1;
 
-        // Switch last array element with the component
+        // Move the last component to the component that is being removed
         m_Components[componentIndex] = m_Components[lastComponentIndex];
         size_t lastComponentOwner = m_IndexToEntity[lastComponentIndex];
         m_EntityToIndex[lastComponentOwner] = componentIndex;
+        m_IndexToEntity[componentIndex] = lastComponentIndex;
 
         // Remove entity from maps
         m_EntityToIndex.erase(a_EntityID);

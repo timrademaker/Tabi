@@ -29,10 +29,10 @@ void SystemManager::OnEntitySignatureChanged(const Entity::ID_t a_EntityID, Enti
     }
 }
 
-void tabi::SystemManager::Update(ComponentManager& a_ComponentManager, float a_DeltaTime)
+void tabi::SystemManager::Update(float a_DeltaTime)
 {
     for (const auto& pair : m_Systems)
     {
-        pair.second->OnUpdate(a_ComponentManager, a_DeltaTime);
+        pair.second->OnUpdate(a_DeltaTime);
     }
 }

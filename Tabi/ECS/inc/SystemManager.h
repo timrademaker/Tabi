@@ -17,7 +17,7 @@ namespace tabi
 
     public:
         template<typename SystemType>
-        tabi::shared_ptr<SystemType> RegisterSystem();
+        tabi::shared_ptr<SystemType> RegisterSystem(ComponentManager* a_ComponentManager);
 
         template<typename SystemType>
         void SetSystemSignature(const SystemSignature& a_Signature);
@@ -25,7 +25,7 @@ namespace tabi
         void OnEntityDestroyed(const Entity::ID_t a_EntityID);
         void OnEntitySignatureChanged(const Entity::ID_t a_EntityID, EntitySignature a_Signature);
 
-        void Update(ComponentManager& a_ComponentManager, float a_DeltaTime);
+        void Update(float a_DeltaTime);
 
     private:
         template<typename SystemType>
@@ -39,14 +39,14 @@ namespace tabi
     };
 
     template <typename SystemType>
-    tabi::shared_ptr<SystemType> SystemManager::RegisterSystem()
+    tabi::shared_ptr<SystemType> SystemManager::RegisterSystem(ComponentManager* a_ComponentManager)
     {
         const SystemTypeHash hash = CreateHash<SystemType>();
 
         // Check if the system has already been registered
         assert(m_Systems.find(hash) == m_Systems.end());
 
-        auto system = tabi::make_shared<SystemType>();
+        auto system = tabi::make_shared<SystemType>(a_ComponentManager);
         m_Systems.insert(tabi::make_pair(hash, system));
 
         return system;

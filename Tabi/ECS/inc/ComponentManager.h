@@ -106,7 +106,10 @@ namespace tabi
         auto hash = HashComponentType<ComponentType>();
 
         // Make sure the component type has been registered
-        assert(m_ComponentTypes.find(hash) != m_ComponentTypes.end());
+        if (m_ComponentTypes.find(hash) == m_ComponentTypes.end())
+        {
+            RegisterComponentType<ComponentType>();
+        }
 
         return tabi::static_pointer_cast<ComponentArray<ComponentType>>(m_ComponentArrays[hash]);
     }

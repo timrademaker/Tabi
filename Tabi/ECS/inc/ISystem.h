@@ -8,8 +8,6 @@
 
 namespace tabi
 {
-    using SystemSignature = bitset<MAX_COMPONENTS>;
-
     class ComponentManager;
 
     class ISystem

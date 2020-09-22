@@ -9,6 +9,8 @@
 
 namespace tabi
 {
+    using SystemSignature = bitset<MAX_COMPONENTS>;
+
     class Entity;
 
     class SystemManager
@@ -19,6 +21,8 @@ namespace tabi
         template<typename SystemType>
         tabi::shared_ptr<SystemType> RegisterSystem(ComponentManager* a_ComponentManager);
 
+        template<typename SystemType>
+        SystemSignature GetSystemSignature();
         template<typename SystemType>
         void SetSystemSignature(const SystemSignature& a_Signature);
 
@@ -50,6 +54,17 @@ namespace tabi
         m_Systems.insert(tabi::make_pair(hash, system));
 
         return system;
+    }
+
+    template<typename SystemType>
+    inline SystemSignature SystemManager::GetSystemSignature()
+    {
+        const SystemTypeHash hash = CreateHash<SystemType>();
+
+        // Check if the system exists;
+        assert(m_Systems.find(hash) != m_Systems.end());
+
+        return m_SystemSignatures[hash];
     }
 
     template <typename SystemType>

@@ -11,6 +11,9 @@ namespace tabi
     public:
         using ID_t = size_t;
 
+        bool operator==(const Entity& a_Rhs) { return m_ID == a_Rhs.m_ID; }
+        bool operator!=(const Entity& a_Rhs) { return !(m_ID == a_Rhs.m_ID); }
+
     public:
         ID_t m_ID;
     };

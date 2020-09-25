@@ -2,7 +2,8 @@
 
 #include "ECS_Constants.h"
 
-#include <cassert>
+#include <TabiMacros.h>
+
 
 using namespace tabi;
 
@@ -17,10 +18,9 @@ tabi::EntityManager::EntityManager()
 Entity tabi::EntityManager::CreateEntity()
 {
     // Make sure there's still an available ID for a new entity
-    assert(!m_AvailableIDs.empty());
+    TABI_ASSERT(!m_AvailableIDs.empty());
     
     Entity ent;
-
     ent.m_ID = m_AvailableIDs.front();
     m_AvailableIDs.pop();
 
@@ -35,7 +35,7 @@ void tabi::EntityManager::DestroyEntity(Entity& a_Entity)
 void tabi::EntityManager::DestroyEntity(Entity::ID_t& a_EntityID)
 {
     // Check if the entity ID is in range
-    assert(a_EntityID < MAX_ENTITIES);
+    TABI_ASSERT(a_EntityID < MAX_ENTITIES);
 
     m_EntitySignatures[a_EntityID].reset();
     m_AvailableIDs.push(a_EntityID);
@@ -51,7 +51,7 @@ EntitySignature tabi::EntityManager::GetSignature(const Entity& a_Entity)
 EntitySignature tabi::EntityManager::GetSignature(const Entity::ID_t a_EntityID)
 {
     // Check if the entity ID is in range
-    assert(a_EntityID < MAX_ENTITIES);
+    TABI_ASSERT(a_EntityID < MAX_ENTITIES);
 
     return m_EntitySignatures[a_EntityID];
 }
@@ -64,7 +64,7 @@ void tabi::EntityManager::SetSignature(const Entity& a_Entity, const EntitySigna
 void tabi::EntityManager::SetSignature(const Entity::ID_t a_EntityID, const EntitySignature& a_Signature)
 {
     // Check if the entity ID is in range
-    assert(a_EntityID < MAX_ENTITIES);
+    TABI_ASSERT(a_EntityID < MAX_ENTITIES);
 
     m_EntitySignatures[a_EntityID] = a_Signature;
 }

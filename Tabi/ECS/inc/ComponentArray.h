@@ -5,8 +5,8 @@
 #include "Entity.h"
 
 #include <TabiContainers.h>
+#include <TabiMacros.h>
 
-#include <cassert>
 
 namespace tabi
 {
@@ -48,7 +48,7 @@ namespace tabi
     void ComponentArray<ComponentType>::AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component)
     {
         // Check if the entity alrady has this component
-        assert(m_EntitiesWithComponent.find(a_EntityID) == m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntitiesWithComponent.find(a_EntityID) == m_EntitiesWithComponent.end());
 
         m_Components[a_EntityID] = a_Component;
         m_EntitiesWithComponent.insert(a_EntityID);
@@ -58,7 +58,7 @@ namespace tabi
     ComponentType& ComponentArray<ComponentType>::GetComponent(const Entity::ID_t a_EntityID)
     {
         // Check if the entity has this component
-        assert(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
 
         return m_Components[a_EntityID];
     }
@@ -67,7 +67,7 @@ namespace tabi
     void ComponentArray<ComponentType>::RemoveComponent(const Entity::ID_t a_EntityID)
     {
         // Check if the entity has this component
-        assert(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
 
         // Zero out memory
         std::memset(&m_Components[a_EntityID], 0, sizeof(ComponentType));      

@@ -5,7 +5,7 @@
 
 #include <TabiContainers.h>
 #include <TabiPointers.h>
-#include <cassert>
+#include <TabiMacros.h>
 
 namespace tabi
 {
@@ -48,7 +48,7 @@ namespace tabi
         const SystemTypeHash hash = CreateHash<SystemType>();
 
         // Check if the system has already been registered
-        assert(m_Systems.find(hash) == m_Systems.end());
+        TABI_ASSERT(m_Systems.find(hash) == m_Systems.end());
 
         auto system = tabi::make_shared<SystemType>(a_ComponentManager);
         m_Systems.insert(tabi::make_pair(hash, system));
@@ -62,7 +62,7 @@ namespace tabi
         const SystemTypeHash hash = CreateHash<SystemType>();
 
         // Check if the system exists;
-        assert(m_Systems.find(hash) != m_Systems.end());
+        TABI_ASSERT(m_Systems.find(hash) != m_Systems.end());
 
         return m_SystemSignatures[hash];
     }
@@ -73,7 +73,7 @@ namespace tabi
         const SystemTypeHash hash = CreateHash<SystemType>();
 
         // Check if the system exists;
-        assert(m_Systems.find(hash) != m_Systems.end());
+        TABI_ASSERT(m_Systems.find(hash) != m_Systems.end());
 
         m_SystemSignatures[hash] = a_Signature;
     }

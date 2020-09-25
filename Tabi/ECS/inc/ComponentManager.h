@@ -19,36 +19,70 @@ namespace tabi
         using ComponentTypeHash = const char*;
 
     public:
+        /**
+        * @brief Register a component type so that it can be used
+        */
         template<typename ComponentType>
         void RegisterComponentType();
 
+        /**
+        * @brief Gets the ID of a component type
+        * @returns The ID of a component type
+        */
         template<typename ComponentType>
-        ComponentTypeID GetComponentType();
+        ComponentTypeID GetComponentTypeID();
 
+        /**
+        * @brief Add a component to an entity
+        * @params a_EntityID The ID of the entity to add the component to
+        * @params a_Component The component to add to the entity
+        */
         template<typename ComponentType>
         void AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component);
 
+        /**
+        * @brief Get a component that is attached to an entity
+        * @params a_EntityID The ID of the entity to get the component from
+        */
         template<typename ComponentType>
         ComponentType& GetComponent(const Entity::ID_t a_EntityID);
 
+        /**
+        * @brief Remove a component from an entity
+        * @params a_EntityID The ID of the entity to remove the component from
+        */
         template<typename ComponentType>
         void RemoveComponent(Entity::ID_t a_EntityID);
 
+        /**
+        * @brief Called when an entity is destroyed
+        * @params a_EntityID The ID of the entity that was destroyed
+        */
         void OnEntityDestroyed(const Entity::ID_t a_EntityID);
 
+    private:
+        /**
+        * @brief Hashes a component type. The hash can be used as a key in a map
+        * @returns A hash of the component type
+        */
         template<typename ComponentType>
         static ComponentTypeHash HashComponentType();
 
-    private:
+        /**
+        * @brief Helper function to get the component array of a certain component type
+        * @returns The component array
+        */
         template<typename ComponentType>
         tabi::shared_ptr<ComponentArray<ComponentType>> GetComponentArray();
 
     private:
+        /// A map containing component type IDs belonging to component types
         tabi::map<ComponentTypeHash, ComponentTypeID> m_ComponentTypes;
+        /// A map containing component arrays
         tabi::map<ComponentTypeHash, tabi::shared_ptr<IComponentArray>> m_ComponentArrays;
 
+        /// The next available ID for new component types
         ComponentTypeID m_NextComponentType = 0;
-
     };
 
     template<typename ComponentType>
@@ -66,7 +100,7 @@ namespace tabi
     }
 
     template<typename ComponentType>
-    inline ComponentTypeID ComponentManager::GetComponentType()
+    inline ComponentTypeID ComponentManager::GetComponentTypeID()
     {
         auto hash = HashComponentType<ComponentType>();
         

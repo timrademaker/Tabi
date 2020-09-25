@@ -30,11 +30,11 @@ namespace tabi
 
         // ComponentManager
         template<typename ComponentType>
-        void AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component);
+        void AddComponent(const Entity::ID_t a_EntityID, ComponentType a_Component);
         template<typename ComponentType>
         ComponentType& GetComponent(const Entity::ID_t a_EntityID);
         template<typename ComponentType>
-        ComponentTypeID GetComponentType();
+        ComponentTypeID GetComponentTypeID();
         template<typename ComponentType>
         void RemoveComponent(Entity::ID_t a_EntityID);
 
@@ -54,12 +54,12 @@ namespace tabi
     };
 
     template<typename ComponentType>
-    inline void ECS::AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component)
+    inline void ECS::AddComponent(const Entity::ID_t a_EntityID, ComponentType a_Component)
     {
         m_ComponentManager->AddComponent(a_EntityID, a_Component);
         
         auto sig = m_EntityManager->GetSignature(a_EntityID);
-        sig.set(m_ComponentManager->GetComponentType<ComponentType>());
+        sig.set(m_ComponentManager->GetComponentTypeID<ComponentType>());
         m_EntityManager->SetSignature(a_EntityID, sig);
         
         m_SystemManager->OnEntitySignatureChanged(a_EntityID, sig);
@@ -72,9 +72,9 @@ namespace tabi
     }
 
     template<typename ComponentType>
-    inline ComponentTypeID ECS::GetComponentType()
+    inline ComponentTypeID ECS::GetComponentTypeID()
     {
-        return m_ComponentManager->GetComponentType<ComponentType>();
+        return m_ComponentManager->GetComponentTypeID<ComponentType>();
     }
 
     template<typename ComponentType>
@@ -83,7 +83,7 @@ namespace tabi
         m_ComponentManager->RemoveComponent<ComponentType>(a_EntityID);
         
         auto sig = m_EntityManager->GetSignature(a_EntityID);
-        sig.set(m_ComponentManager->GetComponentType<ComponentType>(), false);
+        sig.set(m_ComponentManager->GetComponentTypeID<ComponentType>(), false);
         m_EntityManager->SetSignature(a_EntityID, sig);
 
         m_SystemManager->OnEntitySignatureChanged(a_EntityID, sig);
@@ -101,7 +101,7 @@ namespace tabi
         auto systemSig = m_SystemManager->GetSystemSignature<SystemType>();
         
 
-        systemSig.set(m_ComponentManager->GetComponentType<ComponentType>(), a_Required);
+        systemSig.set(m_ComponentManager->GetComponentTypeID<ComponentType>(), a_Required);
         
         m_SystemManager->SetSystemSignature<SystemType>(systemSig);
     }

@@ -15,5 +15,6 @@ namespace tabi
         ID_t m_ID;
     };
     
+    /// The signature of an entity. Represents the components attached to the entity
     using EntitySignature = tabi::bitset<MAX_COMPONENTS>;
 }

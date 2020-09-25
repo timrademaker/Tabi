@@ -19,11 +19,16 @@ namespace tabi
         ISystem(const ISystem&) = delete;
         virtual ~ISystem() = default;
 
+        /**
+        * @brief Updates a system
+        * @params a_DeltaTime The time between this update and the last update
+        */
         virtual void OnUpdate(float a_DeltaTime) { TABI_UNUSED(a_DeltaTime); }
 
     public:
+        /// The entities that have the components this system requires
         tabi::set<Entity::ID_t> m_Entities;
-        /// Non-owning pointer to the component manager
+        /// Non-owning pointer to the component manager (used to retrieve components)
         ComponentManager* m_ComponentManager;
     };
 }

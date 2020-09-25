@@ -23,7 +23,7 @@ namespace tabi
         * @brief Updates a system
         * @params a_DeltaTime The time between this update and the last update
         */
-        virtual void OnUpdate(float a_DeltaTime) { TABI_UNUSED(a_DeltaTime); }
+        virtual void OnUpdate(float a_DeltaTime) = 0;
 
     public:
         /// The entities that have the components this system requires

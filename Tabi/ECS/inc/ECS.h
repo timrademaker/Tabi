@@ -9,10 +9,6 @@
 
 namespace tabi
 {
-    class EntityManager;
-    class ComponentManager;
-    class SystemManager;
-
     class ECS
     {
     public:
@@ -103,7 +99,7 @@ namespace tabi
 
         systemSig.set(m_ComponentManager->GetComponentTypeID<ComponentType>(), a_Required);
         
-        m_SystemManager->SetSystemSignature<SystemType>(systemSig);
+       SetSystemSignature<SystemType>(systemSig);
     }
     
     template<typename SystemType>

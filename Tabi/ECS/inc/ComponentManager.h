@@ -89,7 +89,7 @@ namespace tabi
         auto hash = HashComponentType<ComponentType>();
         
         // Make sure the component type has not already been registered
-        assert(m_ComponentTypes.find(hash) == m_ComponentTypes.end());
+        TABI_ASSERT(m_ComponentTypes.find(hash) == m_ComponentTypes.end());
 
         m_ComponentTypes.insert(tabi::make_pair(hash, m_NextComponentType));
         m_ComponentArrays.insert(tabi::make_pair(hash, tabi::make_shared<ComponentArray<ComponentType>>()));

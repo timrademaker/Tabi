@@ -21,65 +21,65 @@ namespace tabi
 
         /**
         * @brief Add a component to an entity
-        * @params a_EntityID The ID of the entity to add the component to
+        * @params a_Entity The entity to add the component to
         * @params a_Component The component to add to the entity
         */
-        void AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component);
+        void AddComponent(const Entity a_Entity, ComponentType& a_Component);
         /**
         * @brief Get a component from an entity
-        * @params a_EntityID The ID of the entity to retrieve the component from
+        * @params a_Entity The entity to retrieve the component from
         * @returns A reference to the component attached to the entity. The reference might be invalidated whenever a component of this type is removed
         */
-        ComponentType& GetComponent(const Entity::ID_t a_EntityID);
+        ComponentType& GetComponent(const Entity a_Entity);
         /** Remove a component from an entity. This operation can invalidate references to retrieved entities.
         * @brief Remove a component from an entity
-        * @params a_EntityID The ID of the entity to remove the component from
+        * @params a_Entity The entity to remove the component from
         */
-        void RemoveComponent(const Entity::ID_t a_EntityID);
+        void RemoveComponent(const Entity a_Entity);
 
-        virtual void OnEntityDestroyed(const Entity::ID_t a_EntityID) override;
+        virtual void OnEntityDestroyed(const Entity a_Entity) override;
 
     private:
         tabi::array<ComponentType, MAX_ENTITIES> m_Components;
-        tabi::set<Entity::ID_t> m_EntitiesWithComponent;
+        tabi::set<Entity> m_EntitiesWithComponent;
     };
 
     template <typename ComponentType>
-    void ComponentArray<ComponentType>::AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component)
+    void ComponentArray<ComponentType>::AddComponent(const Entity a_Entity, ComponentType& a_Component)
     {
         // Check if the entity alrady has this component
-        TABI_ASSERT(m_EntitiesWithComponent.find(a_EntityID) == m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntitiesWithComponent.find(a_Entity) == m_EntitiesWithComponent.end());
 
-        m_Components[a_EntityID] = a_Component;
-        m_EntitiesWithComponent.insert(a_EntityID);
+        m_Components[a_Entity] = a_Component;
+        m_EntitiesWithComponent.insert(a_Entity);
     }
 
     template <typename ComponentType>
-    ComponentType& ComponentArray<ComponentType>::GetComponent(const Entity::ID_t a_EntityID)
+    ComponentType& ComponentArray<ComponentType>::GetComponent(const Entity a_Entity)
     {
         // Check if the entity has this component
-        TABI_ASSERT(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntitiesWithComponent.find(a_Entity) != m_EntitiesWithComponent.end());
 
-        return m_Components[a_EntityID];
+        return m_Components[a_Entity];
     }
 
     template <typename ComponentType>
-    void ComponentArray<ComponentType>::RemoveComponent(const Entity::ID_t a_EntityID)
+    void ComponentArray<ComponentType>::RemoveComponent(const Entity a_Entity)
     {
         // Check if the entity has this component
-        TABI_ASSERT(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntitiesWithComponent.find(a_Entity) != m_EntitiesWithComponent.end());
 
         // Zero out memory
-        std::memset(&m_Components[a_EntityID], 0, sizeof(ComponentType));      
-        m_EntitiesWithComponent.erase(a_EntityID);
+        std::memset(&m_Components[a_Entity], 0, sizeof(ComponentType));      
+        m_EntitiesWithComponent.erase(a_Entity);
     }
 
     template <typename ComponentType>
-    void ComponentArray<ComponentType>::OnEntityDestroyed(const Entity::ID_t a_EntityID)
+    void ComponentArray<ComponentType>::OnEntityDestroyed(const Entity a_Entity)
     {
-        if(m_EntitiesWithComponent.find(a_EntityID) != m_EntitiesWithComponent.end())
+        if(m_EntitiesWithComponent.find(a_Entity) != m_EntitiesWithComponent.end())
         {
-            RemoveComponent(a_EntityID);
+            RemoveComponent(a_Entity);
         }
     }
 }

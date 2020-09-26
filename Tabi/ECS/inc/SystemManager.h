@@ -12,8 +12,6 @@ namespace tabi
     // The signature of a system. Represents the components required for this system
     using SystemSignature = bitset<MAX_COMPONENTS>;
 
-    class Entity;
-
     class SystemManager
     {
         using SystemTypeHash = const char*;
@@ -42,15 +40,15 @@ namespace tabi
 
         /**
         * @brief Should be called when an entity is destroyed
-        * @params a_EntityID The ID of the entity that was destroyed
+        * @params a_Entity The entity that was destroyed
         */
-        void OnEntityDestroyed(const Entity::ID_t a_EntityID);
+        void OnEntityDestroyed(const Entity a_Entity);
         /**
         * @brief Should be called when an entity's signature changes
-        * @params a_EntityID The ID of the entity of which the signature changed
+        * @params a_Entity The entity of which the signature changed
         * @params a_Signature The entity's signature
         */
-        void OnEntitySignatureChanged(const Entity::ID_t a_EntityID, EntitySignature a_Signature);
+        void OnEntitySignatureChanged(const Entity a_Entity, EntitySignature a_Signature);
 
         /**
         * @brief Updates all registered systems

@@ -14,23 +14,23 @@ tabi::Entity tabi::ECS::CreateEntity()
     return m_EntityManager->CreateEntity();
 }
 
-void tabi::ECS::DestroyEntity(Entity::ID_t a_EntityID)
+void tabi::ECS::DestroyEntity(Entity a_Entity)
 {
-    m_ComponentManager->OnEntityDestroyed(a_EntityID);
-    m_SystemManager->OnEntityDestroyed(a_EntityID);
+    m_ComponentManager->OnEntityDestroyed(a_Entity);
+    m_SystemManager->OnEntityDestroyed(a_Entity);
 
-    m_EntityManager->DestroyEntity(a_EntityID);
+    m_EntityManager->DestroyEntity(a_Entity);
 }
 
-tabi::EntitySignature tabi::ECS::GetSignature(const Entity::ID_t a_EntityID)
+tabi::EntitySignature tabi::ECS::GetSignature(const Entity a_Entity)
 {
-    return m_EntityManager->GetSignature(a_EntityID);
+    return m_EntityManager->GetSignature(a_Entity);
 }
 
-void tabi::ECS::SetSignature(const Entity::ID_t a_EntityID, const EntitySignature& a_Signature)
+void tabi::ECS::SetSignature(const Entity a_Entity, const EntitySignature& a_Signature)
 {
-    m_EntityManager->SetSignature(a_EntityID, a_Signature);
-    m_SystemManager->OnEntitySignatureChanged(a_EntityID, a_Signature);
+    m_EntityManager->SetSignature(a_Entity, a_Signature);
+    m_SystemManager->OnEntitySignatureChanged(a_Entity, a_Signature);
 }
 
 void tabi::ECS::Update(float a_DeltaTime)

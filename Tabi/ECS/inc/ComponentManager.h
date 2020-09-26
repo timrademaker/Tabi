@@ -10,8 +10,6 @@
 
 namespace tabi
 {
-    class Entity;
-
     using ComponentTypeID = std::uint8_t;
 
     class ComponentManager
@@ -34,31 +32,31 @@ namespace tabi
 
         /**
         * @brief Add a component to an entity
-        * @params a_EntityID The ID of the entity to add the component to
+        * @params a_Entity The entity to add the component to
         * @params a_Component The component to add to the entity
         */
         template<typename ComponentType>
-        void AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component);
+        void AddComponent(const Entity a_Entity, ComponentType& a_Component);
 
         /**
         * @brief Get a component that is attached to an entity
-        * @params a_EntityID The ID of the entity to get the component from
+        * @params a_Entity The entity to get the component from
         */
         template<typename ComponentType>
-        ComponentType& GetComponent(const Entity::ID_t a_EntityID);
+        ComponentType& GetComponent(const Entity a_Entity);
 
         /**
         * @brief Remove a component from an entity
-        * @params a_EntityID The ID of the entity to remove the component from
+        * @params a_Entity The entity to remove the component from
         */
         template<typename ComponentType>
-        void RemoveComponent(Entity::ID_t a_EntityID);
+        void RemoveComponent(Entity a_Entity);
 
         /**
         * @brief Called when an entity is destroyed
-        * @params a_EntityID The ID of the entity that was destroyed
+        * @params a_Entity The entity that was destroyed
         */
-        void OnEntityDestroyed(const Entity::ID_t a_EntityID);
+        void OnEntityDestroyed(const Entity a_Entity);
 
     private:
         /**
@@ -114,21 +112,21 @@ namespace tabi
     }
 
     template<typename ComponentType>
-    inline void ComponentManager::AddComponent(const Entity::ID_t a_EntityID, ComponentType& a_Component)
+    inline void ComponentManager::AddComponent(const Entity a_Entity, ComponentType& a_Component)
     {
-        GetComponentArray<ComponentType>()->AddComponent(a_EntityID, a_Component);
+        GetComponentArray<ComponentType>()->AddComponent(a_Entity, a_Component);
     }
 
     template<typename ComponentType>
-    inline ComponentType& ComponentManager::GetComponent(const Entity::ID_t a_EntityID)
+    inline ComponentType& ComponentManager::GetComponent(const Entity a_Entity)
     {
-        return GetComponentArray<ComponentType>()->GetComponent(a_EntityID);
+        return GetComponentArray<ComponentType>()->GetComponent(a_Entity);
     }
 
     template<typename ComponentType>
-    inline void ComponentManager::RemoveComponent(Entity::ID_t a_EntityID)
+    inline void ComponentManager::RemoveComponent(Entity a_Entity)
     {
-        GetComponentArray<ComponentType>()->RemoveComponent(a_EntityID);
+        GetComponentArray<ComponentType>()->RemoveComponent(a_Entity);
     }
 
     template<typename ComponentType>

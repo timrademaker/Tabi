@@ -27,7 +27,7 @@ namespace tabi
 
     public:
         /// The entities that have the components this system requires
-        tabi::set<Entity::ID_t> m_Entities;
+        tabi::set<Entity> m_Entities;
         /// Non-owning pointer to the component manager (used to retrieve components)
         ComponentManager* m_ComponentManager;
     };

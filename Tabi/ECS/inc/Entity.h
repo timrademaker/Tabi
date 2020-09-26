@@ -6,17 +6,7 @@
 
 namespace tabi
 {
-    class Entity
-    {
-    public:
-        using ID_t = size_t;
-
-        bool operator==(const Entity& a_Rhs) { return m_ID == a_Rhs.m_ID; }
-        bool operator!=(const Entity& a_Rhs) { return !(m_ID == a_Rhs.m_ID); }
-
-    public:
-        ID_t m_ID;
-    };
+    using Entity = size_t;
     
     /// The signature of an entity. Represents the components attached to the entity
     using EntitySignature = tabi::bitset<MAX_COMPONENTS>;

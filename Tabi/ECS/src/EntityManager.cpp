@@ -38,7 +38,7 @@ void tabi::EntityManager::DestroyEntity(Entity& a_Entity)
     a_Entity = INVALID_ENTITY_ID;
 }
 
-EntitySignature tabi::EntityManager::GetSignature(const Entity a_Entity)
+EntitySignature tabi::EntityManager::GetEntitySignature(const Entity a_Entity)
 {
     // Check if the entity ID is in range
     TABI_ASSERT(a_Entity < MAX_ENTITIES);

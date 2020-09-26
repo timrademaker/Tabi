@@ -13,9 +13,9 @@ namespace tabi
         virtual ~IComponentArray() = default;
 
         /**
-        * @brief Called when an entity is destroyed, so that it can be removed from the component array
-        * @params a_Entity The entity that was destroyed
-        */
+         * @brief Called when an entity is destroyed, so that it can be removed from the component array
+         * @params a_Entity The entity that was destroyed
+         */
         virtual void OnEntityDestroyed(const Entity a_Entity) = 0;
     };
 }

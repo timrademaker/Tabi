@@ -18,49 +18,49 @@ namespace tabi
 
     public:
         /**
-        * @brief Register a new system
-        * @params a_ComponentManager The ComponentManager this system is used on
-        * @returns The created system
-        */
+         * @brief Register a new system
+         * @params a_ComponentManager The ComponentManager this system is used on
+         * @returns The created system
+         */
         template<typename SystemType>
         tabi::shared_ptr<SystemType> RegisterSystem(ComponentManager* a_ComponentManager);
 
         /**
-        * @brief Get the signature of a system
-        * @returns The system's signature
-        */
+         * @brief Get the signature of a system
+         * @returns The system's signature
+         */
         template<typename SystemType>
         SystemSignature GetSystemSignature();
         /**
-        * @brief Set the signature of a system
-        * @params a_Signature The signature to apply to the system
-        */
+         * @brief Set the signature of a system
+         * @params a_Signature The signature to apply to the system
+         */
         template<typename SystemType>
         void SetSystemSignature(const SystemSignature& a_Signature);
 
         /**
-        * @brief Should be called when an entity is destroyed
-        * @params a_Entity The entity that was destroyed
-        */
+         * @brief Should be called when an entity is destroyed
+         * @params a_Entity The entity that was destroyed
+         */
         void OnEntityDestroyed(const Entity a_Entity);
         /**
-        * @brief Should be called when an entity's signature changes
-        * @params a_Entity The entity of which the signature changed
-        * @params a_Signature The entity's signature
-        */
+         * @brief Should be called when an entity's signature changes
+         * @params a_Entity The entity of which the signature changed
+         * @params a_Signature The entity's signature
+         */
         void OnEntitySignatureChanged(const Entity a_Entity, EntitySignature a_Signature);
 
         /**
-        * @brief Updates all registered systems
-        * @params a_DeltaTime The time between the previous update and this update
-        */
+         * @brief Updates all registered systems
+         * @params a_DeltaTime The time between the previous update and this update
+         */
         void Update(float a_DeltaTime);
 
     private:
         /**
-        * @brief Hashes a system type. The hash can be used as a key in a map
-        * @returns A hash of the system type
-        */
+         * @brief Hashes a system type. The hash can be used as a key in a map
+         * @returns A hash of the system type
+         */
         template<typename SystemType>
         static SystemTypeHash CreateHash();
 

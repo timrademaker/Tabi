@@ -18,58 +18,58 @@ namespace tabi
 
     public:
         /**
-        * @brief Register a component type so that it can be used
-        */
+         * @brief Register a component type so that it can be used
+         */
         template<typename ComponentType>
         void RegisterComponentType();
 
         /**
-        * @brief Gets the ID of a component type
-        * @returns The ID of a component type
-        */
+         * @brief Gets the ID of a component type
+         * @returns The ID of a component type
+         */
         template<typename ComponentType>
         ComponentTypeID GetComponentTypeID();
 
         /**
-        * @brief Add a component to an entity
-        * @params a_Entity The entity to add the component to
-        * @params a_Component The component to add to the entity
-        */
+         * @brief Add a component to an entity
+         * @params a_Entity The entity to add the component to
+         * @params a_Component The component to add to the entity
+         */
         template<typename ComponentType>
         void AddComponent(const Entity a_Entity, ComponentType& a_Component);
 
         /**
-        * @brief Get a component that is attached to an entity
-        * @params a_Entity The entity to get the component from
-        */
+         * @brief Get a component that is attached to an entity
+         * @params a_Entity The entity to get the component from
+         */
         template<typename ComponentType>
         ComponentType& GetComponent(const Entity a_Entity);
 
         /**
-        * @brief Remove a component from an entity
-        * @params a_Entity The entity to remove the component from
-        */
+         * @brief Remove a component from an entity
+         * @params a_Entity The entity to remove the component from
+         */
         template<typename ComponentType>
         void RemoveComponent(Entity a_Entity);
 
         /**
-        * @brief Called when an entity is destroyed
-        * @params a_Entity The entity that was destroyed
-        */
+         * @brief Called when an entity is destroyed
+         * @params a_Entity The entity that was destroyed
+         */
         void OnEntityDestroyed(const Entity a_Entity);
 
     private:
         /**
-        * @brief Hashes a component type. The hash can be used as a key in a map
-        * @returns A hash of the component type
-        */
+         * @brief Hashes a component type. The hash can be used as a key in a map
+         * @returns A hash of the component type
+         */
         template<typename ComponentType>
         static ComponentTypeHash HashComponentType();
 
         /**
-        * @brief Helper function to get the component array of a certain component type
-        * @returns The component array
-        */
+         * @brief Helper function to get the component array of a certain component type
+         * @returns The component array
+         */
         template<typename ComponentType>
         tabi::shared_ptr<ComponentArray<ComponentType>> GetComponentArray();
 

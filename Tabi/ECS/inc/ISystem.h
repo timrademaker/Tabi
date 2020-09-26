@@ -20,9 +20,9 @@ namespace tabi
         virtual ~ISystem() = default;
 
         /**
-        * @brief Updates a system
-        * @params a_DeltaTime The time between this update and the last update
-        */
+         * @brief Updates a system
+         * @params a_DeltaTime The time between the previous update and this update
+         */
         virtual void OnUpdate(float a_DeltaTime) = 0;
 
     public:

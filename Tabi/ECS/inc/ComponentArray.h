@@ -20,23 +20,23 @@ namespace tabi
         virtual ~ComponentArray() override = default;
 
         /**
-        * @brief Add a component to an entity
-        * @params a_Entity The entity to add the component to
-        * @params a_Component The component to add to the entity
-        */
+         * @brief Add a component to an entity
+         * @params a_Entity The entity to add the component to
+         * @params a_Component The component to add to the entity
+         */
         void AddComponent(const Entity a_Entity, ComponentType& a_Component);
         /**
-        * @brief Get a component from an entity
-        * @params a_Entity The entity to retrieve the component from
-        * @returns A reference to the component attached to the entity. The reference might be invalidated whenever a component of this type is removed
-        */
+         * @brief Get a component from an entity
+         * @params a_Entity The entity to retrieve the component from
+         * @returns A reference to the component attached to the entity. The reference might be invalidated whenever a component of this type is removed
+         */
         ComponentType& GetComponent(const Entity a_Entity);
         /** Remove a component from an entity. This operation can invalidate references to retrieved entities.
-        * @brief Remove a component from an entity
-        * @params a_Entity The entity to remove the component from
-        */
+         * @brief Remove a component from an entity
+         * @params a_Entity The entity to remove the component from
+         */
         void RemoveComponent(const Entity a_Entity);
-
+        
         virtual void OnEntityDestroyed(const Entity a_Entity) override;
 
     private:

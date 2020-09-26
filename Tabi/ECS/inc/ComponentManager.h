@@ -5,6 +5,7 @@
 
 #include <TabiContainers.h>
 #include <TabiPointers.h>
+#include <TabiMacros.h>
 
 #include <cstdint>
 

@@ -7,8 +7,6 @@
 
 namespace tabi
 {
-    constexpr size_t INVALID_ENTITY_ID = static_cast<size_t>(-1);
-
     class EntityManager
     {
     public:
@@ -42,6 +40,12 @@ namespace tabi
          * @params a_Signature The signature to apply to the entity
          */
         void SetSignature(const Entity a_Entity, const EntitySignature& a_Signature);
+
+        /**
+         * @brief Get all entity signatures
+         * @returns An array with all entitiy signatures (including entities that aren't alive)
+         */
+        const tabi::array<EntitySignature, MAX_ENTITIES>& GetAllSignatures();
 
     private:
         /// The signatures of all the entities

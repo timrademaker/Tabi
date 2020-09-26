@@ -4,7 +4,6 @@
 #include "Entity.h"
 
 #include <TabiContainers.h>
-#include "TabiMacros.h"
 
 namespace tabi
 {

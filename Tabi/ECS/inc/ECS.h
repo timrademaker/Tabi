@@ -4,6 +4,7 @@
 #include "EntityManager.h"
 #include "ComponentManager.h"
 #include "SystemManager.h"
+#include "ISystem.h"
 
 #include <TabiPointers.h>
 
@@ -164,5 +165,20 @@ namespace tabi
     inline void ECS::SetSystemSignature(const SystemSignature& a_Signature)
     {
         m_SystemManager->SetSystemSignature<SystemType>(a_Signature);
+
+        const auto& entitySignatures = m_EntityManager->GetAllSignatures();
+        auto system = m_SystemManager->GetSystem<SystemType>();
+
+        for (tabi::Entity ent = 0; ent < entitySignatures.size(); ++ent)
+        {
+            if ((entitySignatures[ent] & a_Signature) == a_Signature)
+            {
+                system->m_Entities.insert(ent);
+            }
+            else
+            {
+                system->m_Entities.erase(ent);
+            }
+        }
     }
 }

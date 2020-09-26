@@ -26,6 +26,13 @@ namespace tabi
         tabi::shared_ptr<SystemType> RegisterSystem(ComponentManager* a_ComponentManager);
 
         /**
+         * @brief Gets a registered system
+         * @returns The requested system
+         */
+        template<typename SystemType>
+        tabi::shared_ptr<SystemType> GetSystem();
+
+        /**
          * @brief Get the signature of a system
          * @returns The system's signature
          */
@@ -83,6 +90,15 @@ namespace tabi
         m_Systems.insert(tabi::make_pair(hash, system));
 
         return system;
+    }
+
+    template<typename SystemType>
+    inline tabi::shared_ptr<SystemType> SystemManager::GetSystem()
+    {
+        const SystemTypeHash hash = CreateHash<SystemType>();
+        // Check if the system has already been registered
+        TABI_ASSERT(m_Systems.find(hash) != m_Systems.end());
+        return std::static_pointer_cast<SystemType>(m_Systems[hash]);
     }
 
     template<typename SystemType>

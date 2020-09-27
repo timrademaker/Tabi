@@ -5,11 +5,13 @@ cmake_minimum_required (VERSION 3.8)
 set(HEADERS
     inc/TabiUtilities.h
     inc/TabiEvent.h
+    inc/Stopwatch.h
 )
 
 # Set sources for Utilities
 set(SOURCES
     src/TabiUtilities.cpp
+    src/Stopwatch.cpp
 )
 
 # Add source to this project's executable.

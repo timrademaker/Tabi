@@ -32,12 +32,12 @@ namespace tabi
 
         /**
          * @brief Rotate the camera by a given rotation
-         * @params a_Rotation The rotation to rotate the camera with (in degrees)
+         * @params a_Rotation The rotation to rotate the camera with (in radians)
          */
         void RotateBy(tabi::vec3 a_Rotation);
         /**
          * @brief Set the camera's rotation to a given rotation
-         * @params a_Rotation The rotation to set the camera's rotation to (in degrees)
+         * @params a_Rotation The rotation to set the camera's rotation to (in radians)
          */
         void RotateTo(tabi::vec3 a_Rotation);
 
@@ -67,6 +67,12 @@ namespace tabi
          * @returns The projection matrix
          */
         tabi::mat4 GetProjection();
+
+        /**
+         * @brief Get the current transformation matrix of the camera
+         * @returns The transformation matrix
+         */
+        const tabi::mat4& GetTransform() const;
 
         /**
          * @brief Set the near clipping plane of the camera
@@ -106,8 +112,9 @@ namespace tabi
         bool m_ProjectionDirty = true;
         tabi::mat4 m_Projection;
 
-        tabi::vec3 m_Position;
         RotationType m_Rotation;
+
+        tabi::mat4 m_Transform;
     };
 
 }

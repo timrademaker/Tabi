@@ -8,13 +8,13 @@
 
 void tabi::Camera::MoveBy(tabi::vec3 a_Translation)
 {
-    m_Position += a_Translation;
+    m_Transform.Translate(a_Translation);
     m_ViewDirty = true;
 }
 
 void tabi::Camera::MoveTo(tabi::vec3 a_Position)
 {
-    m_Position = a_Position;
+    m_Transform.SetPosition(a_Position);
     m_ViewDirty = true;
 }
 
@@ -22,26 +22,33 @@ void tabi::Camera::RotateBy(tabi::vec3 a_Rotation)
 {
     m_Rotation += a_Rotation;
     m_ViewDirty = true;
+
+    m_Transform.RotateX(a_Rotation.x);
+    m_Transform.RotateY(a_Rotation.y);
+    m_Transform.RotateZ(a_Rotation.z);
 }
 
 void tabi::Camera::RotateTo(tabi::vec3 a_Rotation)
 {
     m_Rotation = a_Rotation;
     m_ViewDirty = true;
+
+    m_Transform.SetRotation(a_Rotation);
 }
 
 tabi::vec3 tabi::Camera::GetPosition() const
 {
-    return m_Position;
+    return m_Transform.GetPosition();
 }
 
 tabi::vec3 tabi::Camera::GetEulerRotation() const
 {
-    return tabi::vec3(RadToDeg(m_Rotation.x), RadToDeg(m_Rotation.y), RadToDeg(m_Rotation.z));
+    return vec3(RadToDeg(m_Rotation.x), RadToDeg(m_Rotation.y), RadToDeg(m_Rotation.z));
 }
 
 tabi::vec3 tabi::Camera::GetRotation() const
 {
+    //return m_Transform.GetRotation();
     return m_Rotation;
 }
 
@@ -55,6 +62,11 @@ tabi::mat4 tabi::Camera::GetProjection()
 {
     GenerateProjection();
     return m_Projection;
+}
+
+const tabi::mat4& tabi::Camera::GetTransform() const
+{
+    return m_Transform;
 }
 
 void tabi::Camera::SetNear(const float a_Near)
@@ -77,29 +89,24 @@ void tabi::Camera::SetFoV(const float a_FoV)
 
 tabi::vec3 tabi::Camera::GetForward() const
 {
-    tabi::vec3 dir;
-    dir.x = cos(m_Rotation.y) * cos(m_Rotation.x);
-    dir.y = sin(m_Rotation.x);
-    dir.z = sin(m_Rotation.y) * cos(m_Rotation.x);
-    dir.Normalize();
-    return dir;
+    return -vec3(m_Transform[2], m_Transform[6], m_Transform[10]);
 }
 
 tabi::vec3 tabi::Camera::GetRight() const
 {
-    return tabi::vec3::Normalize(tabi::vec3::Cross(GetForward(), tabi::vec3(0.0f, 1.0f, 0.0f)));
+    return vec3(m_Transform[0], m_Transform[4], m_Transform[8]);
 }
 
 tabi::vec3 tabi::Camera::GetUp() const
 {
-    return tabi::vec3::Normalize(tabi::vec3::Cross(GetRight(), GetForward()));
+    return vec3(m_Transform[1], m_Transform[5], m_Transform[9]);
 }
 
 void tabi::Camera::GenerateView()
 {
     if (m_ViewDirty)
     {
-        m_View = mat4::CreateLookAtMatrix(m_Position, m_Position + GetForward(), tabi::vec3(0, 1, 0));
+        m_View = mat4::CreateLookAtMatrix(GetPosition(), GetPosition() + GetForward(), tabi::vec3(0, 1, 0));
 
         m_ViewDirty = false;
     }

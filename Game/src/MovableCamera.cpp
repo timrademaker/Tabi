@@ -73,7 +73,7 @@ void MovableCamera::RotateVertical(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_Delta) > FLT_EPSILON)
     {
-        m_Camera->RotateBy(tabi::vec3(m_MouseSensitivity * m_DeltaTime * -a_Event.m_Delta, 0, 0));
+        m_Camera->RotateBy(tabi::vec3(m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta, 0, 0));
         ConstrainRotation();
     }
 }
@@ -82,7 +82,7 @@ void MovableCamera::MoveForwardController(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
-        m_Camera->MoveBy(m_Camera->GetForward() * -m_Speed * a_Event.m_AxisValue * m_DeltaTime);
+        m_Camera->MoveBy(m_Camera->GetForward() * m_Speed * a_Event.m_AxisValue * m_DeltaTime);
     }
 }
 
@@ -96,7 +96,7 @@ void MovableCamera::MoveRightController(tabi::AxisEvent a_Event)
 
 void MovableCamera::RotateHorizontalController(tabi::AxisEvent a_Event)
 {
-    if (std::abs(a_Event.m_AxisValue) > 0.0f)
+    if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
         m_Camera->RotateBy(tabi::vec3(0, m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue, 0));
     }
@@ -104,7 +104,7 @@ void MovableCamera::RotateHorizontalController(tabi::AxisEvent a_Event)
 
 void MovableCamera::RotateVerticalController(tabi::AxisEvent a_Event)
 {
-    if (std::abs(a_Event.m_AxisValue) > 0.0f)
+    if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
         m_Camera->RotateBy(tabi::vec3(-m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue, 0, 0));
         ConstrainRotation();
@@ -116,7 +116,7 @@ void MovableCamera::Update(float a_DeltaTime)
     m_DeltaTime = a_DeltaTime;
 }
 
-void MovableCamera::ConstrainRotation()
+void MovableCamera::ConstrainRotation() const
 {
     auto rot = m_Camera->GetRotation();
     if (rot.x > tabi::DegToRad(89.0f))

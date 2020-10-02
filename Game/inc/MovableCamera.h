@@ -29,7 +29,7 @@ public:
     
 
 private:
-    void ConstrainRotation();
+    void ConstrainRotation() const;
 
 public:
     tabi::shared_ptr<tabi::Camera> m_Camera;

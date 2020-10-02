@@ -28,11 +28,20 @@ namespace tabi
         static mat4 Scale(const mat4& a_Matrix, const vec3& a_Scale);
         static mat4 Scale(const mat4& a_Matrix, const vec4& a_Scale);
 
+        vec3 GetScale() const;
+        void SetScale(const vec3& a_Scale);
+        static mat4 SetScale(const mat4& a_Matrix, const vec3& a_Scale);
+
         // Translation
         void Translate(const vec3& a_Translation);
         void Translate(const vec4& a_Translation);
         static mat4 Translate(const mat4& a_Matrix, const vec3& a_Translation);
         static mat4 Translate(const mat4& a_Matrix, const vec4& a_Translation);
+
+        vec3 GetPosition() const;
+        void SetPosition(const vec3& a_Position);
+        static mat4 SetPosition(const mat4& a_Matrix, const vec3& a_Position);
+
 
         // Rotation
         void RotateX(const float a_Radians);
@@ -41,6 +50,11 @@ namespace tabi
         static mat4 RotateX(const mat4& a_Matrix, const float a_Radians);
         static mat4 RotateY(const mat4& a_Matrix, const float a_Radians);
         static mat4 RotateZ(const mat4& a_Matrix, const float a_Radians);
+
+        vec3 GetRotation() const;
+        /// Set the rotation of the matrix (in radians)
+        void SetRotation(const vec3& a_EulerRotation);
+        static mat4 SetRotation(const mat4& a_Matrix, const vec3& a_EulerRotation);
 
         static mat4 CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation);
         static mat4 CreatePerspectiveProjectionMatrix(const float a_FoV, const float a_AspectRatio, const float a_Near, const float a_Far);

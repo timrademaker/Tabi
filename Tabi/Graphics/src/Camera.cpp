@@ -102,6 +102,22 @@ tabi::vec3 tabi::Camera::GetUp() const
     return vec3(m_Transform[1], m_Transform[5], m_Transform[9]);
 }
 
+void tabi::Camera::LookAt(const vec3& a_Target)
+{
+    const vec3 forward = vec3::Normalize(GetPosition() - a_Target);
+    const vec3 right = vec3::Normalize(vec3::Cross(forward, vec3(0, 1, 0)));
+    const vec3 up = vec3::Normalize(vec3::Cross(right, forward));
+    m_Transform[0] = right.x;
+    m_Transform[1] = up.x;
+    m_Transform[2] = forward.x;
+    m_Transform[4] = right.y;
+    m_Transform[5] = up.y;
+    m_Transform[6] = forward.y;
+    m_Transform[8] = right.z;
+    m_Transform[9] = up.z;
+    m_Transform[10] = forward.z;
+}
+
 void tabi::Camera::GenerateView()
 {
     if (m_ViewDirty)

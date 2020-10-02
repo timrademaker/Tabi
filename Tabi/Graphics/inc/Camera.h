@@ -94,6 +94,8 @@ namespace tabi
         tabi::vec3 GetRight() const;
         tabi::vec3 GetUp() const;
 
+        void LookAt(const vec3& a_Target);
+
     private:
         void GenerateView();
         void GenerateProjection();

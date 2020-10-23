@@ -1,5 +1,12 @@
 #include "Stopwatch.h"
 
+#if defined(_DEBUG)
+#include <Logging.h>
+#include <ConsoleSink.h>
+
+auto swLogger = tabi::logger::CreateTabiLogger<tabi::logger::ConsoleSink>("Stopwatch");
+#endif
+
 tabi::Stopwatch::Stopwatch(bool a_StartRunning)
     : m_Start(Now())
     , m_Stop(m_Start)
@@ -21,6 +28,12 @@ void tabi::Stopwatch::Start()
         m_Start = Now();
         m_Stop = m_Start;
     }
+#if defined(_DEBUG)
+    else
+    {
+        swLogger->Log(tabi::logger::ELogLevel::Warning, "Tried to start a stopwatch that was already running!");
+    }
+#endif
 }
 
 void tabi::Stopwatch::Stop()
@@ -33,12 +46,18 @@ void tabi::Stopwatch::Stop()
 
         m_AccumulatedTime += std::chrono::duration_cast<nanoseconds>(m_Stop - m_Start);
     }
+#if defined(_DEBUG)
+    else
+    {
+        swLogger->Log(tabi::logger::ELogLevel::Warning, "Tried to stop a stopwatch that was not running!");
+    }
+#endif
 }
 
 void tabi::Stopwatch::Reset()
 {
     m_AccumulatedTime = nanoseconds();
 
-    m_Start = std::chrono::high_resolution_clock::now();
+    m_Start = Now();
     m_Stop = m_Start;
 }

@@ -31,31 +31,10 @@ namespace tabi
         void MoveTo(tabi::vec3 a_Position);
 
         /**
-         * @brief Rotate the camera by a given rotation
-         * @params a_Rotation The rotation to rotate the camera with (in radians)
-         */
-        void RotateBy(tabi::vec3 a_Rotation);
-        /**
-         * @brief Set the camera's rotation to a given rotation
-         * @params a_Rotation The rotation to set the camera's rotation to (in radians)
-         */
-        void RotateTo(tabi::vec3 a_Rotation);
-
-        /**
          * @brief Get the current position of the camera
          * @returns The position of the camera
          */
         tabi::vec3 GetPosition() const;
-        /**
-         * @brief Get the current rotation of the camera in degrees
-         * @returns The rotation of the camera
-         */
-        tabi::vec3 GetEulerRotation() const;
-        /**
-         * @brief Get the current rotation of the camera in radians
-         * @returns The rotation of the camera
-         */
-        tabi::vec3 GetRotation() const;
 
         /**
          * @brief Get the current view matrix of the camera
@@ -113,8 +92,6 @@ namespace tabi
         tabi::mat4 m_View;
         bool m_ProjectionDirty = true;
         tabi::mat4 m_Projection;
-
-        RotationType m_Rotation;
 
         tabi::mat4 m_Transform;
     };

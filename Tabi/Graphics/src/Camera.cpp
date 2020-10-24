@@ -18,38 +18,9 @@ void tabi::Camera::MoveTo(tabi::vec3 a_Position)
     m_ViewDirty = true;
 }
 
-void tabi::Camera::RotateBy(tabi::vec3 a_Rotation)
-{
-    m_Rotation += a_Rotation;
-    m_ViewDirty = true;
-
-    m_Transform.RotateX(a_Rotation.x);
-    m_Transform.RotateY(a_Rotation.y);
-    m_Transform.RotateZ(a_Rotation.z);
-}
-
-void tabi::Camera::RotateTo(tabi::vec3 a_Rotation)
-{
-    m_Rotation = a_Rotation;
-    m_ViewDirty = true;
-
-    m_Transform.SetRotation(a_Rotation);
-}
-
 tabi::vec3 tabi::Camera::GetPosition() const
 {
     return m_Transform.GetPosition();
-}
-
-tabi::vec3 tabi::Camera::GetEulerRotation() const
-{
-    return vec3(RadToDeg(m_Rotation.x), RadToDeg(m_Rotation.y), RadToDeg(m_Rotation.z));
-}
-
-tabi::vec3 tabi::Camera::GetRotation() const
-{
-    //return m_Transform.GetRotation();
-    return m_Rotation;
 }
 
 tabi::mat4 tabi::Camera::GetView()

@@ -1,0 +1,45 @@
+name: Tabi Debug
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  release:
+     types: [ published ]
+
+env:
+  BUILD_TYPE: Debug
+  PLATFORM: x64
+    
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup
+      shell: cmd
+      run: cmake -E make_directory out/project
+      
+    - name: Generate Project Files
+      shell: cmd
+      run: |
+        cd out/project
+        cmake ../../. -DBUILD_PLATFORM=%PLATFORM% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DBUILD_PLATFORM_STATIC_LIB_EXT=lib -DWINDOWS=TRUE -DUSE_OPENGL=TRUE
+      
+    - name: Build Project
+      shell: cmd
+      run: |
+        cmake --build out/project --config %BUILD_TYPE%
+        if exist "bin/%PLATFORM%/%BUILD_TYPE%/bin/%BUILD_TYPE%" (
+          robocopy /move "bin/%PLATFORM%/%BUILD_TYPE%/bin/%BUILD_TYPE%" "bin/%PLATFORM%/%BUILD_TYPE%/bin"
+          exit 0
+        )
+      
+    - name: Archive Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Tabi-${{ env.PLATFORM }}-${{ env.BUILD_TYPE }}
+        path: ${{ github.workspace }}/bin/${{ env.PLATFORM }}/${{ env.BUILD_TYPE }}/bin

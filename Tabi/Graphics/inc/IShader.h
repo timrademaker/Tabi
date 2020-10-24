@@ -70,7 +70,7 @@ namespace tabi
 
     protected:
         IShader() = default;
-        ~IShader() = default;
+        virtual ~IShader() = default;
 
         /**
         * @brief Internal creation of the shader

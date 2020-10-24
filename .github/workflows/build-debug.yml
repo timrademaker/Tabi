@@ -41,5 +41,5 @@ jobs:
     - name: Archive Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: Tabi-${{ env.PLATFORM }}-${{ env.BUILD_TYPE }}
+        name: Tabi-${{ env.PLATFORM }}-${{ env.BUILD_TYPE }}-${{ github.run_number }}
         path: ${{ github.workspace }}/bin/${{ env.PLATFORM }}/${{ env.BUILD_TYPE }}/bin

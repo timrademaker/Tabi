@@ -58,7 +58,7 @@ namespace tabi
 
     protected:
         ISampler() = default;
-        ~ISampler() = default;
+        virtual ~ISampler() = default;
 
         /**
         * @brief Internal creation of the shader

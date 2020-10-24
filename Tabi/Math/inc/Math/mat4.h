@@ -51,7 +51,6 @@ namespace tabi
         static mat4 RotateY(const mat4& a_Matrix, const float a_Radians);
         static mat4 RotateZ(const mat4& a_Matrix, const float a_Radians);
 
-        vec3 GetRotation() const;
         /// Set the rotation of the matrix (in radians)
         void SetRotation(const vec3& a_EulerRotation);
         static mat4 SetRotation(const mat4& a_Matrix, const vec3& a_EulerRotation);

@@ -17,8 +17,8 @@ public:
     void MoveForward    (tabi::ButtonEvent);
     void MoveBackwards  (tabi::ButtonEvent);
 
-    void RotateHorizontal(tabi::AxisEvent a_Event);
-    void RotateVertical(tabi::AxisEvent a_Event);
+    void RotateHorizontal   (tabi::AxisEvent a_Event);
+    void RotateVertical     (tabi::AxisEvent a_Event);
 
     void MoveForwardController      (tabi::AxisEvent a_Event);
     void MoveRightController        (tabi::AxisEvent a_Event);
@@ -26,10 +26,6 @@ public:
     void RotateVerticalController   (tabi::AxisEvent a_Event);
 
     void Update(float a_DeltaTime);
-    
-
-private:
-    void ConstrainRotation() const;
 
 public:
     tabi::shared_ptr<tabi::Camera> m_Camera;

@@ -94,12 +94,12 @@ tabi::vec3 tabi::Camera::GetForward() const
 
 tabi::vec3 tabi::Camera::GetRight() const
 {
-    return vec3(m_Transform[0], m_Transform[4], m_Transform[8]);
+    return -vec3(m_Transform[0], m_Transform[4], m_Transform[8]);
 }
 
 tabi::vec3 tabi::Camera::GetUp() const
 {
-    return vec3(m_Transform[1], m_Transform[5], m_Transform[9]);
+    return -vec3(m_Transform[1], m_Transform[5], m_Transform[9]);
 }
 
 void tabi::Camera::LookAt(const vec3& a_Target)
@@ -116,6 +116,8 @@ void tabi::Camera::LookAt(const vec3& a_Target)
     m_Transform[8] = right.z;
     m_Transform[9] = up.z;
     m_Transform[10] = forward.z;
+
+    m_ViewDirty = true;
 }
 
 void tabi::Camera::GenerateView()

@@ -65,7 +65,7 @@ void MovableCamera::RotateHorizontal(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_Delta) > FLT_EPSILON)
     {
-        m_Camera->RotateBy(tabi::vec3(0, m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta, 0));
+        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetRight() * m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta));
     }
 }
 
@@ -73,8 +73,7 @@ void MovableCamera::RotateVertical(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_Delta) > FLT_EPSILON)
     {
-        m_Camera->RotateBy(tabi::vec3(m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta, 0, 0));
-        ConstrainRotation();
+        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetUp() * m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta));
     }
 }
 
@@ -98,7 +97,7 @@ void MovableCamera::RotateHorizontalController(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
-        m_Camera->RotateBy(tabi::vec3(0, m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue, 0));
+        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetRight() * m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue));
     }
 }
 
@@ -106,25 +105,11 @@ void MovableCamera::RotateVerticalController(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
-        m_Camera->RotateBy(tabi::vec3(-m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue, 0, 0));
-        ConstrainRotation();
+        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetUp() * -m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue));
     }
 }
 
 void MovableCamera::Update(float a_DeltaTime)
 {
     m_DeltaTime = a_DeltaTime;
-}
-
-void MovableCamera::ConstrainRotation() const
-{
-    auto rot = m_Camera->GetRotation();
-    if (rot.x > tabi::DegToRad(89.0f))
-    {
-        m_Camera->RotateTo(tabi::vec3(tabi::DegToRad(89.0f), rot.y, rot.z));
-    }
-    else if (rot.x < tabi::DegToRad(-89.0f))
-    {
-        m_Camera->RotateTo(tabi::vec3(tabi::DegToRad(-89.0f), rot.y, rot.z));
-    }
 }

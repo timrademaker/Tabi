@@ -85,9 +85,9 @@ void InputManager::Update()
     }
 }
 
-void tabi::InputManager::SetCursorMode(bool a_Visible, bool a_CaptureCursor)
+void tabi::InputManager::SetCursorMode(bool a_HideCursor, bool a_CaptureCursor)
 {
-    IInputHandler::GetInstance().SetMouseCursorMode(a_Visible, a_CaptureCursor);
+    IInputHandler::GetInstance().SetMouseCursorMode(a_HideCursor, a_CaptureCursor);
 }
 
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)
@@ -110,6 +110,8 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
         {
             tabi::logger::TabiWarn("Unable to unbind button " + tabi::to_string(a_Button) + " as it wasn't bound");
         }
+#else
+        TABI_UNUSED(foundAny);
 #endif
         
         // If there's no more subscribers, unbind in IInputHandler
@@ -140,6 +142,8 @@ void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
         {
             tabi::logger::TabiWarn("Unable to unbind axis " + tabi::to_string(a_Axis) + " as it wasn't bound");
         }
+#else
+        TABI_UNUSED(foundAny);
 #endif
 
         // If there's no more subscribers, unbind in IInputHandler

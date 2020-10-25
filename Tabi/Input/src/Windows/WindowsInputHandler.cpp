@@ -144,12 +144,12 @@ float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
     }
 }
 
-void tabi::InputHandler::SetMouseCursorMode(bool a_Visible, bool a_Capture)
+void tabi::InputHandler::SetMouseCursorMode(bool a_HideCursor, bool a_Capture)
 {
-    m_HideCursor = a_Visible;
+    m_HideCursor = a_HideCursor;
     m_CaptureMouse = a_Capture;
 
-    SetCursorVisible(a_Visible);
+    SetCursorVisible(!m_HideCursor);
 }
 
 void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
@@ -274,6 +274,8 @@ void tabi::InputHandler::SetCursorVisible(bool a_Visible)
     }
 }
 
+bool prevDeltaXWasPositive = true;
+
 void tabi::InputHandler::CaptureCursor()
 {
     auto& renderer = graphics::IRenderer::GetInstance();
@@ -291,7 +293,7 @@ void tabi::InputHandler::CaptureCursor()
             SetCursorVisible(true);
             return;
         }
-        SetCursorVisible(false);
+        SetCursorVisible(!m_HideCursor);
 
         POINT beforePos = { 0 };
         GetCursorPos(&beforePos);
@@ -299,7 +301,6 @@ void tabi::InputHandler::CaptureCursor()
         RECT rect = { 0 };
         GetWindowRect(window, &rect);
         SetCursorPos(rect.right - (m_WindowWidth / 2), rect.bottom - (m_WindowHeight / 2));
-
         m_WindowWidth = rect.right - rect.left;
         m_WindowHeight = rect.bottom - rect.top;
 

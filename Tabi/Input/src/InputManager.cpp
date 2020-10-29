@@ -85,9 +85,14 @@ void InputManager::Update()
     }
 }
 
-void tabi::InputManager::SetCursorMode(bool a_HideCursor, bool a_CaptureCursor)
+void tabi::InputManager::SetCursorVisible(bool a_ShowCursor)
 {
-    IInputHandler::GetInstance().SetMouseCursorMode(a_HideCursor, a_CaptureCursor);
+    IInputHandler::GetInstance().SetMouseCursorVisible(a_ShowCursor);
+}
+
+void tabi::InputManager::SetCursorCapture(bool a_Capture)
+{
+    IInputHandler::GetInstance().SetMouseCursorCapture(a_Capture);
 }
 
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)

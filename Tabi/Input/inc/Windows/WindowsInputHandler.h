@@ -3,6 +3,7 @@
 #include "IInputHandler.h"
 
 #include <TabiContainers.h>
+#include <TabiPlatform.h>
 
 #include <TabiMacros.h>
 
@@ -40,7 +41,8 @@ namespace tabi
 
         virtual float GetAxisValue(unsigned int a_Axis, float* a_Delta = nullptr) override;
 
-        virtual void SetMouseCursorMode(bool a_Visible, bool a_Capture) override;
+        virtual void SetMouseCursorVisible(bool a_Visible) override;
+        virtual void SetMouseCursorCapture(bool a_Capture) override;
         
         
         void HandleMsg(const MSG& a_Msg);
@@ -63,8 +65,6 @@ namespace tabi
         void SetCursorVisible(bool a_Visible);
         void CaptureCursor();
 
-
-
     private:
 
         static tabi::unordered_map<EMouse, unsigned int> ms_MouseTable;
@@ -76,14 +76,23 @@ namespace tabi
         unsigned int m_WindowWidth;
         unsigned int m_WindowHeight;
 
+        // Mouse delta
         float m_MouseDeltaX;
         float m_MouseDeltaY;
+        // Raw input device
+        RAWINPUTDEVICE m_RawInputDevice;
+        tabi::vector<char> m_RawBuffer;
 
+        // Mouse capture
         bool m_CaptureMouse = false;
-        bool m_HideCursor = false;
 
+        // Cursor visibility
+        /// True if the cursor should be hidden
+        bool m_HideCursor = false;
+        /// True if the cursor is currently visible
         bool m_CursorVisible = true;
 
+        // gainput
         ::gainput::InputManager m_GaInputManager;
         ::gainput::InputMap m_InputMap;
     };

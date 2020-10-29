@@ -37,6 +37,15 @@ tabi::InputHandler::InputHandler()
     m_InputDeviceTable[EInputDevice::Controller] = m_GaInputManager.CreateDevice<gainput::InputDevicePad>();
     m_InputDeviceTable[EInputDevice::Keyboard] = m_GaInputManager.CreateDevice<gainput::InputDeviceKeyboard>();
     m_InputDeviceTable[EInputDevice::Mouse] = m_GaInputManager.CreateDevice<gainput::InputDeviceMouse>();
+
+
+    m_RawInputDevice;
+    // Raw input device
+    m_RawInputDevice.hwndTarget = nullptr;
+    m_RawInputDevice.dwFlags = 0;
+    m_RawInputDevice.usUsagePage = 0x01;
+    m_RawInputDevice.usUsage = 0x02;
+    TABI_ASSERT(RegisterRawInputDevices(&m_RawInputDevice, 1, sizeof(m_RawInputDevice)) == TRUE && "Unable to register raw input device!");
 }
 
 void tabi::InputHandler::Update()
@@ -67,7 +76,6 @@ void tabi::InputHandler::UnbindButton(unsigned int a_Button)
     {
         m_InputMap.Unmap(a_Button);
     }
-
 }
 
 void tabi::InputHandler::BindAxis(unsigned int a_Axis)
@@ -121,13 +129,15 @@ float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
         float pos = m_InputMap.GetFloat(a_Axis);
         if (a_Delta)
         {
-            if (a_Axis == static_cast<unsigned>(EMouse::MouseX) && m_CaptureMouse)
+            if (a_Axis == static_cast<unsigned>(EMouse::MouseX))
             {
                 *a_Delta = m_MouseDeltaX;
+                m_MouseDeltaX = 0.0f;
             }
-            else if (a_Axis == static_cast<unsigned>(EMouse::MouseY) && m_CaptureMouse)
+            else if (a_Axis == static_cast<unsigned>(EMouse::MouseY))
             {
                 *a_Delta = m_MouseDeltaY;
+                m_MouseDeltaY = 0.0f;
             }
             else
             {
@@ -144,17 +154,46 @@ float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
     }
 }
 
-void tabi::InputHandler::SetMouseCursorMode(bool a_HideCursor, bool a_Capture)
+void tabi::InputHandler::SetMouseCursorVisible(bool a_Visible)
 {
-    m_HideCursor = a_HideCursor;
-    m_CaptureMouse = a_Capture;
+    m_HideCursor = !a_Visible;
 
-    SetCursorVisible(!m_HideCursor);
+    SetCursorVisible(a_Visible);
+}
+
+void tabi::InputHandler::SetMouseCursorCapture(bool a_Capture)
+{
+    m_CaptureMouse = a_Capture;
 }
 
 void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
 {
     m_GaInputManager.HandleMessage(a_Msg);
+
+    // Handle raw mouse input
+    if (a_Msg.message == WM_INPUT && !m_CaptureMouse)
+    {
+        UINT size;
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(a_Msg.lParam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1)
+        {
+            return;
+        }
+        
+        m_RawBuffer.resize(size);
+
+
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(a_Msg.lParam), RID_INPUT, m_RawBuffer.data(), &size, sizeof(RAWINPUTHEADER)) != size)
+        {
+            return;
+        }
+
+        auto& ri = reinterpret_cast<const RAWINPUT&>(*m_RawBuffer.data());
+        if (ri.header.dwType == RIM_TYPEMOUSE && (ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
+        {
+            m_MouseDeltaX = static_cast<float>(ri.data.mouse.lLastX) / float(m_WindowWidth);
+            m_MouseDeltaY = static_cast<float>(ri.data.mouse.lLastY) / float(m_WindowHeight);
+        }
+    }
 }
 
 
@@ -273,8 +312,6 @@ void tabi::InputHandler::SetCursorVisible(bool a_Visible)
         m_CursorVisible = false;
     }
 }
-
-bool prevDeltaXWasPositive = true;
 
 void tabi::InputHandler::CaptureCursor()
 {

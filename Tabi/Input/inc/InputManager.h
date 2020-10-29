@@ -104,11 +104,16 @@ namespace tabi
         static void Update();
 
         /**
-        * @brief Sets the cursor's mode
-        * @params a_HideCursor Whether the cursor should be hidden while it is in the window or not
-        * @params a_CaptureCursor Whether the cursor should be able to leave the window or not
+        * @brief Sets the cursor's visibility
+        * @params a_ShowCursor Whether the cursor should be visible while it is in the window or not
         */
-        static void SetCursorMode(bool a_HideCursor, bool a_CaptureCursor);
+        static void SetCursorVisible(bool a_ShowCursor);
+
+        /**
+        * @brief Confine the cursor to the window
+        * @params a_Capture Whether the cursor should be captured or not
+        */
+        static void SetCursorCapture(bool a_Capture);
 
         /**
         * @brief Called internally when the window loses or regains focus

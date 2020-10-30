@@ -27,8 +27,8 @@ using tabi::EInputDevice;
 
 tabi::InputHandler::InputHandler()
     : m_InputMap(m_GaInputManager)
-    , m_MouseDeltaX(0.0f)
-    , m_MouseDeltaY(0.0f)
+    , m_MouseDeltaX(0)
+    , m_MouseDeltaY(0)
 {
     tabi::graphics::IRenderer::GetInstance().GetWindowDimensions(m_WindowWidth, m_WindowHeight);
 
@@ -50,6 +50,9 @@ tabi::InputHandler::InputHandler()
 
 void tabi::InputHandler::Update()
 {
+    m_MouseDeltaX = 0;
+    m_MouseDeltaY = 0;
+
     m_GaInputManager.Update();
 
     if (m_CaptureMouse)
@@ -131,13 +134,11 @@ float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
         {
             if (a_Axis == static_cast<unsigned>(EMouse::MouseX))
             {
-                *a_Delta = m_MouseDeltaX;
-                m_MouseDeltaX = 0.0f;
+                *a_Delta = static_cast<float>(m_MouseDeltaX) / float(m_WindowWidth);
             }
             else if (a_Axis == static_cast<unsigned>(EMouse::MouseY))
             {
-                *a_Delta = m_MouseDeltaY;
-                m_MouseDeltaY = 0.0f;
+                *a_Delta = static_cast<float>(m_MouseDeltaY) / float(m_WindowHeight);
             }
             else
             {
@@ -190,8 +191,8 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
         auto& ri = reinterpret_cast<const RAWINPUT&>(*m_RawBuffer.data());
         if (ri.header.dwType == RIM_TYPEMOUSE && (ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
         {
-            m_MouseDeltaX = static_cast<float>(ri.data.mouse.lLastX) / float(m_WindowWidth);
-            m_MouseDeltaY = static_cast<float>(ri.data.mouse.lLastY) / float(m_WindowHeight);
+            m_MouseDeltaX += ri.data.mouse.lLastX;
+            m_MouseDeltaY += ri.data.mouse.lLastY;
         }
     }
 }
@@ -324,8 +325,8 @@ void tabi::InputHandler::CaptureCursor()
         if (GetFocus() != window)
         {
             // Don't capture if the window doesn't have focus
-            m_MouseDeltaX = 0.0f;
-            m_MouseDeltaY = 0.0f;
+            m_MouseDeltaX = 0;
+            m_MouseDeltaY = 0;
 
             SetCursorVisible(true);
             return;
@@ -344,8 +345,8 @@ void tabi::InputHandler::CaptureCursor()
         POINT afterPos = { 0 };
         GetCursorPos(&afterPos);
 
-        m_MouseDeltaX = (float(beforePos.x - afterPos.x) / float(m_WindowWidth));
-        m_MouseDeltaY = (float(beforePos.y - afterPos.y) / float(m_WindowHeight));
+        m_MouseDeltaX = beforePos.x - afterPos.x;
+        m_MouseDeltaY = beforePos.y - afterPos.y;
     }
 }
 

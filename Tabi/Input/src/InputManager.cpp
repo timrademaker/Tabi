@@ -66,7 +66,6 @@ void InputManager::Update()
 {
     auto& manager = GetInstance();
     auto& handler = IInputHandler::GetInstance();
-    handler.Update();
 
     for (BoundButtonMap::iterator buttonIter = manager.m_BoundButtons.begin(); buttonIter != manager.m_BoundButtons.end(); ++buttonIter)
     {
@@ -83,6 +82,8 @@ void InputManager::Update()
         float val = handler.GetAxisValue(axisIter->first, &delta);
         axisIter->second.Broadcast(tabi::AxisEvent{ val, delta });
     }
+
+    handler.Update();
 }
 
 void tabi::InputManager::SetCursorVisible(bool a_ShowCursor)

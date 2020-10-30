@@ -76,9 +76,9 @@ namespace tabi
         unsigned int m_WindowWidth;
         unsigned int m_WindowHeight;
 
-        // Mouse delta
-        float m_MouseDeltaX;
-        float m_MouseDeltaY;
+        // Mouse delta in whatever units Windows uses for this (probably pixels)
+        int m_MouseDeltaX;
+        int m_MouseDeltaY;
         // Raw input device
         RAWINPUTDEVICE m_RawInputDevice;
         tabi::vector<char> m_RawBuffer;

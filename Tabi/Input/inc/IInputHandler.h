@@ -55,11 +55,16 @@ namespace tabi
 
 
         /**
-        * @brief Set the cursor mode for the mouse cursor
+        * @brief Show or hide the mouse cursor
         * @params a_Visible Whether the mouse cursor should be visible or not
-        * @params a_Capture Whether the mouse cursor should be locked to the window or not
         */
-        virtual void SetMouseCursorMode(bool a_Visible, bool a_Capture) = 0;
+        virtual void SetMouseCursorVisible(bool a_Visible) = 0;
+
+        /**
+        * @brief Enable or disable mouse cursor capture
+        * @params a_Capture Whether the mouse cursor should be captured or not
+        */
+        virtual void SetMouseCursorCapture(bool a_Capture) = 0;
 
     protected:
         IInputHandler() = default;

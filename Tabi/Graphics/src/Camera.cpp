@@ -8,41 +8,19 @@
 
 void tabi::Camera::MoveBy(tabi::vec3 a_Translation)
 {
-    m_Position += a_Translation;
+    m_Transform.Translate(a_Translation);
     m_ViewDirty = true;
 }
 
 void tabi::Camera::MoveTo(tabi::vec3 a_Position)
 {
-    m_Position = a_Position;
-    m_ViewDirty = true;
-}
-
-void tabi::Camera::RotateBy(tabi::vec3 a_Rotation)
-{
-    m_Rotation += a_Rotation;
-    m_ViewDirty = true;
-}
-
-void tabi::Camera::RotateTo(tabi::vec3 a_Rotation)
-{
-    m_Rotation = a_Rotation;
+    m_Transform.SetPosition(a_Position);
     m_ViewDirty = true;
 }
 
 tabi::vec3 tabi::Camera::GetPosition() const
 {
-    return m_Position;
-}
-
-tabi::vec3 tabi::Camera::GetEulerRotation() const
-{
-    return tabi::vec3(RadToDeg(m_Rotation.x), RadToDeg(m_Rotation.y), RadToDeg(m_Rotation.z));
-}
-
-tabi::vec3 tabi::Camera::GetRotation() const
-{
-    return m_Rotation;
+    return m_Transform.GetPosition();
 }
 
 tabi::mat4 tabi::Camera::GetView()
@@ -55,6 +33,11 @@ tabi::mat4 tabi::Camera::GetProjection()
 {
     GenerateProjection();
     return m_Projection;
+}
+
+const tabi::mat4& tabi::Camera::GetTransform() const
+{
+    return m_Transform;
 }
 
 void tabi::Camera::SetNear(const float a_Near)
@@ -77,29 +60,31 @@ void tabi::Camera::SetFoV(const float a_FoV)
 
 tabi::vec3 tabi::Camera::GetForward() const
 {
-    tabi::vec3 dir;
-    dir.x = cos(m_Rotation.y) * cos(m_Rotation.x);
-    dir.y = sin(m_Rotation.x);
-    dir.z = sin(m_Rotation.y) * cos(m_Rotation.x);
-    dir.Normalize();
-    return dir;
+    return m_Transform.GetForward();
 }
 
 tabi::vec3 tabi::Camera::GetRight() const
 {
-    return tabi::vec3::Normalize(tabi::vec3::Cross(GetForward(), tabi::vec3(0.0f, 1.0f, 0.0f)));
+    return m_Transform.GetRight();
 }
 
 tabi::vec3 tabi::Camera::GetUp() const
 {
-    return tabi::vec3::Normalize(tabi::vec3::Cross(GetRight(), GetForward()));
+    return m_Transform.GetUp();
+}
+
+void tabi::Camera::LookAt(const vec3& a_Target)
+{
+    m_Transform.LookAt(a_Target);
+
+    m_ViewDirty = true;
 }
 
 void tabi::Camera::GenerateView()
 {
     if (m_ViewDirty)
     {
-        m_View = mat4::CreateLookAtMatrix(m_Position, m_Position + GetForward(), tabi::vec3(0, 1, 0));
+        m_View = mat4::CreateLookAtMatrix(GetPosition(), GetPosition() + GetForward(), tabi::vec3(0, 1, 0));
 
         m_ViewDirty = false;
     }

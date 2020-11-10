@@ -109,6 +109,26 @@ mat4 tabi::mat4::Scale(const mat4& a_Matrix, const vec4& a_Scale)
     return result;
 }
 
+vec3 mat4::GetScale() const
+{
+    return vec3(m[0][0], m[1][1], m[2][2]);
+}
+
+void mat4::SetScale(const vec3& a_Scale)
+{
+    m[0][0] = a_Scale.x;
+    m[1][1] = a_Scale.y;
+    m[2][2] = a_Scale.z;
+}
+
+mat4 mat4::SetScale(const mat4& a_Matrix, const vec3& a_Scale)
+{
+    mat4 result = a_Matrix;
+    result.SetScale(a_Scale);
+
+    return result;
+}
+
 void tabi::mat4::Translate(const vec3& a_Translation)
 {
     m[3][0] += a_Translation.x;
@@ -139,6 +159,26 @@ mat4 tabi::mat4::Translate(const mat4& a_Matrix, const vec4& a_Translation)
     mat4 result = a_Matrix;
 
     result.Translate(a_Translation);
+
+    return result;
+}
+
+vec3 mat4::GetPosition() const
+{
+    return vec3(m[3][0], m[3][1], m[3][2]);
+}
+
+void mat4::SetPosition(const vec3& a_Position)
+{
+    m[3][0] = a_Position.x;
+    m[3][1] = a_Position.y;
+    m[3][2] = a_Position.z;
+}
+
+mat4 mat4::SetPosition(const mat4& a_Matrix, const vec3& a_Position)
+{
+    mat4 result = a_Matrix;
+    result.SetPosition(a_Position);
 
     return result;
 }
@@ -209,6 +249,32 @@ mat4 tabi::mat4::RotateZ(const mat4& a_Matrix, const float a_Radians)
     return result;
 }
 
+void mat4::SetRotation(const vec3& a_EulerRotation)
+{
+    mat4 newRotMat = mat4::Identity();
+    newRotMat.RotateX(a_EulerRotation.x);
+    newRotMat.RotateY(a_EulerRotation.y);
+    newRotMat.RotateZ(a_EulerRotation.z);
+
+    v[0] = newRotMat[0];
+    v[1] = newRotMat[1];
+    v[2] = newRotMat[2];
+    v[4] = newRotMat[4];
+    v[5] = newRotMat[5];
+    v[6] = newRotMat[6];
+    v[8] = newRotMat[8];
+    v[9] = newRotMat[9];
+    v[10] = newRotMat[10];
+}
+
+mat4 mat4::SetRotation(const mat4& a_Matrix, const vec3& a_EulerRotation)
+{
+    mat4 result = a_Matrix;
+    result.SetRotation(a_EulerRotation);
+
+    return result;
+}
+
 mat4 tabi::mat4::CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation)
 {
     return a_Scale * a_Rotation * a_Translation;
@@ -257,6 +323,46 @@ mat4 tabi::mat4::CreateLookAtMatrix(const vec3& a_Eye, const vec3& a_Target, con
     result.m[3][2] =  vec3::Dot(forward, a_Eye);
 
     return result;
+}
+
+void tabi::mat4::LookAt(const vec3& a_Target)
+{
+    const vec3 forward = vec3::Normalize(GetPosition() - a_Target);
+    const vec3 right = vec3::Normalize(vec3::Cross(forward, vec3(0, 1, 0)));
+    const vec3 up = vec3::Normalize(vec3::Cross(right, forward));
+    v[0] = right.x;
+    v[1] = up.x;
+    v[2] = forward.x;
+    v[4] = right.y;
+    v[5] = up.y;
+    v[6] = forward.y;
+    v[8] = right.z;
+    v[9] = up.z;
+    v[10] = forward.z;
+}
+
+mat4 tabi::mat4::LookAt(const vec3& a_Target) const
+{
+    mat4 result = *this;
+
+    result.LookAt(a_Target);
+
+    return result;
+}
+
+tabi::vec3 tabi::mat4::GetForward() const
+{
+    return -vec3(v[2], v[6], v[10]);
+}
+
+tabi::vec3 tabi::mat4::GetRight() const
+{
+    return -vec3(v[0], v[4], v[8]);
+}
+
+tabi::vec3 tabi::mat4::GetUp() const
+{
+    return -vec3(v[1], v[5], v[9]);
 }
 
 float& tabi::mat4::Get(const unsigned int a_Row, const unsigned int a_Column)

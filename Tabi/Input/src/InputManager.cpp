@@ -66,7 +66,6 @@ void InputManager::Update()
 {
     auto& manager = GetInstance();
     auto& handler = IInputHandler::GetInstance();
-    handler.Update();
 
     for (BoundButtonMap::iterator buttonIter = manager.m_BoundButtons.begin(); buttonIter != manager.m_BoundButtons.end(); ++buttonIter)
     {
@@ -83,11 +82,18 @@ void InputManager::Update()
         float val = handler.GetAxisValue(axisIter->first, &delta);
         axisIter->second.Broadcast(tabi::AxisEvent{ val, delta });
     }
+
+    handler.Update();
 }
 
-void tabi::InputManager::SetCursorMode(bool a_Visible, bool a_CaptureCursor)
+void tabi::InputManager::SetCursorVisible(bool a_ShowCursor)
 {
-    IInputHandler::GetInstance().SetMouseCursorMode(a_Visible, a_CaptureCursor);
+    IInputHandler::GetInstance().SetMouseCursorVisible(a_ShowCursor);
+}
+
+void tabi::InputManager::SetCursorCapture(bool a_Capture)
+{
+    IInputHandler::GetInstance().SetMouseCursorCapture(a_Capture);
 }
 
 void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)
@@ -110,6 +116,8 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
         {
             tabi::logger::TabiWarn("Unable to unbind button " + tabi::to_string(a_Button) + " as it wasn't bound");
         }
+#else
+        TABI_UNUSED(foundAny);
 #endif
         
         // If there's no more subscribers, unbind in IInputHandler
@@ -140,6 +148,8 @@ void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
         {
             tabi::logger::TabiWarn("Unable to unbind axis " + tabi::to_string(a_Axis) + " as it wasn't bound");
         }
+#else
+        TABI_UNUSED(foundAny);
 #endif
 
         // If there's no more subscribers, unbind in IInputHandler

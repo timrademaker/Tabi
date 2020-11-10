@@ -34,7 +34,7 @@ namespace tabi
 
         static tabi::shared_ptr<Model> LoadModel(tinygltf::Model& a_GLTFModel);
 
-        static Model LoadModelRaw(const tinygltf::Model& a_Model);
+        static void LoadModelRaw(const tinygltf::Model& a_Model, tabi::Model& a_OutModel);
 
     public:
         //tabi::vector<tabi::shared_ptr<Node>> m_BaseNodes;

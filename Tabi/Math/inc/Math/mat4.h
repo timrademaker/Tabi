@@ -59,6 +59,15 @@ namespace tabi
         static mat4 CreatePerspectiveProjectionMatrix(const float a_FoV, const float a_AspectRatio, const float a_Near, const float a_Far);
         static mat4 CreateLookAtMatrix(const vec3& a_Eye, const vec3& a_Target, const vec3& a_Up);
 
+        void LookAt(const vec3& a_Target);
+        mat4 LookAt(const vec3& a_Target) const;
+
+        // Directions
+        tabi::vec3 GetForward() const;
+        tabi::vec3 GetRight() const;
+        tabi::vec3 GetUp() const;
+
+        // Getters
         float Get(const unsigned int a_Row, const unsigned int a_Column) const;
         float& Get(const unsigned int a_Row, const unsigned int a_Column);
 

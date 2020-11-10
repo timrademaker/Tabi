@@ -325,6 +325,46 @@ mat4 tabi::mat4::CreateLookAtMatrix(const vec3& a_Eye, const vec3& a_Target, con
     return result;
 }
 
+void tabi::mat4::LookAt(const vec3& a_Target)
+{
+    const vec3 forward = vec3::Normalize(GetPosition() - a_Target);
+    const vec3 right = vec3::Normalize(vec3::Cross(forward, vec3(0, 1, 0)));
+    const vec3 up = vec3::Normalize(vec3::Cross(right, forward));
+    v[0] = right.x;
+    v[1] = up.x;
+    v[2] = forward.x;
+    v[4] = right.y;
+    v[5] = up.y;
+    v[6] = forward.y;
+    v[8] = right.z;
+    v[9] = up.z;
+    v[10] = forward.z;
+}
+
+mat4 tabi::mat4::LookAt(const vec3& a_Target) const
+{
+    mat4 result = *this;
+
+    result.LookAt(a_Target);
+
+    return result;
+}
+
+tabi::vec3 tabi::mat4::GetForward() const
+{
+    return -vec3(v[2], v[6], v[10]);
+}
+
+tabi::vec3 tabi::mat4::GetRight() const
+{
+    return -vec3(v[0], v[4], v[8]);
+}
+
+tabi::vec3 tabi::mat4::GetUp() const
+{
+    return -vec3(v[1], v[5], v[9]);
+}
+
 float& tabi::mat4::Get(const unsigned int a_Row, const unsigned int a_Column)
 {
     assert(a_Row < 4);

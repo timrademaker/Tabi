@@ -20,4 +20,4 @@ target_link_libraries(${test_name}
     
 # target_link_libraries(${test_name} Tabi Tabi_Test)
     
-add_test(${test_name} ${test_name})
+add_test(NAME ${test_name} COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${test_name}.exe)

@@ -35,8 +35,8 @@ namespace tabi
 
         vec3& operator=(const vec3& a_Rhs);
 
-        bool operator==(const vec3& a_Rhs);
-        bool operator!=(const vec3& a_Rhs);
+        bool operator==(const vec3& a_Rhs) const;
+        bool operator!=(const vec3& a_Rhs) const;
 
         vec3& operator+=(const vec3& a_Rhs);
         vec3& operator+=(const float a_Rhs);

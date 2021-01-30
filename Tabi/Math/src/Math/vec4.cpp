@@ -35,11 +35,11 @@ vec4& vec4::operator=(const vec4& a_Rhs)
     return *this;
 }
 
-bool vec4::operator==(const vec4& a_Rhs)
+bool vec4::operator==(const vec4& a_Rhs) const
 {
     return (x == a_Rhs.x) && (y == a_Rhs.y) && (z == a_Rhs.z) && (w == a_Rhs.w);
 }
-bool vec4::operator!=(const vec4& a_Rhs)
+bool vec4::operator!=(const vec4& a_Rhs) const
 {
     return !(*this == a_Rhs);
 }

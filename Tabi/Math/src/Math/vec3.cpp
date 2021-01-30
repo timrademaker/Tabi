@@ -86,12 +86,12 @@ namespace tabi
         return *this;
     }
 
-    bool vec3::operator==(const vec3& a_Rhs)
+    bool vec3::operator==(const vec3& a_Rhs) const
     {
         return (x == a_Rhs.x) && (y == a_Rhs.y) && (z == a_Rhs.z);
     }
 
-    bool vec3::operator!=(const vec3& a_Rhs)
+    bool vec3::operator!=(const vec3& a_Rhs) const
     {
         return !(*this == a_Rhs);
     }

@@ -77,8 +77,8 @@ namespace tabi
 
         mat4& operator=(const mat4& a_Rhs);
 
-        bool operator==(const mat4& a_Rhs);
-        bool operator!=(const mat4& a_Rhs);
+        bool operator==(const mat4& a_Rhs) const;
+        bool operator!=(const mat4& a_Rhs) const;
 
         mat4& operator+=(const mat4& a_Rhs);
         mat4& operator-=(const mat4& a_Rhs);

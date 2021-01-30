@@ -404,7 +404,7 @@ mat4& mat4::operator=(const mat4& a_Rhs)
     return *this;
 }
 
-bool mat4::operator==(const mat4& a_Rhs)
+bool mat4::operator==(const mat4& a_Rhs) const
 {
     for (auto i = 0; i < 16; ++i)
     {
@@ -417,7 +417,7 @@ bool mat4::operator==(const mat4& a_Rhs)
     return true;
 }
 
-bool mat4::operator!=(const mat4& a_Rhs)
+bool mat4::operator!=(const mat4& a_Rhs) const
 {
     return !(*this == a_Rhs);
 }

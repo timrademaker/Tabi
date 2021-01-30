@@ -22,8 +22,8 @@ namespace tabi
 
         vec4& operator=(const vec4& a_Rhs);
 
-        bool operator==(const vec4& a_Rhs);
-        bool operator!=(const vec4& a_Rhs);
+        bool operator==(const vec4& a_Rhs) const;
+        bool operator!=(const vec4& a_Rhs) const;
 
         vec4& operator+=(const vec4& a_Rhs);
         vec4& operator+=(const float a_Rhs);

@@ -1,5 +1,24 @@
 cmake_minimum_required (VERSION 3.8)
 
+
+set(MATH_HELPERS_HEADERS
+    Helpers/Predicates.h
+)
+
+set(MATH_HELPERS_SOURCES
+    Helpers/Predicates.cpp
+)
+
+add_library(MathHelpers ${MATH_HELPERS_SOURCES})
+target_include_directories(MathHelpers PUBLIC ${CMAKE_CURRENT_LIST_DIR}/Helpers)
+
+target_link_libraries(MathHelpers
+                      gtest 
+                      gtest_main 
+                      Math
+)
+
+
 set(SOURCES 
     mat4/Scaling.cpp
     mat4/Translation.cpp
@@ -16,8 +35,7 @@ target_link_libraries(${test_name}
                       gtest 
                       gtest_main 
                       Math
+                      MathHelpers
 )
-    
-# target_link_libraries(${test_name} Tabi Tabi_Test)
     
 add_test(NAME ${test_name} COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${test_name}.exe)

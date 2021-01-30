@@ -42,7 +42,7 @@ jobs:
       shell: cmd
       run: |
         cd out/project
-        ctest -C %BUILD_TYPE%
+        ctest -C %BUILD_TYPE% --output-on-failure
       
     - name: Archive Artifacts
       uses: actions/upload-artifact@v2

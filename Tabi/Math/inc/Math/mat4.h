@@ -15,6 +15,10 @@ namespace tabi
     {
     public:
         mat4();
+        mat4( float a_00, float a_01, float a_02, float a_03
+            , float a_10, float a_11, float a_12, float a_13
+            , float a_20, float a_21, float a_22, float a_23
+            , float a_30, float a_31, float a_32, float a_33);
         ~mat4() = default;
 
         mat4 Transpose() const;

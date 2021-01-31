@@ -36,7 +36,7 @@ TEST(Mat4Tests, Scale)
     EXPECT_EQ(outForcedScale, forcedScale);
 }
 
-TEST(Mat4Tests, StaticScale)
+TEST(Mat4Tests, ScaleStatic)
 {
     const float scale = 5.0f;
 

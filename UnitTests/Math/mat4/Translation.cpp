@@ -33,7 +33,7 @@ TEST(Mat4Tests, Translate)
     EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, outForcedPosition, forcedPosition);
 }
 
-TEST(Mat4Tests, StaticTranslate)
+TEST(Mat4Tests, TranslateStatic)
 {
     const tabi::vec3 translation(10.0f, 15.0f, -20.0f);
 

@@ -12,18 +12,19 @@
     TABI_UNUSED(a_Expected_Expression);
     TABI_UNUSED(a_Epsilon_Expression);
 
+    ::testing::AssertionResult failOutcome = ::testing::AssertionFailure();
+
     for (int i = 0; i < 16; ++i)
     {
         if (fabs(a_Outcome[i] - a_Expected[i]) > a_Epsilon)
         {
-            return ::testing::AssertionFailure()
-                << a_Outcome_Expression << "[" << i << "]"
+            failOutcome << a_Outcome_Expression << "[" << i << "]"
                 << " is " << a_Outcome[i]
-                << ", but " << a_Expected[i] << " was expected!";
+                << ", but " << a_Expected[i] << " was expected!\n";
         }
     }
 
-    return ::testing::AssertionSuccess();
+    return failOutcome.message()[0] != '\0' ? failOutcome : ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult MathPredicates::Vec2Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const tabi::vec2 a_Outcome, const tabi::vec2 a_Expected)
@@ -35,24 +36,24 @@
 {
     TABI_UNUSED(a_Expected_Expression);
     TABI_UNUSED(a_Epsilon_Expression);
+    
+    ::testing::AssertionResult failOutcome = ::testing::AssertionFailure();
 
     if (fabs(a_Outcome.x - a_Expected.x ) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".x"
+        failOutcome <<  a_Outcome_Expression << ".x"
             << " is " << a_Outcome.x
-            << ", but " << a_Expected.x << " was expected!";
+            << ", but " << a_Expected.x << " was expected!\n";
     }
 
     if (fabs(a_Outcome.y - a_Expected.y) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".y"
+        failOutcome << a_Outcome_Expression << ".y"
             << " is " << a_Outcome.y
             << ", but " << a_Expected.y << " was expected!";
     }
 
-    return ::testing::AssertionSuccess();
+    return failOutcome.message()[0] != '\0' ? failOutcome : ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult MathPredicates::Vec3Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const tabi::vec3 a_Outcome, const tabi::vec3 a_Expected)
@@ -65,31 +66,30 @@
     TABI_UNUSED(a_Expected_Expression);
     TABI_UNUSED(a_Epsilon_Expression);
 
+    ::testing::AssertionResult failOutcome = ::testing::AssertionFailure();
+
     if (fabs(a_Outcome.x - a_Expected.x) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".x"
+        failOutcome << a_Outcome_Expression << ".x"
             << " is " << a_Outcome.x
-            << ", but " << a_Expected.x << " was expected!";
+            << ", but " << a_Expected.x << " was expected!\n";
     }
 
     if (fabs(a_Outcome.y - a_Expected.y) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".y"
+        failOutcome <<  a_Outcome_Expression << ".y"
             << " is " << a_Outcome.y
-            << ", but " << a_Expected.y << " was expected!";
+            << ", but " << a_Expected.y << " was expected!\n";
     }
 
     if (fabs(a_Outcome.z - a_Expected.z) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".z"
+        failOutcome << a_Outcome_Expression << ".z"
             << " is " << a_Outcome.z
             << ", but " << a_Expected.z << " was expected!";
     }
 
-    return ::testing::AssertionSuccess();
+    return failOutcome.message()[0] != '\0' ? failOutcome : ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult MathPredicates::Vec4Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const tabi::vec4 a_Outcome, const tabi::vec4 a_Expected)
@@ -102,37 +102,35 @@
     TABI_UNUSED(a_Expected_Expression);
     TABI_UNUSED(a_Epsilon_Expression);
 
+    ::testing::AssertionResult failOutcome = ::testing::AssertionFailure();
+
     if (fabs(a_Outcome.x - a_Expected.x) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".x"
+        failOutcome << a_Outcome_Expression << ".x"
             << " is " << a_Outcome.x
-            << ", but " << a_Expected.x << " was expected!";
+            << ", but " << a_Expected.x << " was expected!\n";
     }
 
     if (fabs(a_Outcome.y - a_Expected.y) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".y"
+        failOutcome << a_Outcome_Expression << ".y"
             << " is " << a_Outcome.y
-            << ", but " << a_Expected.y << " was expected!";
+            << ", but " << a_Expected.y << " was expected!\n";
     }
 
     if (fabs(a_Outcome.z - a_Expected.z) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".z"
+        failOutcome << a_Outcome_Expression << ".z"
             << " is " << a_Outcome.z
-            << ", but " << a_Expected.z << " was expected!";
+            << ", but " << a_Expected.z << " was expected!\n";
     }
 
     if (fabs(a_Outcome.w - a_Expected.w) > a_Epsilon)
     {
-        return ::testing::AssertionFailure()
-            << a_Outcome_Expression << ".w"
+        failOutcome << a_Outcome_Expression << ".w"
             << " is " << a_Outcome.w
             << ", but " << a_Expected.w << " was expected!";
     }
 
-    return ::testing::AssertionSuccess();
+    return failOutcome.message()[0] != '\0' ? failOutcome : ::testing::AssertionSuccess();
 }

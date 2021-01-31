@@ -221,7 +221,8 @@ void tabi::mat4::RotateX(const float a_Radians)
     rotation.m[1][2] = s;
     rotation.m[2][2] = c;
 
-    *this *= rotation;
+    //*this *= rotation;
+    *this = rotation * *this;
 }
 
 void tabi::mat4::RotateY(const float a_Radians)
@@ -235,7 +236,8 @@ void tabi::mat4::RotateY(const float a_Radians)
     rotation.m[0][2] = -s;
     rotation.m[2][2] = c;
 
-    *this *= rotation;
+    //*this *= rotation;
+    *this = rotation * *this;
 }
 
 void tabi::mat4::RotateZ(const float a_Radians)
@@ -249,7 +251,8 @@ void tabi::mat4::RotateZ(const float a_Radians)
     rotation.m[0][1] = s;
     rotation.m[1][1] = c;
 
-    *this *= rotation;
+    //*this *= rotation;
+    *this = rotation * *this;
 }
 
 mat4 tabi::mat4::RotateX(const mat4& a_Matrix, const float a_Radians)

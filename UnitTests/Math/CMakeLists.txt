@@ -25,6 +25,8 @@ set(SOURCES
     mat4/Rotation.cpp
     mat4/Operators.cpp
     mat4/Misc.cpp
+
+    vec3/Operators.cpp
 )
 
 set(test_name math_tests)

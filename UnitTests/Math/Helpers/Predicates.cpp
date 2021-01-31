@@ -32,7 +32,7 @@
     return Vec2Equal(a_Outcome_Expression, a_Expected_Expression, "epsilon", a_Outcome, a_Expected, std::numeric_limits<float>::epsilon());
 }
 
-::testing::AssertionResult MathPredicates::Vec2Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const char* a_Epsilon_Expression, const tabi::vec2 a_Outcome, const  tabi::vec2 a_Expected, const float a_Epsilon)
+::testing::AssertionResult MathPredicates::Vec2Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const char* a_Epsilon_Expression, const tabi::vec2 a_Outcome, const tabi::vec2 a_Expected, const float a_Epsilon)
 {
     TABI_UNUSED(a_Expected_Expression);
     TABI_UNUSED(a_Epsilon_Expression);
@@ -61,7 +61,7 @@
     return Vec3Equal(a_Outcome_Expression, a_Expected_Expression, "epsilon", a_Outcome, a_Expected, std::numeric_limits<float>::epsilon());
 }
 
-::testing::AssertionResult MathPredicates::Vec3Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const char* a_Epsilon_Expression, const tabi::vec3 a_Outcome, const  tabi::vec3 a_Expected, const float a_Epsilon)
+::testing::AssertionResult MathPredicates::Vec3Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const char* a_Epsilon_Expression, const tabi::vec3 a_Outcome, const tabi::vec3 a_Expected, const float a_Epsilon)
 {
     TABI_UNUSED(a_Expected_Expression);
     TABI_UNUSED(a_Epsilon_Expression);
@@ -97,7 +97,7 @@
     return Vec4Equal(a_Outcome_Expression, a_Expected_Expression, "epsilon", a_Outcome, a_Expected, std::numeric_limits<float>::epsilon());
 }
 
-::testing::AssertionResult MathPredicates::Vec4Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const char* a_Epsilon_Expression, const tabi::vec4 a_Outcome, const  tabi::vec4 a_Expected, const float a_Epsilon)
+::testing::AssertionResult MathPredicates::Vec4Equal(const char* a_Outcome_Expression, const char* a_Expected_Expression, const char* a_Epsilon_Expression, const tabi::vec4 a_Outcome, const tabi::vec4 a_Expected, const float a_Epsilon)
 {
     TABI_UNUSED(a_Expected_Expression);
     TABI_UNUSED(a_Epsilon_Expression);

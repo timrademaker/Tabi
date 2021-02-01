@@ -27,6 +27,7 @@ set(SOURCES
     mat4/Misc.cpp
 
     vec3/Operators.cpp
+    vec3/Misc.cpp
 )
 
 set(test_name math_tests)

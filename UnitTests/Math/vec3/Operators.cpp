@@ -122,34 +122,34 @@ TEST(Vec3Tests, Division)
     // vec3 / vec3
     {
         const tabi::vec3 expected(-2.5f, 0.0f, -156.223f);
-        const tabi::vec3 divider(-3.0f, 6.0f, 1.5f);
+        const tabi::vec3 divisor(-3.0f, 6.0f, 1.5f);
         
         // a / b (vec3)
         const tabi::vec3 vector(7.5f, 0.0f, -234.3345f);
 
-        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divider, expected);
+        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divisor, expected);
 
         // a /= b (vec3)
         tabi::vec3 dividedVector = vector;
-        dividedVector /= divider;
+        dividedVector /= divisor;
 
-        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divider, expected);
+        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divisor, expected);
     }
 
     // vec3 / float
     {
         // a / b (float)
         const tabi::vec3 expected(2.5f, 0.0f, -156.223f);
-        const float divider = 3.0f;
+        const float divisor = 3.0f;
 
         const tabi::vec3 vector(7.5f, 0.0f, -468.669f);
 
-        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divider, expected);
+        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divisor, expected);
 
         // a /= b (float)
         tabi::vec3 dividedVector = vector;
-        dividedVector /= divider;
+        dividedVector /= divisor;
 
-        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divider, expected);
+        EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, vector / divisor, expected);
     }
 }

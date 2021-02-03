@@ -31,6 +31,9 @@ set(SOURCES
 
     vec3/Operators.cpp
     vec3/Misc.cpp
+
+    vec4/Operators.cpp
+    vec4/Misc.cpp
 )
 
 set(test_name math_tests)

@@ -26,6 +26,9 @@ set(SOURCES
     mat4/Operators.cpp
     mat4/Misc.cpp
 
+    vec2/Operators.cpp
+    vec2/Misc.cpp
+
     vec3/Operators.cpp
     vec3/Misc.cpp
 )

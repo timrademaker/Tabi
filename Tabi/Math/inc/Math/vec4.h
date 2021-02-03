@@ -7,14 +7,21 @@ DISABLE_NAMELESS_STRUCT_WARNING
 
 namespace tabi
 {
-    class vec3;
-
     class vec4
     {
     public:
         vec4() : x(0), y(0), z(0), w(0) {}
         vec4(float a_X, float a_Y, float a_Z, float a_W) : x(a_X), y(a_Y), z(a_Z), w(a_W) {}
-        vec4(const vec3& a_Vec3, float a_W);
+        vec4(const class vec3& a_Vec3, float a_W);
+
+        float Dot(const vec4& a_Other) const;
+        void Normalize();
+
+        static float Dot(const vec4& a_Vec1, const vec4& a_Vec2);
+        static vec4 Normalize(const vec4& a_Vector);
+
+        float Length() const;
+        float LengthSquared() const;
 
         /**** Operators ****/
         float& operator[](const unsigned int a_Index);
@@ -42,7 +49,7 @@ namespace tabi
 
         friend vec4 operator-(const vec4& a_Lhs, const vec4& a_Rhs);
         friend vec4 operator-(const vec4& a_Lhs, const float a_Rhs);
-        vec4 operator-();
+        vec4 operator-() const;
 
         friend vec4 operator*(const vec4& a_Lhs, const vec4& a_Rhs);
         friend vec4 operator*(const vec4& a_Lhs, const float a_Rhs);

@@ -31,3 +31,4 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
 endif()
 
 add_subdirectory("Math")
+add_subdirectory("ECS")

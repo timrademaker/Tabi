@@ -17,8 +17,7 @@ Logger::Logger(const std::string a_LoggerName, SinkPtr a_Sink)
 
 inline void Logger::AddSink(SinkPtr a_Sink)
 {
-    m_Logger->sinks().push_back(std::shared_ptr<tabi::logger::ISink>(a_Sink));
-    m_Sinks.push_back(std::move(a_Sink));
+    m_Logger->sinks().push_back(std::move(a_Sink));
 }
 
 void Logger::SetLogLevel(ELogLevel a_LogLevel)

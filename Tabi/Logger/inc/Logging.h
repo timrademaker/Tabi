@@ -16,8 +16,8 @@ namespace tabi
         template<typename Sink, typename ... SinkArgs>
         TABI_EXPORT LoggerPtr CreateLogger(tabi::string a_LoggerName, SinkArgs&& ... a_SinkArgs)
         {
-            auto sink = new Sink(tabi::forward<SinkArgs>(a_SinkArgs)...);
-            auto l = tabi::make_shared<Logger>(std::move(a_LoggerName), sink);
+            auto sink = tabi::make_shared<Sink>(tabi::forward<SinkArgs>(a_SinkArgs)...);
+            auto l = tabi::make_shared<Logger>(std::move(a_LoggerName), std::move(sink));
             LoggerRegistry::GetClientLoggerRegistry().InitializeLogger(l);
             
             return l;
@@ -37,8 +37,8 @@ namespace tabi
         template<typename Sink, typename ... SinkArgs>
         TABI_EXPORT LoggerPtr CreateTabiLogger(tabi::string a_LoggerName, SinkArgs&& ... a_SinkArgs)
         {
-            auto sink = new Sink(tabi::forward<SinkArgs>(a_SinkArgs)...);
-            auto l = tabi::make_shared<Logger>(a_LoggerName, sink);
+            auto sink = tabi::make_shared<Sink>(tabi::forward<SinkArgs>(a_SinkArgs)...);
+            auto l = tabi::make_shared<Logger>(std::move(a_LoggerName), std::move(sink));
             LoggerRegistry::GetTabiLoggerRegistry().InitializeLogger(l);
 
             return l;

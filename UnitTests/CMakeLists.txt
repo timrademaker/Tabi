@@ -32,3 +32,4 @@ endif()
 
 add_subdirectory("Math")
 add_subdirectory("ECS")
+add_subdirectory("Logger")

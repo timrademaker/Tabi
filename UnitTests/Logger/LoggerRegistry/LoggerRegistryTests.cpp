@@ -32,17 +32,3 @@ TEST(LoggerRegistryTests, GetLoggerByName)
     EXPECT_EQ(firstLogger, loggerRegistry.GetLoggerByName(firstLoggerName));
     EXPECT_EQ(secondLogger, loggerRegistry.GetLoggerByName(secondLoggerName));
 }
-
-
-TEST(LoggerRegistryTests, CreateLoggerWithExistingName)
-{
-    // Set up
-    tabi::string loggerName("TestLogger");
-    tabi::shared_ptr<tabi::logger::Logger> firstLogger = tabi::make_shared<tabi::logger::Logger>(loggerName);
-    tabi::shared_ptr<tabi::logger::Logger> secondLogger = tabi::make_shared<tabi::logger::Logger>(loggerName);
-
-    tabi::logger::LoggerRegistry& loggerRegistry = tabi::logger::LoggerRegistry::GetClientLoggerRegistry();
-    loggerRegistry.AddLogger(firstLogger);
-    
-    EXPECT_DEATH(loggerRegistry.AddLogger(secondLogger), "");
-}

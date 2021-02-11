@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TabiTypes.h>
+#include <Logging.h>
 
 #include <assert.h>
 #include <functional>
@@ -152,7 +153,7 @@ namespace tabi
     template<typename EventInfo>
     inline bool EventBase<EventInfo>::UnsubscribeStatic()
     {
-        return Remove(nullptr);
+        return Unsubscribe(nullptr);
     }
 
     template<typename EventInfo>

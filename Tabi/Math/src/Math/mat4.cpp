@@ -26,6 +26,33 @@ tabi::mat4::mat4()
     }
 }
 
+tabi::mat4::mat4(
+      float a_00, float a_01, float a_02, float a_03
+    , float a_10, float a_11, float a_12, float a_13
+    , float a_20, float a_21, float a_22, float a_23
+    , float a_30, float a_31, float a_32, float a_33)
+{
+    m[0][0] = a_00;
+    m[0][1] = a_01;
+    m[0][2] = a_02;
+    m[0][3] = a_03;
+
+    m[1][0] = a_10;
+    m[1][1] = a_11;
+    m[1][2] = a_12;
+    m[1][3] = a_13;
+
+    m[2][0] = a_20;
+    m[2][1] = a_21;
+    m[2][2] = a_22;
+    m[2][3] = a_23;
+
+    m[3][0] = a_30;
+    m[3][1] = a_31;
+    m[3][2] = a_32;
+    m[3][3] = a_33;
+}
+
 mat4 tabi::mat4::Transpose() const
 {
     mat4 transpose;
@@ -194,7 +221,8 @@ void tabi::mat4::RotateX(const float a_Radians)
     rotation.m[1][2] = s;
     rotation.m[2][2] = c;
 
-    *this *= rotation;
+    //*this *= rotation;
+    *this = rotation * *this;
 }
 
 void tabi::mat4::RotateY(const float a_Radians)
@@ -208,7 +236,8 @@ void tabi::mat4::RotateY(const float a_Radians)
     rotation.m[0][2] = -s;
     rotation.m[2][2] = c;
 
-    *this *= rotation;
+    //*this *= rotation;
+    *this = rotation * *this;
 }
 
 void tabi::mat4::RotateZ(const float a_Radians)
@@ -222,7 +251,8 @@ void tabi::mat4::RotateZ(const float a_Radians)
     rotation.m[0][1] = s;
     rotation.m[1][1] = c;
 
-    *this *= rotation;
+    //*this *= rotation;
+    *this = rotation * *this;
 }
 
 mat4 tabi::mat4::RotateX(const mat4& a_Matrix, const float a_Radians)

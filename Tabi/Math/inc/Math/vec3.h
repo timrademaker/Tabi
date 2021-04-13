@@ -13,6 +13,7 @@ namespace tabi
     public:
         vec3() : x(0), y(0), z(0) {}
         vec3(float a_X, float a_Y, float a_Z) : x(a_X), y(a_Y), z(a_Z) {}
+        vec3(const class vec2& a_Vec2, float a_Z);
 
         float Dot(const vec3& a_Other) const;
         vec3 Cross(const vec3& a_Other) const;

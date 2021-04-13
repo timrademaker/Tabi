@@ -4,7 +4,7 @@
 
 using namespace tabi::logger;
 
-void SetDefaultLogger(LoggerPtr a_Logger)
+void tabi::logger::SetDefaultLogger(LoggerPtr a_Logger)
 {
     LoggerRegistry::GetClientLoggerRegistry().SetDefaultLogger(a_Logger);
 }

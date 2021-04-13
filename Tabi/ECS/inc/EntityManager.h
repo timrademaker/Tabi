@@ -32,7 +32,7 @@ namespace tabi
          * @params a_Entity The entity for which to retrieve the signature
          * @returns The signature of the entity
          */
-        EntitySignature GetSignature(const Entity a_Entity);
+        EntitySignature GetSignature(const Entity a_Entity) const;
 
         /**
          * @brief Sets the signature of an entity

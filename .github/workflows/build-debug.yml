@@ -37,6 +37,12 @@ jobs:
           robocopy /move "bin/%PLATFORM%/%BUILD_TYPE%/bin/%BUILD_TYPE%" "bin/%PLATFORM%/%BUILD_TYPE%/bin"
           exit 0
         )
+
+    - name: Run Tests
+      shell: cmd
+      run: |
+        cd out/project
+        ctest -C %BUILD_TYPE% --output-on-failure
       
     - name: Archive Artifacts
       uses: actions/upload-artifact@v2

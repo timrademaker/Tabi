@@ -1,4 +1,5 @@
 #include "Math/vec3.h"
+#include "Math/vec2.h"
 
 #include <cassert>
 
@@ -6,6 +7,11 @@
 
 namespace tabi
 {
+    vec3::vec3(const vec2& a_Vec2, float a_Z)
+        : x(a_Vec2.x), y(a_Vec2.y), z(a_Z)
+    {
+    }
+
     float tabi::vec3::Dot(const vec3& a_Other) const
     {
         return Dot(*this, a_Other);
@@ -37,7 +43,7 @@ namespace tabi
 
     vec3 tabi::vec3::Normalize(const vec3& a_Vector)
     {
-        return vec3(a_Vector) / a_Vector.Length();
+        return a_Vector / a_Vector.Length();
     }
 
     float tabi::vec3::Length() const

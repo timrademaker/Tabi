@@ -59,9 +59,9 @@ LoggerPtr LoggerRegistry::GetLoggerByName(LoggerName_t a_LoggerName)
 LoggerRegistry::LoggerRegistry()
 {
     constexpr const char* defaultLoggerName = "";
-    auto sink = new ConsoleSink;
+    auto sink = tabi::make_shared<ConsoleSink>();
 
-    m_DefaultLogger = std::shared_ptr<Logger>(new Logger(defaultLoggerName, sink));
+    m_DefaultLogger = std::make_shared<Logger>(defaultLoggerName, sink);
     InitializeLogger(m_DefaultLogger, false);
     m_Loggers[defaultLoggerName] = m_DefaultLogger;
 

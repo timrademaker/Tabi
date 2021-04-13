@@ -3,11 +3,6 @@
 #include <TabiTypes.h>
 #include <TabiMacros.h>
 
-#include <string>
-#include <unordered_map>
-#include <memory>
-
-
 namespace tabi
 {
     namespace logger

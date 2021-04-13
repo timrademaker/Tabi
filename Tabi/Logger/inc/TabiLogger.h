@@ -31,7 +31,7 @@ namespace tabi
         */
         class TABI_EXPORT Logger
         {
-            using SinkPtr = ISink*;
+            using SinkPtr = tabi::shared_ptr<ISink>;
             using InternalLogLevel_t = spdlog::level::level_enum;
         public:
             using LogMessage_t = tabi::string;
@@ -74,7 +74,6 @@ namespace tabi
             ELogLevel m_FlushOn = ELogLevel::Critical;
 
             tabi::shared_ptr<spdlog::logger> m_Logger;
-            tabi::vector<SinkPtr> m_Sinks;
         };
     }
 }

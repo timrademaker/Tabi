@@ -35,3 +35,10 @@ add_subdirectory("ThirdParty")
 
 # Copy assets to output directory
 file(COPY "Assets" DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+
+include(CTest)
+
+if(BUILD_TESTING)
+    add_subdirectory(./UnitTests)
+endif(BUILD_TESTING)

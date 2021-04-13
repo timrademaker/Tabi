@@ -11,10 +11,10 @@ tabi::string tabi::utils::StringReplace(const tabi::string& a_String, const tabi
     tabi::string result(a_String);
     size_t pos = 0;
 
-    while ((pos = a_String.find(a_Search, pos)) != tabi::string::npos)
+    while ((pos = result.find(a_Search, pos)) != tabi::string::npos)
     {
         result.replace(pos, a_Search.length(), a_Replacement);
-        pos += a_Search.length();
+        pos += a_Replacement.length();
     }
 
     return result;

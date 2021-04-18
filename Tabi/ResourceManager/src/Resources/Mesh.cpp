@@ -22,7 +22,7 @@ constexpr bool swapZPositionSign = false;
 
 using namespace tabi;
 
-tabi::Mesh::Mesh(const char* a_Path, const bool a_ShouldBufferMesh = true, const bool a_CleanUpMeshDataAfterBuffering = true)
+tabi::Mesh::Mesh(const char* a_Path, const bool a_ShouldBufferMesh, const bool a_CleanUpMeshDataAfterBuffering)
 {
     auto path = tabi::string(a_Path);
     auto dotInd = path.find_last_of(".");

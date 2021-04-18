@@ -298,7 +298,7 @@ void tabi::graphics::Renderer::UseShader(tabi::shared_ptr<IShader> a_Shader)
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to use a sampler!");
+        tabi::logger::TabiError("Please initialize the renderer before trying to use a shader!");
         return;
     }
 

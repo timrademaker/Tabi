@@ -2,6 +2,8 @@
 
 #include <Resources/Material.h>
 
+#include <IRenderer.h>
+
 #include <Math/vec3.h>
 #include "ModelLoaderUtils.h"
 
@@ -20,7 +22,7 @@ constexpr bool swapZPositionSign = false;
 
 using namespace tabi;
 
-tabi::Mesh::Mesh(const char* a_Path)
+tabi::Mesh::Mesh(const char* a_Path, const bool a_ShouldBufferMesh = true, const bool a_CleanUpMeshDataAfterBuffering = true)
 {
     auto path = tabi::string(a_Path);
     auto dotInd = path.find_last_of(".");
@@ -38,6 +40,12 @@ tabi::Mesh::Mesh(const char* a_Path)
     }
 
     *this = LoadMeshRaw(model);
+
+    if (a_ShouldBufferMesh)
+    {
+        tabi::graphics::IRenderer& renderer = tabi::graphics::IRenderer::GetInstance();
+        renderer.BufferMesh(*this, a_CleanUpMeshDataAfterBuffering);
+    }
 }
 
 tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex)

@@ -10,6 +10,9 @@ set(HEADERS
     inc/Resources/Model.h
     inc/Resources/Texture.h
     inc/ModelLoaderUtils.h
+
+    inc/Components/StaticMeshComponent.h
+    inc/Systems/StaticMeshRendererSystem.h
 )
 
 # Set sources for ResourceManager
@@ -20,6 +23,9 @@ set(SOURCES
     src/Resources/Model.cpp
     src/Resources/Texture.cpp
     src/ModelLoaderUtils.cpp
+    
+    src/Components/StaticMeshComponent.cpp
+    src/Systems/StaticMeshRendererSystem.cpp
 )
 
 # Add source to this project's executable.
@@ -28,4 +34,4 @@ add_library(ResourceManager EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 target_include_directories(ResourceManager PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(ResourceManager PUBLIC TabiCommon Graphics Utilities Math TinyGLTF)
+target_link_libraries(ResourceManager PUBLIC TabiCommon Graphics Utilities Math ECS TinyGLTF)

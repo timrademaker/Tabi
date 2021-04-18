@@ -30,7 +30,12 @@ namespace tabi
         };
     public:
         Mesh() = default;
-        Mesh(const char* a_Path);
+        /**
+         * @params a_Path The path to the mesh to load
+         * @params a_ShouldBufferMesh If true, the mesh is uploaded to the GPU after being loaded
+         * @params a_CleanUpMeshDataAfterBuffering If true, removes mesh data from memory after uploading the GPU. Has no effect if a_ShouldBufferMesh is false.
+         */
+        Mesh(const char* a_Path, const bool a_ShouldBufferMesh = true, const bool a_CleanUpMeshDataAfterBuffering = true);
 
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
 

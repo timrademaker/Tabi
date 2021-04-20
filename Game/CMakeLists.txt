@@ -10,14 +10,20 @@ if(SPACESHOOTER)
     set(HEADERS
 		${HEADERS}
 	    inc/SpaceShooter/Components/MovementComponent.h
+	    inc/SpaceShooter/Components/HealthComponent.h
+
 	    inc/SpaceShooter/Systems/MovementSystem.h
+
 	    inc/SpaceShooter/SpaceShooterGameMode.h
 	)
 
 	set(SOURCES
 		${SOURCES}
 	    src/SpaceShooter/Components/MovementComponent.cpp
+	    src/SpaceShooter/Components/HealthComponent.cpp
+
 	    src/SpaceShooter/Systems/MovementSystem.cpp
+
 	    src/SpaceShooter/SpaceShooterGameMode.cpp
 	)
 

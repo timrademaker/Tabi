@@ -12,8 +12,6 @@
 
 namespace tabi
 {
-    struct EmptyEvent {};
-
     template<typename EventInfo>
     class EventBase
     {
@@ -29,7 +27,7 @@ namespace tabi
         * @params a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
-        typename typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type 
+        typename typename std::enable_if<!std::is_void<T>::value>::type 
             Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo));
         /**
         * @brief Subscribe a callback to an event
@@ -43,8 +41,8 @@ namespace tabi
         * @params a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
-        typename typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type 
-            Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)());
+        typename typename std::enable_if<std::is_void<T>::value>::type 
+            Subscribe(UserClass* a_Object, void());
         /**
         * @brief Subscribe a static function to an event
         * @params a_Callback The callback function to send events to
@@ -71,12 +69,12 @@ namespace tabi
         * @params a_Event The message sent to all subscribers' callback functions
         */
         template<typename T = EventInfo>
-        typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast(EventInfo a_Event);
+        typename std::enable_if<!std::is_void<T>::value>::type Broadcast(EventInfo /*a_EventInfo*/);
         /**
         * @brief Broadcasts an event to all subscribers. Only available when using tabi::Event
         */
         template<typename T = EventInfo>
-        typename typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast();
+        typename std::enable_if<std::is_void<T>::value>::type Broadcast();
 
         /**
         * @brief Checks if this event has any subscribers
@@ -99,7 +97,7 @@ namespace tabi
 
     template<typename EventInfo>
     template<typename UserClass, typename T>
-    inline typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo))
+    inline typename std::enable_if<!std::is_void<T>::value>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo))
     {
         assert(a_Object);
         assert(a_Callback);
@@ -116,7 +114,7 @@ namespace tabi
 
     template<typename EventInfo>
     template<typename UserClass, typename T>
-    inline typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)())
+    inline typename std::enable_if<std::is_void<T>::value>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void())
     {
         assert(a_Object);
         assert(a_Callback);
@@ -165,7 +163,7 @@ namespace tabi
     template<typename EventInfo>
     template<typename T>
     inline 
-    typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type EventBase<EventInfo>::Broadcast(EventInfo a_Event)
+    typename std::enable_if<!std::is_void<T>::value, void>::type EventBase<EventInfo>::Broadcast(EventInfo a_Event)
     {
         for (auto iter = m_Callbacks.begin(); iter != m_Callbacks.end(); ++iter)
         {
@@ -179,14 +177,13 @@ namespace tabi
     template<typename EventInfo>
     template<typename T>
     inline
-    typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type EventBase<EventInfo>::Broadcast()
+    typename std::enable_if<std::is_void<T>::value, void>::type EventBase<EventInfo>::Broadcast()
     {
-        EmptyEvent ev;
         for (auto iter = m_Callbacks.begin(); iter != m_Callbacks.end(); ++iter)
         {
             for (CallbackType& d : iter->second)
             {
-                d(ev);
+                d();
             }
         }
     }
@@ -212,5 +209,6 @@ namespace tabi
 #endif
     }
 
-    using Event = tabi::EventBase<EmptyEvent>;
+    using Event = tabi::EventBase<void>;
+    using EventSignature = std::function<void()>;
 }

@@ -1,1 +1,1 @@
-#include "Components/EntityTagComponent.h"
+#include "Components/TagComponent.h"

@@ -23,7 +23,7 @@ target_include_directories(Core PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 # PUBLIC: Used in headers and source files
 target_link_libraries(Core PUBLIC TabiCommon Graphics)
 # PRIVATE: Used in source files
-target_link_libraries(Core PRIVATE Logger Input)
+target_link_libraries(Core PRIVATE Logger Input ResourceManager)
 
 add_custom_command(
     TARGET Core

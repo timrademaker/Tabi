@@ -14,6 +14,7 @@ set(HEADERS
     inc/ECS.h
     
     inc/Components/Transform.h
+    inc/Components/TagComponent.h
 )
 
 # Set sources for ECS
@@ -22,6 +23,9 @@ set(SOURCES
     src/ComponentManager.cpp
     src/SystemManager.cpp
     src/ECS.cpp
+
+    src/Components/Transform.cpp
+    src/Components/TagComponent.cpp
 )
 
 # Add source to this project's executable.

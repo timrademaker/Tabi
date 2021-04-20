@@ -3,6 +3,8 @@
 #include <Math/vec3.h>
 #include <Math/mat4.h>
 
+#include <TabiMacros.h>
+
 namespace tabi
 {
     struct Transform

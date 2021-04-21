@@ -6,5 +6,6 @@ void SpaceShooter::GunComponent::PrepareShot()
     {
         m_HasPendingShot = true;
         m_CurrentShotCooldown = m_ShotCooldown;
+        m_AmmoCount -= 1;
     }
 }

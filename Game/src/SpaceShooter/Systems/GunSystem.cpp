@@ -67,7 +67,7 @@ void SpaceShooter::GunSystem::ShootBullet(const BulletInfo& a_BulletInfo, const 
 
     // Add movement component
     SpaceShooter::MovementComponent movement;
-    movement.m_Velocity = entityTransform.m_EulerRotation.Forward() * a_BulletInfo.m_Velocity;
+    movement.m_Velocity = tabi::mat4::SetRotation(tabi::mat4::Identity(), entityTransform.m_EulerRotation).GetForward() * a_BulletInfo.m_Velocity;
     m_ECS->AddComponent(bullet, movement);
 
     // Add bullet component

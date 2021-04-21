@@ -17,6 +17,6 @@ namespace SpaceShooter
         
         int m_AmmoCount;
 
-        bool m_HasPendingShot;
+        bool m_HasPendingShot = false;
     };
 }

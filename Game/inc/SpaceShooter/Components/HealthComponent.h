@@ -9,6 +9,7 @@ namespace SpaceShooter
     class HealthComponent
     {
     public:
+        HealthComponent() = default;
         HealthComponent(const int a_StartingHealth, tabi::EventSignature a_DestroyEntityFunction);
 
         TABI_INLINE void SetHealth(const int a_Health)

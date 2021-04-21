@@ -19,8 +19,12 @@ namespace SpaceShooter
         virtual bool OnInitialize() override;
         virtual void OnUpdate(float a_DeltaTime) override;
 
+        void SetUpPlayer();
+
     private:
         tabi::shared_ptr<tabi::Camera> m_Camera;
         tabi::ECS m_ECS;
+
+        tabi::Entity m_Player;
     };
 }

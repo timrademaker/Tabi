@@ -11,8 +11,13 @@ if(SPACESHOOTER)
 		${HEADERS}
 	    inc/SpaceShooter/Components/MovementComponent.h
 	    inc/SpaceShooter/Components/HealthComponent.h
+	    inc/SpaceShooter/Components/GunComponent.h
+		inc/SpaceShooter/Components/BulletComponent.h
 
 	    inc/SpaceShooter/Systems/MovementSystem.h
+	    inc/SpaceShooter/Systems/GunSystem.h
+
+		inc/SpaceShooter/Weapons/BulletInfo.h
 
 	    inc/SpaceShooter/SpaceShooterGameMode.h
 	)
@@ -21,8 +26,13 @@ if(SPACESHOOTER)
 		${SOURCES}
 	    src/SpaceShooter/Components/MovementComponent.cpp
 	    src/SpaceShooter/Components/HealthComponent.cpp
+		src/SpaceShooter/Components/GunComponent.cpp
+		src/SpaceShooter/Components/BulletComponent.cpp
 
 	    src/SpaceShooter/Systems/MovementSystem.cpp
+		src/SpaceShooter/Systems/GunSystem.cpp
+
+		src/SpaceShooter/Weapons/BulletInfo.cpp
 
 	    src/SpaceShooter/SpaceShooterGameMode.cpp
 	)
@@ -49,7 +59,8 @@ target_include_directories(Game PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 if(SPACESHOOTER)
 	target_include_directories(Game PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc/SpaceShooter)
-target_link_libraries(Game PRIVATE ECS)
+	target_link_libraries(Game PRIVATE ECS)
+	target_link_libraries(Game PUBLIC ResourceManager Math)
 endif()
 
 target_link_libraries(Game PRIVATE Core Logger Input)

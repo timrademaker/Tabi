@@ -9,6 +9,9 @@ set(SOURCES
 if(SPACESHOOTER)
     set(HEADERS
 		${HEADERS}
+
+	    inc/SpaceShooter/Entities/Player.h
+
 	    inc/SpaceShooter/Components/MovementComponent.h
 	    inc/SpaceShooter/Components/HealthComponent.h
 	    inc/SpaceShooter/Components/GunComponent.h
@@ -24,6 +27,9 @@ if(SPACESHOOTER)
 
 	set(SOURCES
 		${SOURCES}
+
+		src/SpaceShooter/Entities/Player.cpp
+
 	    src/SpaceShooter/Components/MovementComponent.cpp
 	    src/SpaceShooter/Components/HealthComponent.cpp
 		src/SpaceShooter/Components/GunComponent.cpp

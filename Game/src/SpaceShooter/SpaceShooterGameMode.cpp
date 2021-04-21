@@ -1,10 +1,14 @@
 #include "SpaceShooter/SpaceShooterGameMode.h"
 
+#include "Entities/Player.h"
+
 #include "Components/GunComponent.h"
 #include "Components/MovementComponent.h"
 
 #include "Systems/MovementSystem.h"
 #include "Systems/GunSystem.h"
+
+#include <Application.h>
 
 #include <Components/Transform.h>
 #include <Components/StaticMeshComponent.h>
@@ -15,6 +19,14 @@
 #include <IRenderer.h>
 #include <ResourceManager.h>
 
+
+SpaceShooter::SpaceShooterGameMode::~SpaceShooterGameMode()
+{
+    if (m_Player)
+    {
+        delete m_Player;
+    }
+}
 
 bool SpaceShooter::SpaceShooterGameMode::OnInitialize()
 {
@@ -33,6 +45,8 @@ bool SpaceShooter::SpaceShooterGameMode::OnInitialize()
     m_ECS.RegisterSystem<tabi::StaticMeshRenderSystem>();
     m_ECS.SetComponentTypeRequired<tabi::StaticMeshRenderSystem, tabi::StaticMeshComponent>(true);
     m_ECS.SetComponentTypeRequired<tabi::StaticMeshRenderSystem, tabi::Transform>(true);
+
+    m_Player = new Player(&m_ECS);
 
 
     tabi::Entity ent = m_ECS.CreateEntity();
@@ -57,47 +71,16 @@ bool SpaceShooter::SpaceShooterGameMode::OnInitialize()
     tabi::InputManager::SetCursorVisible(false);
     tabi::InputManager::SetCursorCapture(true);
 
-
-    SetUpPlayer();
-
     return true;
 }
 
 void SpaceShooter::SpaceShooterGameMode::OnUpdate(float a_DeltaTime)
 {
     m_ECS.Update(a_DeltaTime);
+    m_Player->Update(a_DeltaTime);
 }
 
-void SpaceShooter::SpaceShooterGameMode::SetUpPlayer()
+void SpaceShooter::SpaceShooterGameMode::OnGameOver()
 {
-    // Placeholder until I add a Player class
-
-    m_Player = m_ECS.CreateEntity();
-    
-    // Transform
-    tabi::Transform tr;
-    tr.m_Position = tabi::vec3{ 0.0f, 0.0f, 0.0f };
-    tr.m_Scale = tabi::vec3{ 0.01f, 0.01f, 0.01f };
-    tr.m_EulerRotation = tabi::vec3{ 0.0f, 1.57079633f, 0.0f };
-    m_ECS.AddComponent(m_Player, tr);
-
-    // Mesh
-    tabi::StaticMeshComponent smc;
-    auto duck = tabi::ResourceManager::GetInstance().LoadResource<tabi::Mesh>("Assets/Duck.glb");
-    smc.m_Mesh = duck;
-    smc.m_RelativeMeshRotation = tabi::vec3{ 0.0f, 1.57079633f, 0.0f };
-
-    m_ECS.AddComponent(m_Player, smc);
-
-    // Tag
-    tabi::TagComponent tags;
-    tags.AddTag("Player");
-    m_ECS.AddComponent(m_Player, tags);
-    
-    // Gun
-    SpaceShooter::GunComponent gun;
-    gun.m_AmmoCount = -1;
-    gun.m_BulletInfo = SpaceShooter::BulletInfoFactory::CreateBulletInfo(SpaceShooter::EBulletType::Bullet);
-    gun.m_ShotCooldown = 1.0f;
-    m_ECS.AddComponent(m_Player, gun);
+    tabi::Application::Get().ExitGame();
 }

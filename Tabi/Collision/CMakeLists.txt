@@ -7,6 +7,8 @@ set(HEADERS
     inc/Simplex.h
 
     inc/Colliders/ICollider.h
+    inc/Colliders/Sphere.h
+    inc/Colliders/Hull.h
 )
 
 # Set sources for Collision
@@ -15,6 +17,8 @@ set(SOURCES
     src/Simplex.cpp
 
     src/Colliders/ICollider.cpp
+    src/Colliders/Sphere.cpp
+    src/Colliders/Hull.cpp
 )
 
 # Add source to this project's executable.

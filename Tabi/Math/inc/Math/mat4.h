@@ -59,6 +59,19 @@ namespace tabi
         void SetRotation(const vec3& a_EulerRotation);
         static mat4 SetRotation(const mat4& a_Matrix, const vec3& a_EulerRotation);
 
+        /** 
+         * Set the rotation of the matrix in the opposite way of what SetRotation would do
+         * @param a_EulerRotation The rotation of which to set the opposite as the rotation of this matrix (will be multiplied by -1 before being used)
+         */
+        void SetUnRotation(const vec3& a_EulerRotation);
+        /**
+         * Set the rotation of the matrix in the opposite way of what SetRotation would do
+         * @param a_Matrix The matrix to set the rotation in
+         * @param a_EulerRotation The rotation of which to set the opposite as the rotation of this matrix (will be multiplied by -1 before being used)
+         * @return A matrix with the rotation undone
+         */
+        static mat4 SetUnRotation(const mat4& a_Matrix, const vec3& a_EulerRotation);
+
         static mat4 CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation);
         static mat4 CreatePerspectiveProjectionMatrix(const float a_FoV, const float a_AspectRatio, const float a_Near, const float a_Far);
         static mat4 CreateLookAtMatrix(const vec3& a_Eye, const vec3& a_Target, const vec3& a_Up);

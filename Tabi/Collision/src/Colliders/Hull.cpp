@@ -17,6 +17,10 @@ tabi::HullCollider::HullCollider(tabi::vector<vec3>& a_Vertices, vec3 a_WorldPos
 
 tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Direction) const
 {
+    // Rotate the direction vector based on the collider's rotation
+    // Rotate in the opposite direction, as this prevents us from having to rotate all points instead
+    const vec3 searchDirection = mat4::SetUnRotation(mat4::Identity(), m_Transform.m_EulerRotation) * a_Direction;
+
     int furthestPointIndex = -1;
     float furthestPointDistance = FLT_MIN;
 
@@ -24,7 +28,7 @@ tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Directi
     {
         const vec3& vertex = m_Vertices[vertexIndex];
 
-        const float distance = a_Direction.Dot(vertex);
+        const float distance = searchDirection.Dot(vertex);
         if (distance > furthestPointDistance)
         {
             furthestPointIndex = vertexIndex;
@@ -32,6 +36,6 @@ tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Directi
         }
     }
 
-    return m_Transform.m_Position + (m_Vertices[furthestPointIndex] * m_Transform.m_Scale);
+    return m_Transform.m_Position + mat4::SetRotation(mat4::Identity(), m_Transform.m_EulerRotation) * (m_Vertices[furthestPointIndex] * m_Transform.m_Scale);
 }
 

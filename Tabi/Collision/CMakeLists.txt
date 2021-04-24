@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 3.8)
 # Set headers for Collision
 set(HEADERS 
     inc/GJK.h
-    inc/Simplex.h
+    inc/ThreeSimplex.h
 
     inc/Colliders/Cube.h
     inc/Colliders/Hull.h
@@ -15,7 +15,7 @@ set(HEADERS
 # Set sources for Collision
 set(SOURCES 
     src/GJK.cpp
-    src/Simplex.cpp
+    src/ThreeSimplex.cpp
 
     src/Colliders/Cube.cpp
     src/Colliders/Hull.cpp

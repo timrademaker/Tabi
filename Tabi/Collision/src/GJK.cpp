@@ -6,9 +6,9 @@
 
 bool tabi::GJK::CollidersAreOverlapping(const ICollider* a_Collider1, const ICollider* a_Collider2)
 {
-    Simplex simplex;
+    ThreeSimplex simplex;
 
-    vec3 direction; // Arbitrary direction
+    vec3 direction = a_Collider1->GetPosition() - a_Collider2->GetPosition();
     vec3 pointA = Support(a_Collider1, a_Collider2, direction);
     simplex.AddPoint(pointA);
 

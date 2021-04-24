@@ -1,18 +1,21 @@
 #pragma once
 
 #include <Math/vec3.h>
-#include <TabiContainers.h>
 
 namespace tabi
 {
-    class Simplex
+    class ThreeSimplex
     {
     public:
-        Simplex() = default;
-        Simplex(const size_t a_ExpectedNumPoints);
-        ~Simplex() = default;
+        ThreeSimplex();
+        ~ThreeSimplex() = default;
 
-        void AddPoint(const tabi::vec3& a_Point);
+        /**
+         * Add a point to the simplex
+         * @param a_Point The point to add
+         * @return True if the point was successfully added
+         */
+        bool AddPoint(const tabi::vec3& a_Point);
 
         /**
          * Check if the simplex contains the origin
@@ -22,6 +25,7 @@ namespace tabi
         bool ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin);
 
     private:
-        tabi::vector<tabi::vec3> m_Points;
+        tabi::vec3 m_Points[4];
+        int m_NumPoints;
     };
 }

@@ -1,9 +1,18 @@
 #include "Colliders/Hull.h"
 
+tabi::HullCollider::HullCollider(tabi::vector<vec3>& a_Vertices)
+    : m_Vertices(a_Vertices)
+{
+}
+
+tabi::HullCollider::HullCollider(tabi::vector<vec3>& a_Vertices, Transform a_WorldTransform)
+    : m_Vertices(a_Vertices), ICollider(a_WorldTransform)
+{
+}
+
 tabi::HullCollider::HullCollider(tabi::vector<vec3>& a_Vertices, vec3 a_WorldPosition)
     : m_Vertices(a_Vertices), ICollider(a_WorldPosition)
 {
-    m_RelativeCenter = FindHullCenter();
 }
 
 tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Direction) const
@@ -23,18 +32,6 @@ tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Directi
         }
     }
 
-    return m_WorldPosition + m_RelativeCenter + m_Vertices[furthestPointIndex];
+    return m_Transform.m_Position + (m_Vertices[furthestPointIndex] * m_Transform.m_Scale);
 }
 
-tabi::vec3 tabi::HullCollider::FindHullCenter()
-{
-    // Determine the average position of all vertices. Not completely accurate, but it should do the trick
-    vec3 accumulatedVertexPosition;
-    
-    for (const vec3& vertex : m_Vertices)
-    {
-        accumulatedVertexPosition += vertex;
-    }
-    
-    return accumulatedVertexPosition / static_cast<float>(m_Vertices.size());
-}

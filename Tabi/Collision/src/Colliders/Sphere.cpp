@@ -17,11 +17,10 @@ tabi::SphereCollider::SphereCollider(const tabi::vec3& a_Center, const float a_R
 
 tabi::vec3 tabi::SphereCollider::GetFurthestPointInDirection(const tabi::vec3& a_Direction) const
 {
-    return m_WorldPosition + vec3::Normalize(a_Direction) * m_Radius;
+    return m_Transform.m_Position + vec3::Normalize(a_Direction) * m_Radius * m_Transform.m_Scale;
 }
 
 void tabi::SphereCollider::SetRadius(const float a_Radius)
 {
     m_Radius = a_Radius;
 }
-

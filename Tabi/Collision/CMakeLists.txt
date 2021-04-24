@@ -6,9 +6,10 @@ set(HEADERS
     inc/GJK.h
     inc/Simplex.h
 
+    inc/Colliders/Cube.h
+    inc/Colliders/Hull.h
     inc/Colliders/ICollider.h
     inc/Colliders/Sphere.h
-    inc/Colliders/Hull.h
 )
 
 # Set sources for Collision
@@ -16,9 +17,10 @@ set(SOURCES
     src/GJK.cpp
     src/Simplex.cpp
 
+    src/Colliders/Cube.cpp
+    src/Colliders/Hull.cpp
     src/Colliders/ICollider.cpp
     src/Colliders/Sphere.cpp
-    src/Colliders/Hull.cpp
 )
 
 # Add source to this project's executable.
@@ -30,7 +32,7 @@ target_include_directories(Collision PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
 # PUBLIC: Used in headers and source files
-target_link_libraries(Collision PUBLIC TabiCommon Math)
+target_link_libraries(Collision PUBLIC TabiCommon Math ECS)
 # PRIVATE: Used in source files
 target_link_libraries(Collision PRIVATE Logger)
 

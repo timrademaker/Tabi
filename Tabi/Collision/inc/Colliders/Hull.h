@@ -9,9 +9,9 @@ namespace tabi
     class HullCollider : public ICollider
     {
     public:
-        HullCollider(tabi::vector<vec3>& a_Vertices);
-        HullCollider(tabi::vector<vec3>& a_Vertices, Transform a_WorldTransform);
-        HullCollider(tabi::vector<vec3>& a_Vertices, vec3 a_WorldPosition);
+        HullCollider(const tabi::vector<vec3>& a_Vertices);
+        HullCollider(const tabi::vector<vec3>& a_Vertices, const Transform& a_WorldTransform);
+        HullCollider(const tabi::vector<vec3>& a_Vertices, const vec3& a_WorldPosition);
         ~HullCollider() = default;
 
         virtual vec3 GetFurthestPointInDirection(const vec3& a_Direction) const override;

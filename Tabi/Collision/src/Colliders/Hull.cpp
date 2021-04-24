@@ -1,16 +1,16 @@
 #include "Colliders/Hull.h"
 
-tabi::HullCollider::HullCollider(tabi::vector<vec3>& a_Vertices)
+tabi::HullCollider::HullCollider(const tabi::vector<vec3>& a_Vertices)
     : m_Vertices(a_Vertices)
 {
 }
 
-tabi::HullCollider::HullCollider(tabi::vector<vec3>& a_Vertices, Transform a_WorldTransform)
+tabi::HullCollider::HullCollider(const tabi::vector<vec3>& a_Vertices, const Transform& a_WorldTransform)
     : m_Vertices(a_Vertices), ICollider(a_WorldTransform)
 {
 }
 
-tabi::HullCollider::HullCollider(tabi::vector<vec3>& a_Vertices, vec3 a_WorldPosition)
+tabi::HullCollider::HullCollider(const tabi::vector<vec3>& a_Vertices, const vec3& a_WorldPosition)
     : m_Vertices(a_Vertices), ICollider(a_WorldPosition)
 {
 }

@@ -21,12 +21,41 @@ bool tabi::ThreeSimplex::AddPoint(const tabi::vec3& a_Point)
 
 bool tabi::ThreeSimplex::ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin)
 {
-    if (m_NumPoints == 4)
+    if (m_NumPoints == 4)   // Tetrahedron
     {
-        // TODO: Check if origin contained 
+        // Check if the origin is inside the tetrahedron
+
+        const vec3 ad = d - a;
+        const vec3 bd = d - b;
+        const vec3 cd = d - c;
+        const vec3 d0 = -d;
+
+        const vec3 abdNormal = ad.Cross(bd);
+        const vec3 acdNormal = ad.Cross(bd);
+        const vec3 bcdNormal = bd.Cross(cd);
+
+        if (abdNormal.Dot(d0) < 0.0f)
+        {
+            // Outside ABD
+            a_DirectionTowardsOrigin = abdNormal;
+        }
+        else if (acdNormal.Dot(d0) < 0.0f)
+        {
+            // Outside ACD
+            a_DirectionTowardsOrigin = acdNormal;
+        }
+        else if (bcdNormal.Dot(d0) < 0.0f)
+        {
+            // Outside BCD
+            a_DirectionTowardsOrigin = bcdNormal;
+        }
+        else
+        {
+            return true;
+        }
     }
     // Origin can't be contained yet as the simplex is not a tetrahedron
-    else if (m_NumPoints == 3)
+    else if (m_NumPoints == 3)  // Triangle
     {
         // TODO: Find direction towards origin
     }

@@ -1,7 +1,7 @@
 #include "Colliders/Sphere.h"
 
 tabi::SphereCollider::SphereCollider()
-    : m_Radius(0), ICollider(tabi::vec3{ 0.0f, 0.0f, 0.0f })
+    : m_Radius(0.5f), ICollider(tabi::vec3{ 0.0f, 0.0f, 0.0f })
 {
 }
 
@@ -27,7 +27,7 @@ tabi::vec3 tabi::SphereCollider::GetFurthestPointInDirection(const tabi::vec3& a
     if (m_Transform.m_Scale != tabi::vec3{ 1.0f, 1.0f, 1.0f })
     {
         // Rotate the scale based on the collider's rotation to make sure the furthest point is scaled in the correct direction
-        rotatedScale = mat4::SetRotation(mat4::Identity(), m_Transform.m_EulerRotation)* m_Transform.m_Scale;
+        rotatedScale = mat4::SetRotation(mat4::Identity(), m_Transform.m_EulerRotation) * m_Transform.m_Scale;
     }
 
     return m_Transform.m_Position + vec3::Normalize(a_Direction) * m_Radius * rotatedScale;
@@ -35,5 +35,7 @@ tabi::vec3 tabi::SphereCollider::GetFurthestPointInDirection(const tabi::vec3& a
 
 void tabi::SphereCollider::SetRadius(const float a_Radius)
 {
+    TABI_ASSERT(a_Radius >= 0.0f);
+
     m_Radius = a_Radius;
 }

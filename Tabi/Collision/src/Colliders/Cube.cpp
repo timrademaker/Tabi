@@ -1,5 +1,11 @@
 #include "Colliders/Cube.h"
 
+tabi::CubeCollider::CubeCollider()
+    : HullCollider(tabi::vector<tabi::vec3>())
+{
+    SetHalfBoxExtents(tabi::vec3{ 0.5f, 0.5f, 0.5f });
+}
+
 tabi::CubeCollider::CubeCollider(const tabi::vec3& a_HalfBoxExtents)
     : HullCollider(tabi::vector<tabi::vec3>())
 {

@@ -7,6 +7,7 @@ namespace tabi
     class CubeCollider : public HullCollider
     {
     public:
+        CubeCollider();
         CubeCollider(const tabi::vec3& a_HalfBoxExtents);
         CubeCollider(const tabi::vec3& a_HalfBoxExtents, const Transform& a_WorldTransform);
         CubeCollider(const tabi::vec3& a_HalfBoxExtents, const vec3& a_WorldPosition);

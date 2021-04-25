@@ -26,6 +26,9 @@ tabi::BoxCollider::BoxCollider(const tabi::vec3& a_HalfBoxExtents, const vec3& a
 
 void tabi::BoxCollider::SetHalfBoxExtents(const tabi::vec3& a_HalfBoxExtents)
 {
+    // Make sure the box extents are positive
+    TABI_ASSERT(a_HalfBoxExtents.Dot(tabi::vec3{ 1.0f, 1.0f, 1.0f }) > 0.0f);
+
     m_Vertices.clear();
     m_Vertices.reserve(8);
 

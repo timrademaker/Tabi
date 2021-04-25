@@ -1,6 +1,6 @@
 #include "GJK.h"
 
-#include "Simplex.h"
+#include "ThreeSimplex.h"
 
 #include "Colliders/ICollider.h"
 

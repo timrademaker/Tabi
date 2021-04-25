@@ -6,7 +6,7 @@ set(HEADERS
     inc/GJK.h
     inc/ThreeSimplex.h
 
-    inc/Colliders/Cube.h
+    inc/Colliders/Box.h
     inc/Colliders/Hull.h
     inc/Colliders/ICollider.h
     inc/Colliders/Sphere.h
@@ -17,7 +17,7 @@ set(SOURCES
     src/GJK.cpp
     src/ThreeSimplex.cpp
 
-    src/Colliders/Cube.cpp
+    src/Colliders/Box.cpp
     src/Colliders/Hull.cpp
     src/Colliders/ICollider.cpp
     src/Colliders/Sphere.cpp

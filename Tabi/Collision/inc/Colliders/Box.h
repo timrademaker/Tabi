@@ -4,14 +4,14 @@
 
 namespace tabi
 {
-    class CubeCollider : public HullCollider
+    class BoxCollider : public HullCollider
     {
     public:
-        CubeCollider();
-        CubeCollider(const tabi::vec3& a_HalfBoxExtents);
-        CubeCollider(const tabi::vec3& a_HalfBoxExtents, const Transform& a_WorldTransform);
-        CubeCollider(const tabi::vec3& a_HalfBoxExtents, const vec3& a_WorldPosition);
-        ~CubeCollider() = default;
+        BoxCollider();
+        BoxCollider(const tabi::vec3& a_HalfBoxExtents);
+        BoxCollider(const tabi::vec3& a_HalfBoxExtents, const Transform& a_WorldTransform);
+        BoxCollider(const tabi::vec3& a_HalfBoxExtents, const vec3& a_WorldPosition);
+        ~BoxCollider() = default;
 
         /**
          * Set the half box extents for the cube

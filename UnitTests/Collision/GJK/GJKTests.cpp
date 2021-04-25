@@ -487,16 +487,41 @@ TEST(GJKCollisionTests, SphereBoxOverlap)
         EXPECT_TRUE(tabi::GJK::CollidersAreOverlapping(&bc1, &sc1));
 
         tabi::SphereCollider sc2(sphereRadius);
-        sc2.SetWorldPosition(tabi::vec3{ 0.6f * sphereRadius, (0.6f * sphereRadius) + halfBoxExtents.y, 0.0f });
-        sc2.SetWorldScale(tabi::vec3{ 0.75f, 1.0f, 1.0f });
-        sc2.SetWorldRotation(tabi::vec3{ 0.0f, 0.0f, 0.785398163f });
+        sc2.SetWorldPosition(
+            tabi::vec3{
+                0.6f * sphereRadius,
+                (0.6f * sphereRadius) + halfBoxExtents.y,
+                0.0f
+            }
+        );
+        sc2.SetWorldScale(
+            tabi::vec3{
+                0.5f,
+                1.0f,
+                1.0f
+            }
+        );
+        sc2.SetWorldRotation(
+            tabi::vec3{
+                0.0f,
+                0.0f,
+                0.785398163f
+            }
+        );
 
-        // Apparently not colliding, but that can't be right
         EXPECT_TRUE(tabi::GJK::CollidersAreOverlapping(&bc1, &sc2));
 
-        sc2.SetWorldScale(tabi::vec3{ 0.5f, 1.0f, 1.0f });
-
         bc1.SetWorldRotation(tabi::vec3{ 0.0f, 0.0f, 0.785398163f });
+        EXPECT_FALSE(tabi::GJK::CollidersAreOverlapping(&bc1, &sc2));
+
+        bc1.SetWorldPosition(tabi::vec3{});
+        sc2.SetWorldRotation(
+            tabi::vec3{
+                0.0f,
+                0.0f,
+                0.785398163f * 1.5f
+            }
+        );
         EXPECT_FALSE(tabi::GJK::CollidersAreOverlapping(&bc1, &sc2));
     }
 }

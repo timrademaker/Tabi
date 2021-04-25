@@ -57,7 +57,15 @@ bool tabi::ThreeSimplex::ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin)
     // Origin can't be contained yet as the simplex is not a tetrahedron
     else if (m_NumPoints == 3)  // Triangle
     {
-        // TODO: Find direction towards origin
+        // Find the normal of the triangle in the direction of the origin
+        vec3 ab = b - a;
+        vec3 ac = c - a;
+
+        a_DirectionTowardsOrigin = ac.Cross(ab);
+        if (a_DirectionTowardsOrigin.Dot(-a) < 0.0f)
+        {
+            a_DirectionTowardsOrigin = -a_DirectionTowardsOrigin;
+        }
     }
     else if (m_NumPoints == 2)  // Line
     {

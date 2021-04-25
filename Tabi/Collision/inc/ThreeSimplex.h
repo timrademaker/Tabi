@@ -2,6 +2,9 @@
 
 #include <Math/vec3.h>
 
+DISABLE_WARNING_PUSH
+DISABLE_NAMELESS_STRUCT_WARNING
+
 namespace tabi
 {
     class ThreeSimplex
@@ -25,7 +28,26 @@ namespace tabi
         bool ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin);
 
     private:
-        tabi::vec3 m_Points[4];
+        union
+        {
+            tabi::vec3 m_Points[4];
+            struct
+            {
+                tabi::vec3 a;
+                tabi::vec3 b;
+                tabi::vec3 c;
+                tabi::vec3 d;
+            };
+            struct
+            {
+                tabi::vec3 m_A;
+                tabi::vec3 m_B;
+                tabi::vec3 m_C;
+                tabi::vec3 m_D;
+            };
+        };
+
         int m_NumPoints;
     };
 }
+DISABLE_WARNING_POP

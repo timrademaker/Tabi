@@ -69,11 +69,25 @@ bool tabi::ThreeSimplex::ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin)
     }
     else if (m_NumPoints == 2)  // Line
     {
-        // Find the normal of the line between pointA and pointB in the direction of the origin
-        vec3 AB = m_Points[1] - m_Points[0];
+        // Find the normal of the line between point A and point B in the direction of the origin
+        const vec3 ba = a - b;
 
         // Use the vector triple product to find the direction towards the origin
-        a_DirectionTowardsOrigin = AB.Cross(-m_Points[0]).Cross(AB);
+        const vec3 tmp = ba.Cross(-b);
+
+        if (tmp.LengthSquared() != 0.0f)
+        {
+            a_DirectionTowardsOrigin = tmp.Cross(ba);
+        }
+        else
+        {
+            // origin lies on BA
+            return true;
+        }
+    }
+    else
+    {
+        a_DirectionTowardsOrigin = -a;
     }
 
     return false;

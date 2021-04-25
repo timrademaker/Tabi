@@ -25,7 +25,7 @@ bool tabi::GJK::CollidersAreOverlapping(const ICollider* a_Collider1, const ICol
     direction = -pointA; // New direction is from A towards the origin
 
     // Build a 3-simplex
-    for (int i = 0; i < 3; ++i)
+    for (size_t iteration = 0; iteration < s_MaxIterations; ++iteration)
     {
         // Find a point in the new direction
         vec3 newPoint = Support(a_Collider1, a_Collider2, direction);
@@ -39,7 +39,7 @@ bool tabi::GJK::CollidersAreOverlapping(const ICollider* a_Collider1, const ICol
 
         simplex.AddPoint(newPoint);
 
-        if (simplex.ContainsOrigin(direction))
+        if (simplex.EvolveSimplex(direction))
         {
             // Shapes overlap
             return true;

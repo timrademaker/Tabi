@@ -19,7 +19,7 @@ bool tabi::ThreeSimplex::AddPoint(const tabi::vec3& a_Point)
     }
 }
 
-bool tabi::ThreeSimplex::ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin)
+bool tabi::ThreeSimplex::EvolveSimplex(tabi::vec3& a_DirectionTowardsOrigin)
 {
     if (m_NumPoints == 4)   // Tetrahedron
     {
@@ -31,23 +31,35 @@ bool tabi::ThreeSimplex::ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin)
         const vec3 d0 = -d;
 
         const vec3 abdNormal = ad.Cross(bd);
-        const vec3 acdNormal = ad.Cross(bd);
+        const vec3 acdNormal = cd.Cross(ad);
         const vec3 bcdNormal = bd.Cross(cd);
 
-        if (abdNormal.Dot(d0) < 0.0f)
+        if (abdNormal.Dot(d0) > 0.0f)
         {
             // Outside ABD
             a_DirectionTowardsOrigin = abdNormal;
+
+            // Remove C
+            c = m_Points[3];
+            m_NumPoints -= 1;
         }
-        else if (acdNormal.Dot(d0) < 0.0f)
+        else if (acdNormal.Dot(d0) > 0.0f)
         {
             // Outside ACD
             a_DirectionTowardsOrigin = acdNormal;
+
+            // Remove B
+            b = m_Points[3];
+            m_NumPoints -= 1;
         }
-        else if (bcdNormal.Dot(d0) < 0.0f)
+        else if (bcdNormal.Dot(d0) > 0.0f)
         {
             // Outside BCD
             a_DirectionTowardsOrigin = bcdNormal;
+
+            // Remove A
+            a = m_Points[3];
+            m_NumPoints -= 1;
         }
         else
         {

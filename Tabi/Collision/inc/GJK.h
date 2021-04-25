@@ -6,6 +6,8 @@ namespace tabi
 {
     class GJK
     {
+        static constexpr size_t s_MaxIterations = 10;
+
     public:
         /**
          * Check if two colliders are overlapping

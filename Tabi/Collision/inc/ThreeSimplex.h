@@ -21,11 +21,11 @@ namespace tabi
         bool AddPoint(const tabi::vec3& a_Point);
 
         /**
-         * Check if the simplex contains the origin
+         * Evolve the simplex and check if it contains the origin
          * @param a_DirectionTowardsOrigin Will be set to the direction from the simplex towards the origin if the origin is not contained and the simplex has less than 4 points
          * @return True if the simplex contains the origin
          */
-        bool ContainsOrigin(tabi::vec3& a_DirectionTowardsOrigin);
+        bool EvolveSimplex(tabi::vec3& a_DirectionTowardsOrigin);
 
     private:
         union

@@ -16,6 +16,9 @@ namespace tabi
 
         virtual vec3 GetFurthestPointInDirection(const vec3& a_Direction) const override;
 
+    private:
+        float GetFurthestVertexDistance() const;
+
     protected:
         /** All of the vertices making up the hull */
         tabi::vector<vec3> m_Vertices;

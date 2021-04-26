@@ -3,16 +3,19 @@
 tabi::HullCollider::HullCollider(const tabi::vector<vec3>& a_Vertices)
     : m_Vertices(a_Vertices)
 {
+    m_BroadPhaseSphereRadius = GetFurthestVertexDistance();
 }
 
 tabi::HullCollider::HullCollider(const tabi::vector<vec3>& a_Vertices, const Transform& a_WorldTransform)
     : m_Vertices(a_Vertices), ICollider(a_WorldTransform)
 {
+    m_BroadPhaseSphereRadius = GetFurthestVertexDistance();
 }
 
 tabi::HullCollider::HullCollider(const tabi::vector<vec3>& a_Vertices, const vec3& a_WorldPosition)
     : m_Vertices(a_Vertices), ICollider(a_WorldPosition)
 {
+    m_BroadPhaseSphereRadius = GetFurthestVertexDistance();
 }
 
 tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Direction) const
@@ -37,5 +40,17 @@ tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Directi
     }
 
     return m_Transform.m_Position + mat4::SetRotation(mat4::Identity(), m_Transform.m_EulerRotation) * (m_Vertices[furthestPointIndex] * m_Transform.m_Scale);
+}
+
+float tabi::HullCollider::GetFurthestVertexDistance() const
+{
+    float furthestDistanceSquared = FLT_MIN;
+
+    for (const auto& vert : m_Vertices)
+    {
+        furthestDistanceSquared = std::max(furthestDistanceSquared, vert.LengthSquared());
+    }
+
+    return std::sqrt(furthestDistanceSquared);
 }
 

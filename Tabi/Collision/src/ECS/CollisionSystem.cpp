@@ -54,18 +54,18 @@ void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity a_Entity1, t
         {
             // Broadcast event for the first collider
             {
-                tabi::CollisionInfo ci;
-                ci.m_OtherEntity = a_Entity2;
-                ci.m_OverlappedCollider = a_Collider2.m_Collider;
-                a_Collider1.m_OnColliderBeginOverlap.Broadcast(ci);
+                tabi::OverlapInfo oi;
+                oi.m_OtherEntity = a_Entity2;
+                oi.m_OverlappedCollider = a_Collider2.m_Collider;
+                a_Collider1.m_OnColliderBeginOverlap.Broadcast(oi);
             }
 
             // Broadcast event for the second collider
             {
-                tabi::CollisionInfo ci;
-                ci.m_OtherEntity = a_Entity1;
-                ci.m_OverlappedCollider = a_Collider1.m_Collider;
-                a_Collider2.m_OnColliderBeginOverlap.Broadcast(ci);
+                tabi::OverlapInfo oi;
+                oi.m_OtherEntity = a_Entity1;
+                oi.m_OverlappedCollider = a_Collider1.m_Collider;
+                a_Collider2.m_OnColliderBeginOverlap.Broadcast(oi);
             }
 
             previouslyOverlappingEntities.insert(valueEntity);
@@ -77,18 +77,18 @@ void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity a_Entity1, t
 
         // Broadcast event for the first collider
         {
-            tabi::CollisionInfo ci;
-            ci.m_OtherEntity = a_Entity2;
-            ci.m_OverlappedCollider = a_Collider2.m_Collider;
-            a_Collider1.m_OnColliderEndOverlap.Broadcast(ci);
+            tabi::OverlapInfo oi;
+            oi.m_OtherEntity = a_Entity2;
+            oi.m_OverlappedCollider = a_Collider2.m_Collider;
+            a_Collider1.m_OnColliderEndOverlap.Broadcast(oi);
         }
 
         // Broadcast event for the second collider
         {
-            tabi::CollisionInfo ci;
-            ci.m_OtherEntity = a_Entity1;
-            ci.m_OverlappedCollider = a_Collider1.m_Collider;
-            a_Collider2.m_OnColliderEndOverlap.Broadcast(ci);
+            tabi::OverlapInfo oi;
+            oi.m_OtherEntity = a_Entity1;
+            oi.m_OverlappedCollider = a_Collider1.m_Collider;
+            a_Collider2.m_OnColliderEndOverlap.Broadcast(oi);
         }
     }
 }

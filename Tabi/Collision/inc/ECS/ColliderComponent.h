@@ -9,14 +9,14 @@
 
 namespace tabi
 {
-    struct CollisionInfo
+    struct OverlapInfo
     {
         tabi::Entity m_OtherEntity;
         tabi::shared_ptr<tabi::ICollider> m_OverlappedCollider;
     };
 
-    DECLARE_EVENT(OnColliderBeginOverlap, CollisionInfo);
-    DECLARE_EVENT(OnColliderEndOverlap, CollisionInfo);
+    DECLARE_EVENT(OnColliderBeginOverlap, OverlapInfo);
+    DECLARE_EVENT(OnColliderEndOverlap, OverlapInfo);
 
     class ColliderComponent
     {

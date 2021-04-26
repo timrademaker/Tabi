@@ -36,6 +36,16 @@ namespace tabi
         return (x * x) + (y * y);
     }
 
+    float vec2::MinElement() const
+    {
+        return std::fminf(x, y);
+    }
+
+    float vec2::MaxElement() const
+    {
+        return std::fmaxf(x, y);
+    }
+
     /**** Operators ****/
     float& vec2::operator[](const unsigned int a_Index)
     {

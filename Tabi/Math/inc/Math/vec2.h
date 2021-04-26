@@ -22,6 +22,17 @@ namespace tabi
         float Length() const;
         float LengthSquared() const;
 
+        /**
+         * Get the element with the lowest value from the vector
+         * @return The minimum element
+         */
+        float MinElement() const;
+        /**
+         * Get the element with the highest value from the vector
+         * @return The maximum element
+         */
+        float MaxElement() const;
+
 
         /**** Operators ****/
         float& operator[](const unsigned int a_Index);

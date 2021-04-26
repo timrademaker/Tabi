@@ -46,9 +46,8 @@ void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity a_Entity1, t
         entitiesWereOverlappingPreviously = true;
     }
 
-    // TODO: Broad phase collision check
-
-    if (GJK::CollidersAreOverlapping(a_Collider1.m_Collider.get(), a_Collider2.m_Collider.get()))
+    if (CheckColliderOverlapBroadPhase(a_Collider1.m_Collider.get(), a_Collider2.m_Collider.get())
+        && GJK::CollidersAreOverlapping(a_Collider1.m_Collider.get(), a_Collider2.m_Collider.get()))
     {
         if (!entitiesWereOverlappingPreviously)
         {
@@ -91,4 +90,12 @@ void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity a_Entity1, t
             a_Collider2.m_OnColliderEndOverlap.Broadcast(oi);
         }
     }
+}
+
+bool tabi::CollisionSystem::CheckColliderOverlapBroadPhase(const tabi::ICollider* a_Collider1, const tabi::ICollider* a_Collider2) const
+{
+    const float sphereRadii = a_Collider1->GetBroadPhaseRadius() + a_Collider2->GetBroadPhaseRadius();
+    const float squaredDistanceBetweenColliders = (a_Collider1->GetPosition() - a_Collider2->GetPosition()).LengthSquared();
+
+    return squaredDistanceBetweenColliders <= (sphereRadii * sphereRadii);
 }

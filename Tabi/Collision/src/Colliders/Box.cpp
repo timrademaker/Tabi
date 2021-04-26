@@ -40,6 +40,8 @@ void tabi::BoxCollider::SetHalfBoxExtents(const tabi::vec3& a_HalfBoxExtents)
     m_Vertices.push_back({ -a_HalfBoxExtents.x,  a_HalfBoxExtents.y, -a_HalfBoxExtents.z });
     m_Vertices.push_back({ -a_HalfBoxExtents.x, -a_HalfBoxExtents.y, -a_HalfBoxExtents.z });
     m_Vertices.push_back({ -a_HalfBoxExtents.x, -a_HalfBoxExtents.y,  a_HalfBoxExtents.z });
+    
+    m_BroadPhaseSphereRadius = a_HalfBoxExtents.MaxElement();
 }
 
 void tabi::BoxCollider::SetBoxExtents(const tabi::vec3& a_BoxExtents)

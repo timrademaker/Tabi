@@ -46,7 +46,17 @@ namespace tabi
          */
         vec3 GetPosition() const;
 
+        /**
+         * Get the radius of the broad phase collision sphere
+         * @return The radius of the broad phase collision sphere
+         */
+        float GetBroadPhaseRadius() const;
+
     protected:
+        /** The transform of the collider */
         Transform m_Transform;
+
+        /** The radius of a sphere around this collider */
+        float m_BroadPhaseSphereRadius;
     };
 }

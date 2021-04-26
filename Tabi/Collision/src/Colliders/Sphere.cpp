@@ -1,23 +1,27 @@
 #include "Colliders/Sphere.h"
 
 tabi::SphereCollider::SphereCollider()
-    : m_Radius(0.5f), ICollider(tabi::vec3{ 0.0f, 0.0f, 0.0f })
+    : ICollider(tabi::vec3{ 0.0f, 0.0f, 0.0f })
 {
+    SetRadius(0.5f);
 }
 
 tabi::SphereCollider::SphereCollider(const float a_Radius)
-    : m_Radius(a_Radius), ICollider(tabi::vec3{ 0.0f, 0.0f, 0.0f })
+    : ICollider(tabi::vec3{ 0.0f, 0.0f, 0.0f })
 {
+    SetRadius(a_Radius);
 }
 
 tabi::SphereCollider::SphereCollider(const float a_Radius, const vec3& a_Center)
-    : m_Radius(a_Radius), ICollider(a_Center)
+    : ICollider(a_Center)
 {
+    SetRadius(a_Radius);
 }
 
 tabi::SphereCollider::SphereCollider(const float a_Radius, const Transform& a_WorldTransform)
-    : m_Radius(a_Radius), ICollider(a_WorldTransform)
+    : ICollider(a_WorldTransform)
 {
+    SetRadius(a_Radius);
 }
 
 tabi::vec3 tabi::SphereCollider::GetFurthestPointInDirection(const tabi::vec3& a_Direction) const
@@ -32,4 +36,5 @@ void tabi::SphereCollider::SetRadius(const float a_Radius)
     TABI_ASSERT(a_Radius >= 0.0f);
 
     m_Radius = a_Radius;
+    m_BroadPhaseSphereRadius = a_Radius;
 }

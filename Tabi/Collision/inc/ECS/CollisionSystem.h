@@ -4,8 +4,6 @@
 
 namespace tabi
 {
-    class ColliderComponent;
-
     class CollisionSystem : public ISystem
     {
     public:
@@ -20,7 +18,9 @@ namespace tabi
         virtual void OnUpdate(float a_DeltaTime) override final;
 
     private:
-        void CheckColliderOverlap(const tabi::Entity a_Entity1, tabi::ColliderComponent& a_Collider1, const tabi::Entity a_Entity2, tabi::ColliderComponent& a_Collider2);
+        void CheckColliderOverlap(const tabi::Entity a_Entity1, class ColliderComponent& a_Collider1, const tabi::Entity a_Entity2, class ColliderComponent& a_Collider2);
+
+        bool CheckColliderOverlapBroadPhase(const class ICollider* a_Collider1, const class ICollider* a_Collider2) const;
 
     private:
         /** All pairs of entities that were overlapping during the previous update */

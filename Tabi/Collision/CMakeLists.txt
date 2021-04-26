@@ -10,6 +10,9 @@ set(HEADERS
     inc/Colliders/Hull.h
     inc/Colliders/ICollider.h
     inc/Colliders/Sphere.h
+
+    inc/ECS/ColliderComponent.h
+    inc/ECS/CollisionSystem.h
 )
 
 # Set sources for Collision
@@ -21,6 +24,9 @@ set(SOURCES
     src/Colliders/Hull.cpp
     src/Colliders/ICollider.cpp
     src/Colliders/Sphere.cpp
+
+    src/ECS/ColliderComponent.cpp
+    src/ECS/CollisionSystem.cpp
 )
 
 # Add source to this project's executable.
@@ -32,7 +38,7 @@ target_include_directories(Collision PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
 # PUBLIC: Used in headers and source files
-target_link_libraries(Collision PUBLIC TabiCommon Math ECS)
+target_link_libraries(Collision PUBLIC TabiCommon Math ECS Utilities)
 # PRIVATE: Used in source files
 target_link_libraries(Collision PRIVATE Logger)
 

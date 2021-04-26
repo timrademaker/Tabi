@@ -511,7 +511,22 @@ TEST(GJKCollisionTests, SphereBoxOverlap)
 
         EXPECT_TRUE(tabi::GJK::CollidersAreOverlapping(&bc1, &sc2));
 
-        bc1.SetWorldRotation(tabi::vec3{ 0.0f, 0.0f, 0.785398163f });
+        bc1.SetWorldRotation(
+            tabi::vec3{
+                0.0f,
+                0.0f,
+                0.785398163f
+            }
+        );
+        EXPECT_TRUE(tabi::GJK::CollidersAreOverlapping(&bc1, &sc2));
+        
+        sc2.SetWorldRotation(
+            tabi::vec3{
+                0.0f,
+                0.0f,
+                -0.785398163f
+            }
+        );
         EXPECT_FALSE(tabi::GJK::CollidersAreOverlapping(&bc1, &sc2));
 
         bc1.SetWorldRotation(tabi::vec3{});

@@ -32,7 +32,7 @@ void tabi::CollisionSystem::OnUpdate(float a_DeltaTime)
     }
 }
 
-void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity a_Entity1, tabi::ColliderComponent& a_Collider1, const tabi::Entity a_Entity2, tabi::ColliderComponent& a_Collider2)
+void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity& a_Entity1, tabi::ColliderComponent& a_Collider1, const tabi::Entity& a_Entity2, tabi::ColliderComponent& a_Collider2)
 {
     const tabi::Entity& keyEntity = a_Entity1 < a_Entity2 ? a_Entity1 : a_Entity2;
     const tabi::Entity& valueEntity = a_Entity1 < a_Entity2 ? a_Entity2 : a_Entity1;
@@ -46,7 +46,7 @@ void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity a_Entity1, t
         entitiesWereOverlappingPreviously = true;
     }
 
-    if (CheckColliderOverlapBroadPhase(a_Collider1.m_Collider.get(), a_Collider2.m_Collider.get())
+    if (CheckColliderOverlapBroadPhase(*a_Collider1.m_Collider, *a_Collider2.m_Collider)
         && GJK::CollidersAreOverlapping(a_Collider1.m_Collider.get(), a_Collider2.m_Collider.get()))
     {
         if (!entitiesWereOverlappingPreviously)
@@ -92,10 +92,10 @@ void tabi::CollisionSystem::CheckColliderOverlap(const tabi::Entity a_Entity1, t
     }
 }
 
-bool tabi::CollisionSystem::CheckColliderOverlapBroadPhase(const tabi::ICollider* a_Collider1, const tabi::ICollider* a_Collider2) const
+bool tabi::CollisionSystem::CheckColliderOverlapBroadPhase(const tabi::ICollider& a_Collider1, const tabi::ICollider& a_Collider2) const
 {
-    const float sphereRadii = a_Collider1->GetBroadPhaseRadius() + a_Collider2->GetBroadPhaseRadius();
-    const float squaredDistanceBetweenColliders = (a_Collider1->GetPosition() - a_Collider2->GetPosition()).LengthSquared();
+    const float sphereRadii = a_Collider1.GetBroadPhaseRadius() + a_Collider2.GetBroadPhaseRadius();
+    const float squaredDistanceBetweenColliders = (a_Collider1.GetPosition() - a_Collider2.GetPosition()).LengthSquared();
 
     return squaredDistanceBetweenColliders <= (sphereRadii * sphereRadii);
 }

@@ -14,13 +14,22 @@ namespace tabi
 
         virtual vec3 GetFurthestPointInDirection(const vec3& a_Direction) const override;
 
-        TABI_INLINE float GetRadius()
+        /**
+         * Get the sphere collider's radius
+         * @return The sphere collider's radius
+         */
+        TABI_INLINE float GetRadius() const
         {
             return m_Radius;
         };
+        /**
+         * Set the sphere collider's radius
+         * @param a_Radius The new radius of the sphere collider
+         */
         void SetRadius(const float a_Radius);
 
     private:
+        /** The sphere's radius */
         float m_Radius;
     };
 }

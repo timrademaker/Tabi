@@ -22,7 +22,7 @@ tabi::vec3 tabi::HullCollider::GetFurthestPointInDirection(const vec3& a_Directi
 {
     // Rotate the direction vector based on the collider's rotation
     // Rotate in the opposite direction, as this prevents us from having to rotate all points instead
-    const vec3 searchDirection = mat4::SetUnRotation(mat4::Identity(), m_Transform.m_EulerRotation) * a_Direction;
+    const vec3 searchDirection = mat4::SetInverseRotation(mat4::Identity(), m_Transform.m_EulerRotation) * a_Direction;
 
     int furthestPointIndex = -1;
     float furthestPointDistance = FLT_MIN;

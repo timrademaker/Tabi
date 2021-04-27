@@ -26,7 +26,7 @@ tabi::SphereCollider::SphereCollider(const float a_Radius, const Transform& a_Wo
 
 tabi::vec3 tabi::SphereCollider::GetFurthestPointInDirection(const tabi::vec3& a_Direction) const
 {
-    const vec3 searchDirection = mat4::SetUnRotation(mat4::Identity(), m_Transform.m_EulerRotation) * a_Direction;
+    const vec3 searchDirection = mat4::SetInverseRotation(mat4::Identity(), m_Transform.m_EulerRotation) * a_Direction;
 
     return m_Transform.m_Position + mat4::SetRotation(mat4::Identity(), m_Transform.m_EulerRotation) * (vec3::Normalize(searchDirection) * m_Radius * m_Transform.m_Scale);
 }

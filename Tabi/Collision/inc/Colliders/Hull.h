@@ -17,6 +17,10 @@ namespace tabi
         virtual vec3 GetFurthestPointInDirection(const vec3& a_Direction) const override;
 
     private:
+        /**
+         * Get the distance to the vertex furthest away from the hull's center. Used for broad phase sphere radius.
+         * @return The distance to the vertex furthest away from the hull's center
+         */
         float GetFurthestVertexDistance() const;
 
     protected:

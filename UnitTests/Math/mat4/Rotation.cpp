@@ -247,7 +247,7 @@ TEST(Mat4Tests, RotationStatic)
 	}
 }
 
-TEST(Mat4Tests, UnRotation)
+TEST(Mat4Tests, InverseRotation)
 {
 	// X
 	{
@@ -256,7 +256,7 @@ TEST(Mat4Tests, UnRotation)
 		const tabi::mat4 expectedMatUnRotateX = tabi::mat4::RotateX(tabi::mat4::Identity(), -xRot);
 
 		tabi::mat4 outMatUnRotateX = tabi::mat4::Identity();
-		outMatUnRotateX.SetUnRotation(tabi::vec3{ xRot, 0.0f, 0.0f });
+		outMatUnRotateX.SetInverseRotation(tabi::vec3{ xRot, 0.0f, 0.0f });
 
 		EXPECT_PRED_FORMAT2(MathPredicates::Mat4Equal, outMatUnRotateX, expectedMatUnRotateX);
 	}
@@ -267,7 +267,7 @@ TEST(Mat4Tests, UnRotation)
 		const tabi::mat4 expectedMatUnRotateY = tabi::mat4::RotateY(tabi::mat4::Identity(), -yRot);
 
 		tabi::mat4 outMatUnRotateY = tabi::mat4::Identity();
-		outMatUnRotateY.SetUnRotation(tabi::vec3{ 0.0f, yRot, 0.0f });
+		outMatUnRotateY.SetInverseRotation(tabi::vec3{ 0.0f, yRot, 0.0f });
 
 		EXPECT_PRED_FORMAT2(MathPredicates::Mat4Equal, outMatUnRotateY, expectedMatUnRotateY);
 	}
@@ -279,7 +279,7 @@ TEST(Mat4Tests, UnRotation)
 		const tabi::mat4 expectedMatUnRotateZ = tabi::mat4::RotateZ(tabi::mat4::Identity(), -zRot);
 
 		tabi::mat4 outMatUnRotateZ = tabi::mat4::Identity();
-		outMatUnRotateZ.SetUnRotation(tabi::vec3{ 0.0f, 0.0f, zRot });
+		outMatUnRotateZ.SetInverseRotation(tabi::vec3{ 0.0f, 0.0f, zRot });
 
 		EXPECT_PRED_FORMAT2(MathPredicates::Mat4Equal, outMatUnRotateZ, expectedMatUnRotateZ);
 	}
@@ -294,7 +294,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -304,7 +304,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -314,7 +314,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -330,7 +330,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -340,7 +340,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -350,7 +350,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -366,7 +366,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -376,7 +376,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -386,7 +386,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -402,7 +402,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -412,7 +412,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}
@@ -422,7 +422,7 @@ TEST(Mat4Tests, UnRotation)
 			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
 
 			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
-			const tabi::vec3 unrotatedVector = tabi::mat4::SetUnRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
 
 			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
 		}

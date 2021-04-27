@@ -39,6 +39,3 @@ target_include_directories(Collision PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 # Add libraries
 # PUBLIC: Used in headers and source files
 target_link_libraries(Collision PUBLIC TabiCommon Math ECS Utilities)
-# PRIVATE: Used in source files
-target_link_libraries(Collision PRIVATE Logger)
-

@@ -305,7 +305,7 @@ mat4 mat4::SetRotation(const mat4& a_Matrix, const vec3& a_EulerRotation)
     return result;
 }
 
-void tabi::mat4::SetUnRotation(const vec3& a_EulerRotation)
+void tabi::mat4::SetInverseRotation(const vec3& a_EulerRotation)
 {
     mat4 newRotMat = mat4::Identity();
     newRotMat.RotateZ(-a_EulerRotation.z);
@@ -323,10 +323,10 @@ void tabi::mat4::SetUnRotation(const vec3& a_EulerRotation)
     v[10] = newRotMat[10];
 }
 
-mat4 tabi::mat4::SetUnRotation(const mat4& a_Matrix, const vec3& a_EulerRotation)
+mat4 tabi::mat4::SetInverseRotation(const mat4& a_Matrix, const vec3& a_EulerRotation)
 {
     mat4 result = a_Matrix;
-    result.SetUnRotation(a_EulerRotation);
+    result.SetInverseRotation(a_EulerRotation);
 
     return result;
 }

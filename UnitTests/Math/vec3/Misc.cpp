@@ -157,3 +157,33 @@ TEST(Vec3Tests, Length)
         EXPECT_FLOAT_EQ(outcome.LengthSquared(), expected * expected);
     }
 }
+
+TEST(Vec3Tests, MinElement)
+{
+    {
+        const float expected = 100.0f;
+        const tabi::vec3 vec{ expected, expected + 0.001f, expected + 1.0f };
+        EXPECT_FLOAT_EQ(vec.MinElement(), expected);
+    }
+
+    {
+        const float expected = -100.0f;
+        const tabi::vec3 vec{ expected, expected + 0.001f, expected + 1.0f };
+        EXPECT_FLOAT_EQ(vec.MinElement(), expected);
+    }
+}
+
+TEST(Vec3Tests, MaxElement)
+{
+    {
+        const float expected = 100.0f;
+        const tabi::vec3 vec{ expected, expected - 0.001f, expected - 1.0f };
+        EXPECT_FLOAT_EQ(vec.MaxElement(), expected);
+    }
+
+    {
+        const float expected = -100.0f;
+        const tabi::vec3 vec{ expected, expected - 0.001f, expected - 1.0f };
+        EXPECT_FLOAT_EQ(vec.MaxElement(), expected);
+    }
+}

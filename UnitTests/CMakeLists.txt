@@ -30,6 +30,7 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
+add_subdirectory("Collision")
 add_subdirectory("ECS")
 add_subdirectory("EventSystem")
 add_subdirectory("Logger")

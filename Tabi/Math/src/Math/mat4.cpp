@@ -305,6 +305,32 @@ mat4 mat4::SetRotation(const mat4& a_Matrix, const vec3& a_EulerRotation)
     return result;
 }
 
+void tabi::mat4::SetInverseRotation(const vec3& a_EulerRotation)
+{
+    mat4 newRotMat = mat4::Identity();
+    newRotMat.RotateZ(-a_EulerRotation.z);
+    newRotMat.RotateY(-a_EulerRotation.y);
+    newRotMat.RotateX(-a_EulerRotation.x);
+
+    v[0] = newRotMat[0];
+    v[1] = newRotMat[1];
+    v[2] = newRotMat[2];
+    v[4] = newRotMat[4];
+    v[5] = newRotMat[5];
+    v[6] = newRotMat[6];
+    v[8] = newRotMat[8];
+    v[9] = newRotMat[9];
+    v[10] = newRotMat[10];
+}
+
+mat4 tabi::mat4::SetInverseRotation(const mat4& a_Matrix, const vec3& a_EulerRotation)
+{
+    mat4 result = a_Matrix;
+    result.SetInverseRotation(a_EulerRotation);
+
+    return result;
+}
+
 mat4 tabi::mat4::CreateTransformationMatrix(const mat4& a_Translation, const mat4& a_Scale, const mat4& a_Rotation)
 {
     return a_Scale * a_Rotation * a_Translation;

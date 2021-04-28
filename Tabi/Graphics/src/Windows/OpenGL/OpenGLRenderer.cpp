@@ -213,6 +213,13 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
             auto& sampler = a_Mesh.m_Material->m_MetalicRoughness->m_BaseColorTexture->m_Sampler;
             UseSampler(sampler);
         }
+        else
+        {
+            if (m_CurrentlyBoundShader != m_MeshShader)
+            {
+                UseShader(m_MeshShader);
+            }
+        }
 
         if(a_Mesh.m_Material->m_MetalicRoughness)
         {

@@ -246,3 +246,185 @@ TEST(Mat4Tests, RotationStatic)
 		EXPECT_PRED_FORMAT2(MathPredicates::Mat4Equal, outMatRotZ, expectedMatRotZ);
 	}
 }
+
+TEST(Mat4Tests, InverseRotation)
+{
+	// X
+	{
+		const float xRot = 5.0f;
+
+		const tabi::mat4 expectedMatUnRotateX = tabi::mat4::RotateX(tabi::mat4::Identity(), -xRot);
+
+		tabi::mat4 outMatUnRotateX = tabi::mat4::Identity();
+		outMatUnRotateX.SetInverseRotation(tabi::vec3{ xRot, 0.0f, 0.0f });
+
+		EXPECT_PRED_FORMAT2(MathPredicates::Mat4Equal, outMatUnRotateX, expectedMatUnRotateX);
+	}
+	// Y
+	{
+		const float yRot = 2.5f;
+
+		const tabi::mat4 expectedMatUnRotateY = tabi::mat4::RotateY(tabi::mat4::Identity(), -yRot);
+
+		tabi::mat4 outMatUnRotateY = tabi::mat4::Identity();
+		outMatUnRotateY.SetInverseRotation(tabi::vec3{ 0.0f, yRot, 0.0f });
+
+		EXPECT_PRED_FORMAT2(MathPredicates::Mat4Equal, outMatUnRotateY, expectedMatUnRotateY);
+	}
+
+	// Z
+	{
+		const float zRot = 1.0f;
+
+		const tabi::mat4 expectedMatUnRotateZ = tabi::mat4::RotateZ(tabi::mat4::Identity(), -zRot);
+
+		tabi::mat4 outMatUnRotateZ = tabi::mat4::Identity();
+		outMatUnRotateZ.SetInverseRotation(tabi::vec3{ 0.0f, 0.0f, zRot });
+
+		EXPECT_PRED_FORMAT2(MathPredicates::Mat4Equal, outMatUnRotateZ, expectedMatUnRotateZ);
+	}
+
+	// XY
+	{
+		// Rotate a vector, then rotate it back
+		const tabi::vec3 rotation{ 0.12f, -1.247f, 0.0f };
+
+		// 1-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 2-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 3-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+	}
+
+	// XZ
+	{
+		// Rotate a vector, then rotate it back
+		const tabi::vec3 rotation{ 0.12f, 0.0f, -2.127f };
+
+		// 1-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 2-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 3-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+	}
+
+	// YZ
+	{
+		// Rotate a vector, then rotate it back
+		const tabi::vec3 rotation{ 0.0f, 2.48f, -3.14f };
+
+		// 1-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 2-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 3-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+	}
+
+	// XYZ
+	{
+		// Rotate a vector, then rotate it back
+		const tabi::vec3 rotation{ 1.0f, 1.36f, 1.57f };
+
+		// 1-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.0f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 2-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, 0.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+
+		// 3-axis direction vector
+		{
+			const tabi::vec3 startVector{ 1.0f, 0.5f, -1.0f };
+
+			const tabi::vec3 rotatedVector = tabi::mat4::SetRotation(tabi::mat4::Identity(), rotation) * startVector;
+			const tabi::vec3 unrotatedVector = tabi::mat4::SetInverseRotation(tabi::mat4::Identity(), rotation) * rotatedVector;
+
+			EXPECT_PRED_FORMAT2(MathPredicates::Vec3Equal, unrotatedVector, startVector);
+		}
+	}
+}

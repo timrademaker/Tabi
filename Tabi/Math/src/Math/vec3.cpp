@@ -56,6 +56,23 @@ namespace tabi
         return (x * x) + (y * y) + (z * z);
     }
 
+    float vec3::MinElement() const
+    {
+        float minElement = x;
+        minElement = std::fminf(minElement, y);
+        minElement = std::fminf(minElement, z);
+        return minElement;
+    }
+
+    float vec3::MaxElement() const
+    {
+        float maxElement = x;
+        maxElement = std::fmaxf(maxElement, y);
+        maxElement = std::fmaxf(maxElement, z);
+
+        return maxElement;
+    }
+
     vec3 tabi::vec3::Up()
     {
         return vec3(0.0f, 1.0f, 0.0f);

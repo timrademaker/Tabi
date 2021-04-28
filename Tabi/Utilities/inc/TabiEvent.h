@@ -82,7 +82,7 @@ namespace tabi
         * @brief Checks if this event has any subscribers
         * @returns True if this event has any subscribers
         */
-        bool HasSubscribers();
+        bool HasSubscribers() const;
 
     private:
         /**
@@ -164,8 +164,8 @@ namespace tabi
 
     template<typename EventInfo>
     template<typename T>
-    inline 
-    typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type EventBase<EventInfo>::Broadcast(EventInfo a_Event)
+    inline
+        typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type EventBase<EventInfo>::Broadcast(EventInfo a_Event)
     {
         for (auto iter = m_Callbacks.begin(); iter != m_Callbacks.end(); ++iter)
         {
@@ -192,7 +192,7 @@ namespace tabi
     }
 
     template<typename EventInfo>
-    inline bool EventBase<EventInfo>::HasSubscribers()
+    inline bool EventBase<EventInfo>::HasSubscribers() const
     {
         return m_Callbacks.size() > 0;
     }

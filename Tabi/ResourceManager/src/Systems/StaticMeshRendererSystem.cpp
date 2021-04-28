@@ -21,7 +21,11 @@ void tabi::StaticMeshRenderSystem::OnUpdate(float a_DeltaTime)
         {
             auto& trans = m_ComponentManager->GetComponent<tabi::Transform>(ent);
 
-            tabi::mat4 transform = trans.GetTransformationMatrix();
+            tabi::mat4 transform = tabi::mat4::CreateTransformationMatrix(
+                tabi::mat4::Translate(tabi::mat4::Identity(), trans.m_Position),
+                tabi::mat4::Scale(tabi::mat4::Identity(), trans.m_Scale),
+                tabi::mat4::SetRotation(tabi::mat4::Identity(), mesh.m_RelativeMeshRotation - trans.m_EulerRotation)
+            );
 
             renderer.RenderMesh(*mesh.m_Mesh, transform);
         }

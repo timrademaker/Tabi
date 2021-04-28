@@ -42,6 +42,25 @@ namespace tabi
         return (x * x) + (y * y) + (z * z) + (w * w);
     }
 
+    float vec4::MinElement() const
+    {
+        float minElement = x;
+        minElement = std::fminf(minElement, y);
+        minElement = std::fminf(minElement, z);
+        minElement = std::fminf(minElement, w);
+        return minElement;
+    }
+
+    float vec4::MaxElement() const
+    {
+        float maxElement = x;
+        maxElement = std::fmaxf(maxElement, y);
+        maxElement = std::fmaxf(maxElement, z);
+        maxElement = std::fmaxf(maxElement, w);
+
+        return maxElement;
+    }
+
     /**** Operators ****/
     float& vec4::operator[](const unsigned int a_Index)
     {

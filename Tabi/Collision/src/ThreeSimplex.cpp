@@ -83,9 +83,10 @@ bool tabi::ThreeSimplex::EvolveSimplex(tabi::vec3& a_DirectionTowardsOrigin)
     {
         // Find the normal of the line between point A and point B in the direction of the origin
         const vec3 ba = a - b;
+        const vec3 b0 = -b;
 
-        // Use the vector triple product to find the direction towards the origin
-        const vec3 tmp = ba.Cross(-b);
+        // Use the vector triple product to find the normal towards the origin
+        const vec3 tmp = ba.Cross(b0);
 
         if (tmp.LengthSquared() != 0.0f)
         {
@@ -93,7 +94,11 @@ bool tabi::ThreeSimplex::EvolveSimplex(tabi::vec3& a_DirectionTowardsOrigin)
         }
         else
         {
-            // origin lies on BA
+            // As this class is specifically meant to be used in GJK.cpp, we can assume that B lies past the origin
+            // And because we searched in the direction of the origin to find B, the origin can't lie beyond A.
+            // If this wasn't certain, we'd have to check if(ba.Dot(b0) < ba.Dot(ba))
+                
+            // Origin lies on BA
             return true;
         }
     }

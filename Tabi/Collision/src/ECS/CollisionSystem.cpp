@@ -10,19 +10,16 @@ void tabi::CollisionSystem::OnUpdate(float a_DeltaTime)
 {
     TABI_UNUSED(a_DeltaTime);
 
-    for (const auto& ent1 : m_Entities)
+    for(auto ent1iter = m_Entities.begin(); std::next(ent1iter) != m_Entities.end(); ++ent1iter)
     {
+        const auto& ent1 = *ent1iter;
         const auto& transform1 = m_ComponentManager->GetComponent<tabi::Transform>(ent1);
         auto& collider1 = m_ComponentManager->GetComponent<tabi::ColliderComponent>(ent1);
         collider1.m_Collider->SetWorldTransfrom(transform1);
         
-        for (const auto& ent2 : m_Entities)
+        for (auto ent2iter = std::next(ent1iter); ent2iter != m_Entities.end(); ++ent2iter)
         {
-            if (ent1 == ent2)
-            {
-                continue;
-            }
-
+            const auto& ent2 = *ent2iter;
             const auto& transform2 = m_ComponentManager->GetComponent<tabi::Transform>(ent2);
             auto& collider2 = m_ComponentManager->GetComponent<tabi::ColliderComponent>(ent2);
             collider2.m_Collider->SetWorldTransfrom(transform2);

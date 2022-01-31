@@ -178,3 +178,19 @@ TEST_F(CollisionSystemTests, OverlapEndEventArguments)
 
     m_ECS.Update(1.0f);
 }
+
+TEST_F(CollisionSystemTests, NoSelfOverlapEvent)
+{
+    // Set expectations for entity 1
+    EXPECT_CALL(m_CollisionCallback1, OnOverlapBegin(::testing::_)).Times(0);
+
+    // Set expectations for entity 2
+    EXPECT_CALL(m_CollisionCallback2, OnOverlapBegin(::testing::_)).Times(0);
+
+
+    // Execute
+    m_ECS.GetComponent<tabi::Transform>(m_Entity1).m_Position = tabi::vec3{ 0.0f, 0.0f, 0.0f };
+    m_ECS.GetComponent<tabi::Transform>(m_Entity2).m_Position = tabi::vec3{ 1000.0f, 1000.0f, 1000.0f };
+
+    m_ECS.Update(1.0f);
+}

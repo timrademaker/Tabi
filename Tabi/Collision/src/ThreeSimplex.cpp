@@ -70,8 +70,8 @@ bool tabi::ThreeSimplex::EvolveSimplex(tabi::vec3& a_DirectionTowardsOrigin)
     else if (m_NumPoints == 3)  // Triangle
     {
         // Find the normal of the triangle in the direction of the origin
-        vec3 ab = b - a;
-        vec3 ac = c - a;
+        const vec3 ab = b - a;
+        const vec3 ac = c - a;
 
         a_DirectionTowardsOrigin = ac.Cross(ab);
         if (a_DirectionTowardsOrigin.Dot(-a) < 0.0f)

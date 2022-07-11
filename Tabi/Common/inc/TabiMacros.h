@@ -36,3 +36,7 @@
 #define DISABLE_WARNING(warningName)   DO_PRAGMA(GCC diagnostic ignored #warningName)
 
 #endif
+
+#define TABI_ENUM_FLAG(EnumName) inline EnumName operator|(const EnumName& a_Lhs, const EnumName& a_Rhs) { return static_cast<EnumName>(static_cast<int64_t>(a_Lhs) | static_cast<int64_t>(a_Rhs)); } \
+inline EnumName operator|=(EnumName& a_Lhs, const EnumName& a_Rhs) { a_Lhs = static_cast<EnumName>(a_Lhs | a_Rhs);  return a_Lhs; } \
+inline EnumName operator&(const EnumName& a_Lhs, const EnumName& a_Rhs) { return static_cast<EnumName>(static_cast<int64_t>(a_Lhs) & static_cast<int64_t>(a_Rhs)); }

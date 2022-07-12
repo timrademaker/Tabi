@@ -20,6 +20,17 @@ namespace tabi
 
 		virtual void InsertBarrier() = 0; // TODO: Barrier types?
 
+		/*
+		 * @brief Start using a certain graphics pipeline
+		 * @param a_GraphicsPipeline The graphics pipeline to use
+		 */
+		virtual void UseGraphicsPipeline(class IGraphicsPipeline* a_GraphicsPipeline) = 0;
+		/*
+		 * @brief Start using a certain compute pipeline
+		 * @param a_ComputePipeline The compute pipeline to use
+		 */
+		virtual void UseComputePipeline(class IComputePipeline* a_ComputePipeline) = 0;
+
 		/**
 		 * @brief Draw vertices
 		 * @param a_VertexCount The number of vertices to draw
@@ -53,7 +64,12 @@ namespace tabi
 		 */
 		virtual void DrawIndexedInstanced(uint32_t a_IndexCountPerInstance, uint32_t a_InstanceCount, uint32_t a_StartIndexLocation = 0, uint32_t a_StartVertexLocation = 0) = 0;
 
-		virtual void BindGraphicsPipeline(class IGraphicsPipeline*) = 0;
-		virtual void BindComputePipeline(class IComputePipeline*) = 0;
+		/**
+		 * @brief Dispatch a compute pipeline
+		 * @param a_GroupCountX The number of groups dispatched in the x direction
+		 * @param a_GroupCountY The number of groups dispatched in the y direction
+		 * @param a_GroupCountZ The number of groups dispatched in the z direction
+		 */
+		virtual void DispatchComputePipeline(uint32_t a_GroupCountX, uint32_t a_GroupCountY, uint32_t a_GroupCountZ) = 0;
 	};
 }

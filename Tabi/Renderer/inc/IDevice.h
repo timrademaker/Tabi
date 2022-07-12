@@ -19,8 +19,16 @@ namespace tabi
 		virtual class IBuffer* CreateBuffer(const struct BufferDescription&) = 0;
 		virtual class ISampler* CreateSampler(const struct SamplerDescription&) = 0;
 
-		virtual class IGraphicsPipeline* CreateGraphicsPipeline(const struct GraphicePipelineDescription&) = 0;
-		virtual class IComputePipeline* CreateComputePipeline(const struct ComputePipelineDescription&) = 0;
+		/**
+		 * @brief Create a new graphics pipeline object
+		 * @param a_PipelineDescription A struct describing the graphics pipeline to create
+		 */
+		virtual class IGraphicsPipeline* CreateGraphicsPipeline(const struct GraphicePipelineDescription& a_PipelineDescription) = 0;
+		/**
+		 * @brief Create a new compute pipeline object
+		 * @param a_ComputePipelineDescription A struct describing the compute pipeline to create
+		 */
+		virtual class IComputePipeline* CreateComputePipeline(const struct ComputePipelineDescription& a_ComputePipelineDescription) = 0;
 
 		virtual class IRenderTarget* CreateRenderTarget() = 0;
 		virtual class ICommandList* CreateCommandList() = 0;

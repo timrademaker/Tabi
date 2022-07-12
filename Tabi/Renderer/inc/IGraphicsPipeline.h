@@ -101,6 +101,9 @@ namespace tabi
 	{
 		EPolygonMode m_PolygonMode = EPolygonMode::Fill;
 		ECullMode m_CullMode = ECullMode::Back;
+
+		// If true, a triangle will be considered front-facing if its vertices are counter-clockwise on the render target
+		bool m_TriangleFrontIsCounterClockwise = false;
 	};
 
 	struct StencilState
@@ -127,7 +130,7 @@ namespace tabi
 		class IShader* m_VertexShader = nullptr;
 		class IShader* m_PixelShader = nullptr;
 
-		EToplolgy m_Topology;
+		EToplolgy m_Topology = EToplolgy::Triangle;
 		// TODO: Support multiple blend targets?
 		BlendState m_BlendState;
 		RasterizerState m_RasterizerState;

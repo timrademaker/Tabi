@@ -5,18 +5,54 @@ namespace tabi
 	class ICommandList
 	{
 	public:
-		// TODO: Constructor/destructor
-
+		/**
+		 * @brief Start recording commands
+		 */
 		virtual void BeginRecording() = 0;
+		/**
+		* @brief Stop recording commands
+		*/
 		virtual void EndRecording() = 0;
 
-		// virtual void BindBuffer(class IBuffer*, int32_t a_Slot) = 0;	// What kind of buffer? Storage?
+		/**
+		 * @brief Bind vertex buffers to be used
+		 * @param a_FirstSlot The index of the first slot to bind the vertex buffers to
+		 * @param a_VertexBuffers The buffers to bind
+		 * @param a_NumBuffers The number of buffers to bind
+		 */
 		virtual void BindVertexBuffers(int32_t a_FirstSlot, class IBuffer** a_VertexBuffers, size_t a_NumBuffers) = 0;
+		/**
+		 * @brief Bind an index buffer to be used
+		 * @param a_IndexBuffer The buffer to bind
+		 */
 		virtual void BindIndexBuffer(class IBuffer* a_IndexBuffer) = 0;
-		// virtual void BindConstantBuffer(class IBuffer*, int32_t a_Slot) = 0;
+		/**
+		 * @brief Bind a buffer that can be read from by shaders
+		 * @param a_Buffer The buffer to bind
+		 * @param a_Slot The slot to bind the buffer to
+		 */
+		virtual void BindConstantBuffer(class IBuffer* a_Buffer, int32_t a_Slot) = 0;
+		/**
+		 * @brief Bind a buffer that shaders can read from and write to
+		 * @param a_Buffer The buffer to bind
+		 * @param a_Slot The slot to bind the buffer to
+		 *
+		 * @note: In OpenGL, this would be a SSBO or buffer texture. In D3D, this would be a UAV.
+		 */
+		virtual void BindReadWriteBuffer(class IBuffer* a_Buffer, int32_t a_Slot) = 0;
 
-		virtual void BindTexture(class ITexture*, int32_t a_Slot) = 0;
-		virtual void BindWritableTexture(class ITexture*, int32_t a_Slot) = 0;	// Texture that can be read from and written to
+		/**
+		 * @brief Bind a texture to a shader slot
+		 * @param a_Texture The texture to bind
+		 * @param a_Slot The slot to bind the texture to
+		 */
+		virtual void BindTexture(class ITexture* a_Texture, int32_t a_Slot) = 0;
+		/**
+		 * @brief Bind a read/write texture to a shader slot
+		 * @param a_Texture The texture to bind
+		 * @param a_Slot The slot to bind the texture to
+		 */
+		virtual void BindWritableTexture(class ITexture* a_Texture, int32_t a_Slot) = 0;
 
 		virtual void InsertBarrier() = 0; // TODO: Barrier types?
 

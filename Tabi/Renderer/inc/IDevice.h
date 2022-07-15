@@ -17,6 +17,7 @@ namespace tabi
 		// NOTE: D3D12 uploads using a command list, but maybe just give the device a separate command list that uploads textures (and is executed at the end of a frame if needed)?
 		virtual class ITexture* CreateTexture(const struct TextureDescription&, const char* a_Data, size_t a_DataSize) = 0;
 		virtual class IBuffer* CreateBuffer(const struct BufferDescription&) = 0;
+		virtual class IShader CreateShader(const struct ShaderDescription&) = 0;
 		virtual class ISampler* CreateSampler(const struct SamplerDescription&) = 0;
 
 		/**

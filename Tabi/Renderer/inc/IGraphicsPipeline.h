@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TabiMacros.h>
+#include "Enums/ComparisonFunction.h"
 
 namespace tabi
 {
@@ -60,18 +61,6 @@ namespace tabi
 		All = Red | Green | Blue | Alpha
 	};
 	TABI_ENUM_FLAG(EColorMask);
-
-	enum class EComparisonFunction : uint8_t
-	{
-		Never,
-		Less,
-		Equal,
-		LessOrEqual,
-		Greater,
-		GreaterOrEqual,
-		NotEqual,
-		Always
-	};
 
 	enum class EStencilOperation : uint8_t
 	{

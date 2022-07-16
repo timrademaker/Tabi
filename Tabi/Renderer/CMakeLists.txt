@@ -3,7 +3,6 @@ cmake_minimum_required (VERSION 3.8)
 
 # Set headers for Renderer
 set(HEADERS
-    inc/Format.h
     inc/IBuffer.h
     inc/ICommandList.h
     inc/IComputePipeline.h
@@ -12,6 +11,9 @@ set(HEADERS
     inc/IGraphicsPipeline.h
     inc/ISampler.h
     inc/ITexture.h
+
+    inc/Enums/Format.h
+    inc/Enums/ComparisonFunction.h
 )
 
 # Set sources for Renderer

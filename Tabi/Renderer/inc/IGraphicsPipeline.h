@@ -125,6 +125,34 @@ namespace tabi
 		StencilState m_BackStencilState;
 	};
 
+	enum class EInstanceDataStepClassification : uint8_t
+	{
+		// Vertex input changes for each vertex
+		PerVertex,
+		// Vertex input changes for each instance
+		PerInstance
+	};
+
+	// https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_input_element_desc
+	struct VertexInputElement
+	{
+		uint8_t m_InputSlot = 0;
+		uint8_t m_NumComponents = 0;
+		uint8_t m_SemanticIndex = 0;
+		const char* m_SemanticName = nullptr;
+
+		// Indicates how often the data read from the vertex buffer advances to the next element
+		EInstanceDataStepClassification m_InstanceDataStepClassification = EInstanceDataStepClassification::PerVertex;
+		// The number of instances to draw using the same per-instance data before advancing to the next element in the vertex buffer. Must be 0 when advancing once per vertex.
+		uint8_t m_InstanceDataStepRate = 0;
+	};
+
+	struct VertexInputLayout
+	{
+		std::vector<VertexInputElement> m_InputElements{};
+		uint8_t m_NumInputElements = 0;
+	};
+
 	struct GraphicsPipelineDescription
 	{
 		class IShader* m_VertexShader = nullptr;
@@ -135,7 +163,7 @@ namespace tabi
 		BlendState m_BlendState;
 		RasterizerState m_RasterizerState;
 		DepthStencilState m_DepthStencilState;
-		// Vertex input format description
+		VertexInputLayout m_VertexInputLayout;
 	};
 
 	class IGraphicsPipeline

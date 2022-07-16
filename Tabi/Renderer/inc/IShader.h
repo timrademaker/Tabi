@@ -14,6 +14,7 @@ namespace tabi
 	{
 		EShaderType m_ShaderType = EShaderType::None;
 		const char* m_Data = nullptr;
+		uint32_t m_DataLength = 0;
 	};
 
 	class IShader
@@ -21,12 +22,12 @@ namespace tabi
 	public:
 		IShader(EShaderType a_ShaderType) : m_ShaderType(a_ShaderType){};
 
-		EShaderType GetShaderType() const
+		inline EShaderType GetShaderType() const
 		{
 			return m_ShaderType;
 		}
 
-	protected:
+	private:
 		EShaderType m_ShaderType = EShaderType::None;
 		
 	};

@@ -17,7 +17,7 @@ namespace tabi
 		// NOTE: D3D12 uploads using a command list, but maybe just give the device a separate command list that uploads textures (and is executed at the end of a frame if needed)?
 		virtual class ITexture* CreateTexture(const struct TextureDescription&, const char* a_Data, size_t a_DataSize) = 0;
 		virtual class IBuffer* CreateBuffer(const struct BufferDescription&) = 0;
-		virtual class IShader CreateShader(const struct ShaderDescription&) = 0;
+		virtual class IShader* CreateShader(const struct ShaderDescription&) = 0;
 		virtual class ISampler* CreateSampler(const struct SamplerDescription&) = 0;
 
 		/**
@@ -33,6 +33,15 @@ namespace tabi
 
 		virtual class IRenderTarget* CreateRenderTarget() = 0;
 		virtual class ICommandList* CreateCommandList() = 0;
+
+		virtual void DestroyTexture(class ITexture* a_Texture) = 0;
+		virtual void DestroyBuffer(class IBuffer* a_Buffer) = 0;
+		virtual void DestroyShader(class IShader* a_Shader) = 0;
+		virtual void DestroySampler(class ISampler* a_Sampler) = 0;
+		virtual void DestroyGraphicsPipeline(class IGraphicsPipeline* a_GraphicsPipeline) = 0;
+		virtual void DestroyComputePipeline(class IComputePipeline* a_ComputePipeline) = 0;
+		virtual void DestroyRenderTarget(class IRenderTarget* a_RenderTarget) = 0;
+		virtual void DestroyCommandList(class ICommandList* a_CommandList) = 0;
 
 		virtual void ExecuteCommandList(class ICommandList*) = 0;
 

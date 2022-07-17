@@ -31,7 +31,7 @@ namespace tabi
 		 */
 		virtual class IComputePipeline* CreateComputePipeline(const struct ComputePipelineDescription& a_ComputePipelineDescription) = 0;
 
-		virtual class IRenderTarget* CreateRenderTarget() = 0;
+		virtual class IRenderTarget* CreateRenderTarget(const struct RenderTargetDescription&) = 0;	// TODO: Some args (or a description) with things like format and size(?)
 		virtual class ICommandList* CreateCommandList() = 0;
 
 		virtual void DestroyTexture(class ITexture* a_Texture) = 0;

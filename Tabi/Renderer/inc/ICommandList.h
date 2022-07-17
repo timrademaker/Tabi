@@ -54,7 +54,29 @@ namespace tabi
 		 */
 		virtual void BindWritableTexture(class ITexture* a_Texture, int32_t a_Slot) = 0;
 
-		virtual void InsertBarrier() = 0; // TODO: Barrier types?
+		/**
+		 * @brief Insert a memory barrier into the command stream
+		 */
+		virtual void InsertBarrier() = 0;
+
+		/**
+		 * @brief Attach a render target to render to with subsequent draw calls
+		 * @param a_RenderTarget The render target to use. nullptr represents the screen's render target
+		 */
+		virtual void SetRenderTarget(class IRenderTarget* a_RenderTarget) = 0;
+		/**
+		 * @brief Clear a render target's color buffer
+		 * @param a_RenderTarget The render target to clear. nullptr represents the screen's render target
+		 * @param a_ClearColor The RGBA color to fill the render target with
+		 */
+		virtual void ClearRenderTarget(class IRenderTarget* a_RenderTarget, float[4] a_ClearColor) = 0;
+		/**
+		 * @brief Clear a render target's depth-stencil buffer
+		 * @param a_RenderTarget The render target to clear. nullptr represents the screen's render target
+		 * @param a_DepthValue The value to clear the depth buffer with. Should be between 0.0 and 1.0
+		 * @param a_StencilValue The value to clear the stencil buffer with
+		 */
+		virtual void ClearDepthStencil(class IRenderTarget* a_RenderTarget, float a_DepthValue = 0.0f, uint8_t a_StencilValue = 0) = 0;
 
 		/*
 		 * @brief Start using a certain graphics pipeline

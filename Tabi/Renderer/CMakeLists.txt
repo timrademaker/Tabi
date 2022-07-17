@@ -9,7 +9,9 @@ set(HEADERS
     inc/IDevice.h
     inc/IFence.h
     inc/IGraphicsPipeline.h
+    inc/IRenderTarget.h
     inc/ISampler.h
+    inc/IShader.h
     inc/ITexture.h
 
     inc/Enums/Format.h

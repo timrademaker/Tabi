@@ -6,6 +6,7 @@ namespace tabi
 {
 	enum class ETextureDimension : uint8_t
 	{
+		Unknown,
 		Buffer,	// TODO: Should this be a thing? Isn't 1D basically the same?
 		Tex1D,
 		Tex1DArray,
@@ -26,9 +27,9 @@ namespace tabi
 	// https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_resource_desc
 	struct TextureDescription
 	{
-		ETextureDimension m_Dimension = ETextureDimension::Tex2D;
+		ETextureDimension m_Dimension = ETextureDimension::Unknown;
 		ETextureRole m_Role = ETextureRole::Texture;
-		EFormat m_Format = EFormat::RGBA32_uint;
+		EFormat m_Format = EFormat::Unknown;
 		// Use (where can this texture be accessed from?)	(https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_flags)
 		// OGL doesn't care about that though, so maybe leave it out for now
 		uint64_t m_Width = 0;
@@ -40,6 +41,24 @@ namespace tabi
 	// TODO: Not much of an interface. Should this just be Texture (or BaseTexture or TextureHandle)?
 	class ITexture
 	{
+	public:
+		inline ETextureDimension GetTextureDimension() const
+		{
+			return m_TextureDimension;
+		}
 
+		inline EFormat GetTextureFormat() const
+		{
+			return m_Format;
+		}
+
+	protected:
+		ITexture(ETextureDimension a_TextureDimension, EFormat a_TextureFormat)
+			: m_TextureDimension(a_TextureDimension), m_Format(a_TextureFormat)
+		{};
+
+	private:
+		ETextureDimension m_TextureDimension = ETextureDimension::Unknown;
+		EFormat m_Format = EFormat::Unknown;
 	};
 }

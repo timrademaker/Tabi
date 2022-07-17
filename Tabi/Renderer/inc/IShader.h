@@ -4,7 +4,7 @@ namespace tabi
 {
 	enum class EShaderType : int8_t
 	{
-		None = -1,
+		Invalid = -1,
 		Vertex,
 		Pixel,
 		Compute
@@ -12,7 +12,7 @@ namespace tabi
 
 	struct ShaderDescription
 	{
-		EShaderType m_ShaderType = EShaderType::None;
+		EShaderType m_ShaderType = EShaderType::Invalid;
 		const char* m_Data = nullptr;
 		uint32_t m_DataLength = 0;
 	};
@@ -20,7 +20,9 @@ namespace tabi
 	class IShader
 	{
 	public:
-		IShader(EShaderType a_ShaderType) : m_ShaderType(a_ShaderType){};
+		IShader(EShaderType a_ShaderType)
+			: m_ShaderType(a_ShaderType)
+		{};
 
 		inline EShaderType GetShaderType() const
 		{
@@ -28,7 +30,7 @@ namespace tabi
 		}
 
 	private:
-		EShaderType m_ShaderType = EShaderType::None;
+		EShaderType m_ShaderType = EShaderType::Invalid;
 		
 	};
 }

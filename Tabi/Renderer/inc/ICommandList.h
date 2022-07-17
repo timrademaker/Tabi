@@ -90,6 +90,23 @@ namespace tabi
 		virtual void UseComputePipeline(class IComputePipeline* a_ComputePipeline) = 0;
 
 		/**
+		 * @brief Copy data to a texture
+		 * @param a_Texture The texture to copy the data to
+		 * @param a_Data The data to copy to the texture
+		 * @param a_DataSize The amount of data to copy
+		 * @param a_Offset The offset in the texture's memory at which to start replacing the existing data
+		 */
+		virtual void CopyDataToTexture(class ITexture* a_Texture, const char* a_Data, size_t a_DataSize, size_t a_Offset) = 0;
+		/**
+		 * @brief Copy data to a buffer
+		 * @param a_Texture The buffer to copy the data to
+		 * @param a_Data The data to copy to the buffer
+		 * @param a_DataSize The amount of data to copy
+		 * @param a_Offset The offset in the buffer's memory at which to start replacing the existing data
+		 */
+		virtual void CopyDataToBuffer(class IBuffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset) = 0;
+
+		/**
 		 * @brief Draw vertices
 		 * @param a_VertexCount The number of vertices to draw
 		 * @param a_StartVertexLocation The offset to the first vertex to draw

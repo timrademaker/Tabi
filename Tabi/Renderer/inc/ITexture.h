@@ -19,9 +19,12 @@ namespace tabi
 
 	enum class ETextureRole : uint8_t
 	{
-		Texture,		// Texture used as... texture
-		DepthStencil,	// Texture used as depth-stencil buffer
-		RenderTexture	// Texture used as render target
+		// Texture used as... texture
+		Texture,
+		// Texture used as depth-stencil buffer
+		DepthStencil,
+		// Texture used as render target
+		RenderTexture
 	};
 
 	// https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_resource_desc
@@ -30,8 +33,6 @@ namespace tabi
 		ETextureDimension m_Dimension = ETextureDimension::Unknown;
 		ETextureRole m_Role = ETextureRole::Texture;
 		EFormat m_Format = EFormat::Unknown;
-		// Use (where can this texture be accessed from?)	(https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_flags)
-		// OGL doesn't care about that though, so maybe leave it out for now
 		uint64_t m_Width = 0;
 		uint64_t m_Height = 0;
 		uint16_t m_Depth = 0;	// Depth if 3D texture, array size if array type

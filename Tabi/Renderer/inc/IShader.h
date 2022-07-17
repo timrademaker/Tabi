@@ -20,14 +20,15 @@ namespace tabi
 	class IShader
 	{
 	public:
-		IShader(EShaderType a_ShaderType)
-			: m_ShaderType(a_ShaderType)
-		{};
-
 		inline EShaderType GetShaderType() const
 		{
 			return m_ShaderType;
 		}
+
+	protected:
+		IShader(EShaderType a_ShaderType)
+			: m_ShaderType(a_ShaderType)
+		{};
 
 	private:
 		EShaderType m_ShaderType = EShaderType::Invalid;

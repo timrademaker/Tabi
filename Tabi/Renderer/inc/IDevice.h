@@ -1,16 +1,18 @@
 #pragma once
 
+#include <cstdint>
+
 namespace tabi
 {
 	class IDevice
 	{
-		IDevice() = default;
+	public:
 		IDevice(IDevice&) = delete;
 		IDevice(const IDevice&) = delete;
 		IDevice(IDevice&&) = delete;
-		virtual IDevice() = default;
 
-	public:
+		static IDevice* GetInstance();
+
 		/**
 		 * @brief Initialize the rendering device
 		 */
@@ -108,5 +110,9 @@ namespace tabi
 		 * @brief Present the backbuffer to the screen
 		 */
 		virtual void Present() = 0;
+
+	protected:
+		IDevice() = default;
+		virtual ~IDevice() = default;
 	};
 }

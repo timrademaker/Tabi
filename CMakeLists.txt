@@ -29,7 +29,7 @@ endif()
 
 
 # Include sub-projects.
-add_subdirectory ("Tabi")
+add_subdirectory("Tabi")
 add_subdirectory("Game")
 add_subdirectory("ThirdParty")
 

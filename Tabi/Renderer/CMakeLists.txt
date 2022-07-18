@@ -22,7 +22,7 @@ set(HEADERS
 
 # Set sources for Renderer
 set(SOURCES
-
+    src/IDevice.cpp
 )
 
 if(WINDOWS)

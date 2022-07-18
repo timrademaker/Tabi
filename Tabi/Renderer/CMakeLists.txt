@@ -14,6 +14,8 @@ set(HEADERS
     inc/IShader.h
     inc/ITexture.h
 
+    inc/TextureUpdateDescription.h
+
     inc/Enums/Format.h
     inc/Enums/ComparisonFunction.h
 )

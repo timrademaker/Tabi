@@ -8,7 +8,7 @@
 
 #define INFO_BUFFER_SIZE 512
 
-tabi::logger::LoggerPtr tabi::graphics::helpers::m_GraphicsLogger = tabi::logger::CreateTabiLogger<tabi::logger::ConsoleSink>("TabiGraphics");
+static tabi::logger::LoggerPtr s_GraphicsLogger = tabi::logger::CreateTabiLogger<tabi::logger::ConsoleSink>("TabiGraphics");
 
 bool tabi::graphics::helpers::CheckShaderLoadSuccess(unsigned int a_Shader)
 {
@@ -19,7 +19,7 @@ bool tabi::graphics::helpers::CheckShaderLoadSuccess(unsigned int a_Shader)
     {
         char info[INFO_BUFFER_SIZE];
         glGetShaderInfoLog(a_Shader, INFO_BUFFER_SIZE, nullptr, &info[0]);
-        m_GraphicsLogger->Log(tabi::logger::ELogLevel::Error, "Error while loading shader: " + tabi::string(info));
+        s_GraphicsLogger->Log(tabi::logger::ELogLevel::Error, "Error while loading shader: " + tabi::string(info));
     }
 
     return success;
@@ -34,7 +34,7 @@ bool tabi::graphics::helpers::CheckShaderProgramSuccess(unsigned int a_Program)
     {
         char info[INFO_BUFFER_SIZE];
         glGetProgramInfoLog(a_Program, INFO_BUFFER_SIZE, nullptr, &info[0]);
-        m_GraphicsLogger->Log(tabi::logger::ELogLevel::Error, "Error while loading shader: " + tabi::string(info));
+        s_GraphicsLogger->Log(tabi::logger::ELogLevel::Error, "Error while loading shader: " + tabi::string(info));
     }
 
     return success;
@@ -49,7 +49,7 @@ bool tabi::graphics::helpers::CheckForErrors()
 
         const auto errorString = ErrorToString(err);
 
-        m_GraphicsLogger->Log(logger::ELogLevel::Error, "Error " + tabi::to_string(err) + ": " + errorString);
+        s_GraphicsLogger->Log(logger::ELogLevel::Error, "Error " + tabi::to_string(err) + ": " + errorString);
 
         err = glGetError();
     }
@@ -110,7 +110,7 @@ bool tabi::graphics::helpers::IsOpenGLVersionSupported(float a_MinimumRequiredVe
 
     if(number < a_MinimumRequiredVersion)
     {
-        m_GraphicsLogger->Log(logger::ELogLevel::Critical, "The supported OpenGL version ("
+        s_GraphicsLogger->Log(logger::ELogLevel::Critical, "The supported OpenGL version ("
             + versionNumber
             + ") is lower than the minimum version required by this program ("
             + tabi::to_string(a_MinimumRequiredVersion).substr(0, 3)
@@ -126,9 +126,9 @@ bool tabi::graphics::helpers::IsOpenGLVersionSupported(float a_MinimumRequiredVe
 #if defined(GL_DEBUG_OUTPUT)
 // OpenGL 4.3 or higher
 
-void GLAPIENTRY tabi::graphics::helpers::MessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLenum a_Severity, GLsizei a_Length, const GLchar* a_Message, const void* a_UserParam)
+void GLAPIENTRY MessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLenum a_Severity, GLsizei a_Length, const GLchar* a_Message, const void* a_UserParam)
 {
-    tabi::logger::ELogLevel severity;
+    auto severity = tabi::logger::ELogLevel::Debug;
     switch (a_Severity)
     {
     case GL_DEBUG_SEVERITY_HIGH:
@@ -147,7 +147,7 @@ void GLAPIENTRY tabi::graphics::helpers::MessageCallback(GLenum a_Source, GLenum
         break;
     }
     }
-    m_GraphicsLogger->Log(severity, "Type: " + std::to_string(a_Type) + "\nMessage: " + a_Message);
+    s_GraphicsLogger->Log(severity, "Type: " + std::to_string(a_Type) + "\nMessage: " + a_Message);
 }
 
 

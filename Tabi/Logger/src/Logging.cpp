@@ -29,16 +29,10 @@ void tabi::logger::SetDefaultTabiLogger(LoggerPtr a_Logger)
 
 void tabi::logger::TabiLog(ELogLevel a_LogLevel, Logger::LogMessage_t a_Message)
 {
-    
-    auto logger = LoggerRegistry::GetTabiLoggerRegistry().GetDefaultLogger();
-    if (logger)
-    {
-        logger->Log(a_LogLevel, a_Message);
-    }
-    else
-    {
-        assert(false && "No default logger has been set!");
-    }
+    const auto logger = LoggerRegistry::GetTabiLoggerRegistry().GetDefaultLogger();
+    assert(logger && "No default logger has been set!");
+
+    logger->Log(a_LogLevel, std::move(a_Message));
 }
 
 

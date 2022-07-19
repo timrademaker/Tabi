@@ -17,7 +17,7 @@ namespace tabi
 
         /** Enum containing the different levels of severity for a logged message
         */
-        enum class TABI_EXPORT ELogLevel
+        enum class ELogLevel
         {
             Trace       = spdlog::level::trace,
             Debug       = spdlog::level::debug,
@@ -29,7 +29,7 @@ namespace tabi
 
         /** The Logger class
         */
-        class TABI_EXPORT Logger
+        class Logger
         {
             using SinkPtr = tabi::shared_ptr<ISink>;
             using InternalLogLevel_t = spdlog::level::level_enum;
@@ -62,12 +62,12 @@ namespace tabi
             void FlushOn(ELogLevel a_LogLevel);
             /** Logs a message to all sinks (if the log level is high enough).
             */
-            void Log(ELogLevel a_LogLevel, LogMessage_t a_LogMessage);
+            void Log(ELogLevel a_LogLevel, LogMessage_t a_LogMessage) const;
 
         private:
             /** Used to translate ELogLevel to the log level used by the library the logger uses internally
             */
-             InternalLogLevel_t TranslateLogLevel(const ELogLevel a_LogLevel);
+            static InternalLogLevel_t TranslateLogLevel(const ELogLevel a_LogLevel);
 
         private:
             ELogLevel m_LogLevel = ELogLevel::Trace;

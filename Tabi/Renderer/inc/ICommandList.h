@@ -1,10 +1,21 @@
 #pragma once
 
+#include "TabiMacros.h"
+
+#include <cstdint>
+
 namespace tabi
 {
 	class ICommandList
 	{
+	protected:
+		ICommandList() = default;
+		~ICommandList() = default;
+
 	public:
+		TABI_NO_COPY(ICommandList);
+		TABI_NO_MOVE(ICommandList);
+
 		/**
 		 * @brief Start recording commands
 		 */
@@ -13,6 +24,10 @@ namespace tabi
 		* @brief Stop recording commands
 		*/
 		virtual void EndRecording() = 0;
+		/**
+		 * @brief Resets the command list to its initial state, as if it has just been created
+		 */
+		virtual void Reset() = 0;
 
 		/**
 		 * @brief Bind vertex buffers to be used

@@ -16,8 +16,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin/${BUILD_PLATFO
 
 # Set compiler options
 if (MSVC)
-     # Enable warning level 4 and treat all warnings as errors
-    add_compile_options("/W4" "/WX")
+     # Enable warning level 4
+    add_compile_options("/W4")
 else ()
 	
 endif ()

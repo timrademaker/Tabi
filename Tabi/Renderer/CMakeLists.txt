@@ -35,6 +35,22 @@ if(WINDOWS)
     )
 endif()
 
+if(USE_OPENGL)
+    list(APPEND HEADERS 
+        inc/OpenGL/OpenGLBuffer.h
+        inc/OpenGL/OpenGLCommandList.h
+        inc/OpenGL/OpenGLDevice.h
+        inc/OpenGL/OpenGLFence.h
+    )
+    
+    list(APPEND SOURCES
+        src/OpenGL/OpenGLCommandList.cpp
+        src/OpenGL/OpenGLDevice.cpp
+        src/OpenGL/OpenGLFence.cpp
+    )
+endif()
+
+
 # Add source to this project's executable.
 add_library(Renderer EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 
@@ -44,15 +60,5 @@ target_include_directories(Renderer PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 target_link_libraries(Renderer PUBLIC TabiCommon Logger Core)
 
 if(USE_OPENGL)
-    list(APPEND HEADERS 
-        inc/OpenGL/OpenGLDevice.h
-        inc/OpenGL/OpenGLFence.h
-    )
-    
-    list(APPEND SOURCES
-        src/OpenGL/OpenGLDevice.cpp
-        src/OpenGL/OpenGLFence.cpp
-    )
-
     target_link_libraries(Renderer PUBLIC GLAD)
 endif()

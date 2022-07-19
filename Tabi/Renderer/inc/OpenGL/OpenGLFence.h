@@ -11,16 +11,16 @@ namespace tabi
 	class OpenGLFence : public IFence
 	{
 	public:
-		inline void SetCompletionValue(int64_t a_Value) { m_CompletionValue = a_Value };
-		inline void Complete() { m_CurrentValue = m_CompletionValue };
+		inline void SetCompletionValue(int64_t a_Value) { m_CompletionValue = a_Value; };
+		inline void Complete() { m_CurrentValue = m_CompletionValue; };
 
 		virtual uint64_t GetFenceValue() override;
 
 	public:
-		struct GLsync m_FenceSync;
+		::GLsync m_FenceSync;
 
 	private:
 		uint64_t m_CompletionValue = 0;
-		std::atomic<uint64_t> m_CurrentValue = 0;
+		std::atomic<uint64_t> m_CurrentValue{ 0 };
 	};
 }

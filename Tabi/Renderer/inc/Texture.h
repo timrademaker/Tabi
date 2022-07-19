@@ -1,13 +1,15 @@
 #pragma once
 
-#include "Format.h"
+#include "Enums/Format.h"
+
+#include <cstdint>
 
 namespace tabi
 {
 	enum class ETextureDimension : uint8_t
 	{
 		Unknown,
-		Buffer,	// TODO: Should this be a thing? Isn't 1D basically the same?
+		Buffer,
 		Tex1D,
 		Tex1DArray,
 		Tex2D,
@@ -39,8 +41,9 @@ namespace tabi
 		uint16_t m_MipLevels = 1;
 	};
 
-	// TODO: Not much of an interface. Should this just be Texture (or BaseTexture or TextureHandle)?
-	class ITexture
+	// TODO: ResourceManager's Resources/Texture.h is also a thing. Should that become Texture2D or Image or something?
+	// Or is there a better way to avoid confusion? Renderer namespace?
+	class Texture
 	{
 	public:
 		inline ETextureDimension GetTextureDimension() const
@@ -54,7 +57,7 @@ namespace tabi
 		}
 
 	protected:
-		ITexture(ETextureDimension a_TextureDimension, EFormat a_TextureFormat)
+		Texture(ETextureDimension a_TextureDimension, EFormat a_TextureFormat)
 			: m_TextureDimension(a_TextureDimension), m_Format(a_TextureFormat)
 		{};
 

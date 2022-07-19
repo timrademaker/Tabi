@@ -27,7 +27,7 @@ namespace tabi
 		 * @param a_TextureDescription A struct describing the texture to create
 		 * @returns The created texture
 		 */
-		virtual class ITexture* CreateTexture(const struct TextureDescription& a_TextureDescription) = 0;
+		virtual class Texture* CreateTexture(const struct TextureDescription& a_TextureDescription) = 0;
 		/**
 		 * @brief Create a new buffer
 		 * @param a_BufferDescription A struct describing the buffer to create
@@ -77,7 +77,7 @@ namespace tabi
 		 */
 		virtual void ExecuteCommandList(class ICommandList* a_CommandList) = 0;
 
-		virtual void DestroyTexture(class ITexture* a_Texture) = 0;
+		virtual void DestroyTexture(class Texture* a_Texture) = 0;
 		virtual void DestroyBuffer(class IBuffer* a_Buffer) = 0;
 		virtual void DestroyShader(class IShader* a_Shader) = 0;
 		virtual void DestroySampler(class ISampler* a_Sampler) = 0;

@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.8)
 
 # Set headers for Renderer
 set(HEADERS
-    inc/IBuffer.h
+    inc/Buffer.h
     inc/ICommandList.h
     inc/IComputePipeline.h
     inc/IDevice.h
@@ -12,7 +12,7 @@ set(HEADERS
     inc/IRenderTarget.h
     inc/ISampler.h
     inc/IShader.h
-    inc/ITexture.h
+    inc/Texture.h
 
     inc/TextureUpdateDescription.h
 

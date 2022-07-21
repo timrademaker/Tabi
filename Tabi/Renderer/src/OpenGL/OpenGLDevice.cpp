@@ -11,32 +11,33 @@ namespace tabi
 
 	void OpenGLDevice::InsertFence(class IFence* a_Fence, uint64_t a_Value)
 	{
-		auto* fence = static_cast<OpenGLFence*>(a_Fence);
-		// TODO: Insert into pending commands:
-		/*
-		fence->m_FenceSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-		*/
+		m_CommandQueue.emplace_back([fence = static_cast<OpenGLFence*>(a_Fence)]
+			{
+				fence->m_FenceSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			}
+		);
 	}
 
 	void OpenGLDevice::EndFrame()
 	{
-		// TODO: Insert into pending commands:
-		/*
-		while(!m_PendingFences.empty())
-		{
-			auto* fence = m_PendingFences.front();
-			auto result = glClientWaitSync(fence->m_FenceSync, 0, 0);
-			if(result == GL_ALREADY_SIGNALED || result == GL_CONDITION_SATISFIED)
+		m_CommandQueue.emplace_back([pendingFences = &m_PendingFences]
 			{
-				fence->Complete();
-				m_PendingFences.pop();
+				while (!pendingFences->empty())
+				{
+					auto* fence = pendingFences->front();
+					const auto result = glClientWaitSync(fence->m_FenceSync, 0, 0);
+					if (result == GL_ALREADY_SIGNALED || result == GL_CONDITION_SATISFIED)
+					{
+						fence->Complete();
+						pendingFences->pop();
+					}
+					else
+					{
+						// Other fences won't have been completed either, as they were inserted later
+						break;
+					}
+				}
 			}
-			else
-			{
-				// Other fences won't have been completed either, as they were inserted later
-				break;
-			}
-		}		
-		*/
+		);
 	}
 }

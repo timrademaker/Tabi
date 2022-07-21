@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "IDevice.h"
 
 #include <TabiContainers.h>
@@ -47,6 +49,7 @@ namespace tabi
 		virtual void Present() override;
 
 	private:
+		tabi::vector<std::function<void()>> m_CommandQueue{ 1024 };
 		tabi::queue<class OpenGLFence*> m_PendingFences;
 	};
 }

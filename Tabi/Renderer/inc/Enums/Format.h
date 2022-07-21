@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace tabi
 {
 	// https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format

@@ -33,13 +33,13 @@ namespace tabi
 		 * @param a_BufferDescription A struct describing the buffer to create
 		 * @returns The created buffer
 		 */
-		virtual class IBuffer* CreateBuffer(const struct BufferDescription& a_BufferDescription) = 0;
+		virtual class Buffer* CreateBuffer(const struct BufferDescription& a_BufferDescription) = 0;
 		/**
 		 * @brief Create a new shader
 		 * @param a_ShaderDescription A struct describing the shader to create
 		 * @returns The created shader
 		 */
-		virtual class IShader* CreateShader(const struct ShaderDescription& a_ShaderDescription) = 0;
+		virtual class Shader* CreateShader(const struct ShaderDescription& a_ShaderDescription) = 0;
 		/**
 		 * @brief Create a new sampler
 		 * @param a_SamplerDescription A struct describing the sampler to create
@@ -78,8 +78,8 @@ namespace tabi
 		virtual void ExecuteCommandList(class ICommandList* a_CommandList) = 0;
 
 		virtual void DestroyTexture(class Texture* a_Texture) = 0;
-		virtual void DestroyBuffer(class IBuffer* a_Buffer) = 0;
-		virtual void DestroyShader(class IShader* a_Shader) = 0;
+		virtual void DestroyBuffer(class Buffer* a_Buffer) = 0;
+		virtual void DestroyShader(class Shader* a_Shader) = 0;
 		virtual void DestroySampler(class ISampler* a_Sampler) = 0;
 		virtual void DestroyGraphicsPipeline(class IGraphicsPipeline* a_GraphicsPipeline) = 0;
 		virtual void DestroyComputePipeline(class IComputePipeline* a_ComputePipeline) = 0;

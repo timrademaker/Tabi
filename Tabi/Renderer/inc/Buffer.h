@@ -18,18 +18,17 @@ namespace tabi
 	class Buffer
 	{
 	public:
-		inline EFormat GetFormat() const { return m_Format; }
-		inline size_t GetSize() const { return m_Size; }
-		inline uint32_t GetStride() const { return m_Stride; }
+		inline const BufferDescription& GetBufferDescription() const
+		{
+			return m_BufferDescription;
+		}
 
 	protected:
-		Buffer(EFormat a_Format, size_t a_BufferSize, uint32_t a_Stride)
-			: m_Format(a_Format), m_Size(a_BufferSize), m_Stride(a_Stride)
+		Buffer(BufferDescription a_BufferDescription)
+			: m_BufferDescription(a_BufferDescription)
 		{}
 
 	private:
-		EFormat m_Format = EFormat::Unknown;
-		size_t m_Size = 0;
-		uint32_t m_Stride = 0;
+		BufferDescription m_BufferDescription{};
 	};
 }

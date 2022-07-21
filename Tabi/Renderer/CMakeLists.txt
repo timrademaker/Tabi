@@ -11,13 +11,15 @@ set(HEADERS
     inc/IGraphicsPipeline.h
     inc/IRenderTarget.h
     inc/ISampler.h
-    inc/IShader.h
+    inc/Shader.h
     inc/Texture.h
 
     inc/TextureUpdateDescription.h
 
-    inc/Enums/Format.h
     inc/Enums/ComparisonFunction.h
+    inc/Enums/Format.h
+    inc/Enums/ShaderEnums.h
+    inc/Enums/TextureEnums.h
 )
 
 # Set sources for Renderer
@@ -41,12 +43,17 @@ if(USE_OPENGL)
         inc/OpenGL/OpenGLCommandList.h
         inc/OpenGL/OpenGLDevice.h
         inc/OpenGL/OpenGLFence.h
+        inc/OpenGL/OpenGLShader.h
+
+        inc/OpenGL/Converters.h
     )
     
     list(APPEND SOURCES
         src/OpenGL/OpenGLCommandList.cpp
         src/OpenGL/OpenGLDevice.cpp
         src/OpenGL/OpenGLFence.cpp
+
+        src/OpenGL/Converters.cpp
     )
 endif()
 

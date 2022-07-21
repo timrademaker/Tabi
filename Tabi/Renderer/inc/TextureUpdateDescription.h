@@ -16,9 +16,9 @@ namespace tabi
 
 		// The offset in the X direction within the texture at which to start replacing the existing data
 		uint32_t m_OffsetX = 0;
-		// The offset in the Y direction within the texture at which to start replacing the existing data
+		// The offset in the Y direction within the texture at which to start replacing the existing data, or the array index of a 1DArray texture
 		uint32_t m_OffsetY = 0;
-		// The offset in the Z direction within the texture at which to start replacing the existing data
+		// The offset in the Z direction within the texture at which to start replacing the existing data, or the array index of a 2DArray texture, or the index into a cubemap (X+, X-, Y+, Y-, Z+, Z-)
 		uint32_t m_OffsetZ = 0;
 
 		// The mipmap level to update

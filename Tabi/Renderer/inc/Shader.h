@@ -1,15 +1,9 @@
 #pragma once
 
+#include "Enums/ShaderEnums.h"
+
 namespace tabi
 {
-	enum class EShaderType : int8_t
-	{
-		Invalid = -1,
-		Vertex,
-		Pixel,
-		Compute
-	};
-
 	struct ShaderDescription
 	{
 		EShaderType m_ShaderType = EShaderType::Invalid;
@@ -17,7 +11,7 @@ namespace tabi
 		uint32_t m_DataLength = 0;
 	};
 
-	class IShader
+	class Shader
 	{
 	public:
 		inline EShaderType GetShaderType() const
@@ -26,7 +20,7 @@ namespace tabi
 		}
 
 	protected:
-		IShader(EShaderType a_ShaderType)
+		Shader(EShaderType a_ShaderType)
 			: m_ShaderType(a_ShaderType)
 		{};
 

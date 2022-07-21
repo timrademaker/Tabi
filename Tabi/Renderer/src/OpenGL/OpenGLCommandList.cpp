@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-#define ENSURE_COMMAND_LIST_RECORDING() TABI_ASSERT(m_IsRecording, "Command list function called while recording is not active!")
+#define ENSURE_COMMAND_LIST_IS_RECORDING() TABI_ASSERT(m_IsRecording, "Command list function called while recording is not active!")
 
 void tabi::OpenGLCommandList::BeginRecording()
 {
@@ -26,7 +26,7 @@ void tabi::OpenGLCommandList::Reset()
 
 void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_VertexBuffers, size_t a_NumBuffers)
 {
-	ENSURE_COMMAND_LIST_RECORDING();
+	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	// Copy the buffers to a vector so we don't have to rely on a_VertexBuffers remaining valid until the command list is executed
 	tabi::vector<Buffer*> buffers{ a_NumBuffers };
@@ -44,8 +44,8 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 			{
 				const OpenGLBuffer* oglBuffer = static_cast<OpenGLBuffer*>(buffers[i]);
 
-				vertexBuffers.push_back(oglBuffer->GetBufferID());
-				strides.push_back(buffers[i]->GetStride());
+				vertexBuffers.push_back(oglBuffer->GetID());
+				strides.push_back(buffers[i]->GetBufferDescription().m_Stride);
 			}
 
 			glBindVertexBuffers(a_FirstSlot, a_NumBuffers, vertexBuffers.data(), nullptr, strides.data());
@@ -55,11 +55,11 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 
 void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
 {
-	ENSURE_COMMAND_LIST_RECORDING();
+	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	m_PendingCommands.push_back([a_IndexBuffer]
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<OpenGLBuffer*>(a_IndexBuffer)->GetBufferID());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<OpenGLBuffer*>(a_IndexBuffer)->GetID());
 		}
 	);
 
@@ -67,24 +67,24 @@ void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
 
 void tabi::OpenGLCommandList::BindConstantBuffer(Buffer* a_Buffer, int32_t a_Slot)
 {
-	ENSURE_COMMAND_LIST_RECORDING();
+	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	m_PendingCommands.push_back([a_Buffer, a_Slot]
 		{
-			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, static_cast<OpenGLBuffer*>(a_Buffer)->GetBufferID());
+			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, static_cast<OpenGLBuffer*>(a_Buffer)->GetID());
 		}
 	);
 }
 
 void tabi::OpenGLCommandList::BindReadWriteBuffer(Buffer* a_Buffer, int32_t a_Slot)
 {
-	ENSURE_COMMAND_LIST_RECORDING();
+	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	m_PendingCommands.push_back([a_Buffer, a_Slot]
 		{
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, static_cast<OpenGLBuffer*>(a_Buffer)->GetBufferID());
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, static_cast<OpenGLBuffer*>(a_Buffer)->GetID());
 		}
 	);
 }
 
-#undef ENSURE_COMMAND_LIST_RECORDING
+#undef ENSURE_COMMAND_LIST_IS_RECORDING

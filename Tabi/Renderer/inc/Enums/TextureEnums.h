@@ -26,4 +26,14 @@ namespace tabi
 		// Texture used as render target
 		RenderTexture
 	};
+
+	enum class ECubemapFace : uint8_t
+	{
+		XPositive,
+		XNegative,
+		YPositive,
+		YNegative,
+		ZPositive,
+		ZNegative
+	};
 }

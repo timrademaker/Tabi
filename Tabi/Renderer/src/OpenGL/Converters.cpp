@@ -47,4 +47,26 @@ namespace tabi
 			TABI_ASSERT(false, "Unknown shader type");
 			return GL_INVALID_ENUM;
 		}
+
+		GLenum GLCubeMapFace(ECubemapFace a_Face)
+		{
+			switch(a_Face)
+			{
+			case ECubemapFace::XPositive:
+				return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+			case ECubemapFace::XNegative:
+				return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+			case ECubemapFace::YPositive:
+				return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+			case ECubemapFace::YNegative:
+				return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+			case ECubemapFace::ZPositive:
+				return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+			case ECubemapFace::ZNegative:
+				return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+			}
+
+			TABI_ASSERT(false, "Unknown cubemap face");
+			return GL_INVALID_ENUM;
+		}
 }

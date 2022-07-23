@@ -10,4 +10,5 @@ namespace tabi
 {
 	GLenum GLTextureDimension(ETextureDimension a_Dimension);
 	GLenum GLShaderType(EShaderType a_ShaderType);
+	GLenum GLCubeMapFace(ECubemapFace a_Face);
 }

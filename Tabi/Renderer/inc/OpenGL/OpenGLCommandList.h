@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ICommandList.h"
+#include "TextureUpdateDescription.h"
 
 #include <TabiContainers.h>
 

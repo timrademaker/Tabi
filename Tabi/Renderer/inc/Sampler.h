@@ -6,14 +6,18 @@ namespace tabi
 {
     enum class EFilterMode : uint8_t
     {
-        Nearest,                // Selects the nearest texel
-        Linear                  // Interpolates between two texels
+        // Selects the nearest texel
+        Nearest,
+        // Interpolates between two texels
+    	Linear
     };
 
     enum class EMipMapMode : uint8_t
     {
-        Nearest,                // Selects the nearest mipmap layer
-        Linear                  // Interpolate between two mipmap layers
+        // Selects the nearest mipmap layer
+        Nearest,
+        // Interpolate between two mipmap layers
+        Linear
     };
 
     enum class EWrapMode : uint8_t
@@ -50,8 +54,15 @@ namespace tabi
         float[4] m_BorderColor{ 0.0f, 0.0f, 0.0f, 0.0f };
     };
 
-	class ISampler
+	class Sampler
 	{
+    public:
+        inline const SamplerDescription& GetSamplerDescription() const
+        {
+            return m_SamplerDescription;
+        }
 
+	private:
+        SamplerDescription m_SamplerDescription;
 	};
 }

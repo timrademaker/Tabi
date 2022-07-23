@@ -17,7 +17,7 @@ namespace tabi
 		virtual Texture* CreateTexture(const TextureDescription& a_TextureDescription) override;
 		virtual Buffer* CreateBuffer(const BufferDescription& a_BufferDescription) override;
 		virtual Shader* CreateShader(const ShaderDescription& a_ShaderDescription) override;
-		virtual ISampler* CreateSampler(const SamplerDescription& a_SamplerDescription) override;
+		virtual Sampler* CreateSampler(const SamplerDescription& a_SamplerDescription) override;
 
 		virtual IGraphicsPipeline* CreateGraphicsPipeline(const GraphicePipelineDescription& a_PipelineDescription) override;
 		virtual IComputePipeline* CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription) override;
@@ -31,7 +31,7 @@ namespace tabi
 		virtual void DestroyTexture(Texture* a_Texture) override;
 		virtual void DestroyBuffer(Buffer* a_Buffer) override;
 		virtual void DestroyShader(Shader* a_Shader) override;
-		virtual void DestroySampler(ISampler* a_Sampler) override;
+		virtual void DestroySampler(Sampler* a_Sampler) override;
 
 		virtual void DestroyGraphicsPipeline(IGraphicsPipeline* a_GraphicsPipeline) override;
 		virtual void DestroyComputePipeline(IComputePipeline* a_ComputePipeline) override;

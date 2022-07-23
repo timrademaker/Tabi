@@ -10,7 +10,7 @@ set(HEADERS
     inc/IFence.h
     inc/IGraphicsPipeline.h
     inc/IRenderTarget.h
-    inc/ISampler.h
+    inc/Sampler.h
     inc/Shader.h
     inc/Texture.h
 

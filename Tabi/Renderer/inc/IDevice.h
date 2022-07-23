@@ -45,7 +45,7 @@ namespace tabi
 		 * @param a_SamplerDescription A struct describing the sampler to create
 		 * @returns The created sampler
 		 */
-		virtual class ISampler* CreateSampler(const struct SamplerDescription& a_SamplerDescription) = 0;
+		virtual class Sampler* CreateSampler(const struct SamplerDescription& a_SamplerDescription) = 0;
 
 		/**
 		 * @brief Create a new graphics pipeline object
@@ -80,7 +80,7 @@ namespace tabi
 		virtual void DestroyTexture(class Texture* a_Texture) = 0;
 		virtual void DestroyBuffer(class Buffer* a_Buffer) = 0;
 		virtual void DestroyShader(class Shader* a_Shader) = 0;
-		virtual void DestroySampler(class ISampler* a_Sampler) = 0;
+		virtual void DestroySampler(class Sampler* a_Sampler) = 0;
 		virtual void DestroyGraphicsPipeline(class IGraphicsPipeline* a_GraphicsPipeline) = 0;
 		virtual void DestroyComputePipeline(class IComputePipeline* a_ComputePipeline) = 0;
 		virtual void DestroyRenderTarget(class IRenderTarget* a_RenderTarget) = 0;

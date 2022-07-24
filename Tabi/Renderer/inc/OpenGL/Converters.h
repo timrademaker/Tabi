@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Enums/BufferEnums.h"
 #include "Enums/Format.h"
 #include "Enums/ShaderEnums.h"
 #include "Enums/TextureEnums.h"
@@ -14,4 +15,6 @@ namespace tabi
 	GLenum GLType(EFormat a_Format);
 	GLenum GLShaderType(EShaderType a_ShaderType);
 	GLenum GLCubeMapFace(ECubemapFace a_Face);
+	GLenum GLTarget(ETextureDimension a_TextureDimension);
+	GLenum GLTarget(EBufferRole a_BufferRole);
 }

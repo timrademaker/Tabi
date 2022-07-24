@@ -345,4 +345,47 @@ namespace tabi
 				return GL_INVALID_ENUM;
 			}
 		}
+
+		GLenum GLTarget(ETextureDimension a_TextureDimension)
+		{
+			switch (a_TextureDimension)
+			{
+			case ETextureDimension::Tex1D:
+				return GL_TEXTURE_1D;
+			case ETextureDimension::Tex1DArray:
+				return GL_TEXTURE_1D_ARRAY;
+			case ETextureDimension::Tex2D:
+				return GL_TEXTURE_2D;
+			case ETextureDimension::Tex2DArray:
+				return GL_TEXTURE_2D_ARRAY;
+			case ETextureDimension::Tex3D:
+				return GL_TEXTURE_3D;
+			case ETextureDimension::CubeMap:
+				return GL_TEXTURE_CUBE_MAP;
+			case ETextureDimension::CubeMapArray:
+				return GL_TEXTURE_CUBE_MAP_ARRAY;
+
+			case ETextureDimension::Unknown:
+			default:
+				TABI_ASSERT(false, "Unknown texture dimension");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLTarget(EBufferRole a_BufferRole)
+		{
+			switch(a_BufferRole)
+			{
+			case EBufferRole::Vertex:
+				return GL_ARRAY_BUFFER;
+			case EBufferRole::Index:
+				return GL_ELEMENT_ARRAY_BUFFER;
+			case EBufferRole::Constant:
+				return GL_UNIFORM_BUFFER;
+
+			default:
+				TABI_ASSERT(false, "Unknown buffer role");
+				return GL_INVALID_ENUM;
+			}
+		}
 }

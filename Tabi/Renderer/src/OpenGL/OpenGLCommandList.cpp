@@ -1,6 +1,10 @@
 #include "OpenGL/OpenGLCommandList.h"
 
+#include "OpenGL/Converters.h"
 #include "OpenGL/OpenGLBuffer.h"
+#include "OpenGL/OpenGLTexture.h"
+
+#include "TextureUpdateDescription.h"
 
 #include <glad/glad.h>
 
@@ -83,6 +87,142 @@ void tabi::OpenGLCommandList::BindReadWriteBuffer(Buffer* a_Buffer, int32_t a_Sl
 	m_PendingCommands.push_back([a_Buffer, a_Slot]
 		{
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, static_cast<OpenGLBuffer*>(a_Buffer)->GetID());
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::BindTexture(Texture* a_Texture, int32_t a_Slot)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	m_PendingCommands.push_back([a_Texture, a_Slot]
+		{
+			glActiveTexture(GL_TEXTURE0 + a_Slot);
+			glBindTexture(GLTextureDimension(a_Texture->GetTextureDescription().m_Dimension), static_cast<OpenGLTexture*>(a_Texture)->GetID());
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_Slot)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
+		{
+			bool textureIsLayered = GL_FALSE;
+
+			switch (tex->GetTextureDescription().m_Dimension)
+			{
+			case ETextureDimension::Tex1D:
+			case ETextureDimension::Tex2D:
+			case ETextureDimension::Tex3D:
+			case ETextureDimension::CubeMap:
+			{
+				textureIsLayered = GL_FALSE;
+				break;
+			}
+			case ETextureDimension::Tex1DArray:
+			case ETextureDimension::Tex2DArray:
+			case ETextureDimension::CubeMapArray:
+			{
+				textureIsLayered = GL_TRUE;
+				break;
+			}
+			}
+
+			glBindImageTexture(a_Slot, tex->GetID(), 0, textureIsLayered, 0, GL_READ_WRITE, GLFormat(tex->GetTextureDescription().m_Format));
+		}
+	);
+}
+
+namespace tabi
+{
+	void CopyDataToTexture1D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription)
+	{
+		glTextureSubImage1D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+			a_UpdateDescription.m_OffsetX,
+			a_UpdateDescription.m_DataWidth,
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+			a_UpdateDescription.m_Data
+		);
+	}
+
+	void CopyDataToTexture2D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, uint32_t a_DataHeight, uint32_t a_OffsetY)
+	{
+		glTextureSubImage2D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+			a_UpdateDescription.m_OffsetX, a_OffsetY,
+			a_UpdateDescription.m_DataWidth, a_DataHeight,
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+			a_UpdateDescription.m_Data
+		);
+	}
+
+	void CopyDataToTexture3D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription)
+	{
+		glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+			a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ,
+			a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, a_UpdateDescription.m_DataDepth,
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+			a_UpdateDescription.m_Data
+		);
+	}
+
+	void CopyDataToTextureCubemap(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription)
+	{
+		const auto faceIndex = static_cast<uint8_t>(a_UpdateDescription.m_CubeFace);
+		if(a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMap)
+		{
+			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, faceIndex,
+				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
+				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+				a_UpdateDescription.m_Data
+			);
+		}
+		else if (a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMapArray)
+		{
+			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ * 6 + faceIndex,
+				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
+				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+				a_UpdateDescription.m_Data
+			);
+		}
+	}
+}
+
+void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), updateDescription = a_TextureUpdateDescription]
+		{
+			auto offsetY = updateDescription.m_OffsetY;
+			auto dataHeight = updateDescription.m_DataHeight;
+
+			switch(tex->GetTextureDescription().m_Dimension)
+			{
+			case ETextureDimension::Tex1D:
+				CopyDataToTexture1D(tex, updateDescription);
+				break;
+			case ETextureDimension::Tex1DArray:
+				offsetY = updateDescription.m_OffsetZ;
+				dataHeight = updateDescription.m_DataDepth;
+			case ETextureDimension::Tex2D:
+				CopyDataToTexture2D(tex, updateDescription, dataHeight, offsetY);
+				break;
+			case ETextureDimension::Tex2DArray:
+			case ETextureDimension::Tex3D:
+				CopyDataToTexture3D(tex, updateDescription);
+				break;
+			case ETextureDimension::CubeMap:
+			case ETextureDimension::CubeMapArray:
+				CopyDataToTextureCubemap(tex, updateDescription);
+				break;
+			default: 
+				TABI_ASSERT(false, "Attempting to copy data to a texture with unexpected dimensions");
+				break;
+			}
 		}
 	);
 }

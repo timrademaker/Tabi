@@ -75,11 +75,9 @@ namespace tabi
 		/* Depth */
 		Depth16,
 		Depth24,
-		Depth32,
 		Depth32_float,
 
-		Depth24Stencil8,		// D3D: DXGI_FORMAT_D24_UNORM_S8_UINT	OpenGL: GL_DEPTH24_STENCIL8
-		Depth32Stencil8,
+		Depth24Stencil8,
 
 		// TODO: Some whacky formats (and compressed formats?)
 	};

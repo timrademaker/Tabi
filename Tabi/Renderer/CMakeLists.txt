@@ -16,6 +16,7 @@ set(HEADERS
 
     inc/TextureUpdateDescription.h
 
+    inc/Enums/BufferEnums.h
     inc/Enums/ComparisonFunction.h
     inc/Enums/Format.h
     inc/Enums/ShaderEnums.h

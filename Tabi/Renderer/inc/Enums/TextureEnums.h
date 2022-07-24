@@ -7,7 +7,6 @@ namespace tabi
 	enum class ETextureDimension : uint8_t
 	{
 		Unknown,
-		Buffer,
 		Tex1D,
 		Tex1DArray,
 		Tex2D,

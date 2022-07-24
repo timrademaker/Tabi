@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Enums/BufferEnums.h"
 #include "Enums/Format.h"
 
 namespace tabi
@@ -7,6 +8,7 @@ namespace tabi
 	struct BufferDescription
 	{
 		EFormat m_Format = EFormat::Unknown;
+		EBufferRole m_Role = EBufferRole::Vertex;
 		size_t m_SizeInBytes = 0;
 		uint32_t m_Stride = 0;
 

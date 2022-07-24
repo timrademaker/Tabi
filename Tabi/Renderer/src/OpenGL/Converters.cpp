@@ -10,8 +10,6 @@ namespace tabi
 		{
 			switch (a_Dimension)
 			{
-			case ETextureDimension::Buffer:
-				return GL_TEXTURE_BUFFER;
 			case ETextureDimension::Tex1D:
 				return GL_TEXTURE_1D;
 			case ETextureDimension::Tex1DArray:

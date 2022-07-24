@@ -25,52 +25,60 @@ namespace tabi
 		/**
 		 * @brief Create a new texture
 		 * @param a_TextureDescription A struct describing the texture to create
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created texture
 		 */
-		virtual class Texture* CreateTexture(const struct TextureDescription& a_TextureDescription) = 0;
+		virtual class Texture* CreateTexture(const struct TextureDescription& a_TextureDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new buffer
 		 * @param a_BufferDescription A struct describing the buffer to create
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created buffer
 		 */
-		virtual class Buffer* CreateBuffer(const struct BufferDescription& a_BufferDescription) = 0;
+		virtual class Buffer* CreateBuffer(const struct BufferDescription& a_BufferDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new shader
 		 * @param a_ShaderDescription A struct describing the shader to create
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created shader
 		 */
-		virtual class Shader* CreateShader(const struct ShaderDescription& a_ShaderDescription) = 0;
+		virtual class Shader* CreateShader(const struct ShaderDescription& a_ShaderDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new sampler
 		 * @param a_SamplerDescription A struct describing the sampler to create
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created sampler
 		 */
-		virtual class Sampler* CreateSampler(const struct SamplerDescription& a_SamplerDescription) = 0;
+		virtual class Sampler* CreateSampler(const struct SamplerDescription& a_SamplerDescription, const char* a_DebugName = nullptr) = 0;
 
 		/**
 		 * @brief Create a new graphics pipeline object
 		 * @param a_PipelineDescription A struct describing the graphics pipeline to create
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created graphics pipeline
 		 */
-		virtual class IGraphicsPipeline* CreateGraphicsPipeline(const struct GraphicePipelineDescription& a_PipelineDescription) = 0;
+		virtual class IGraphicsPipeline* CreateGraphicsPipeline(const struct GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new compute pipeline object
 		 * @param a_ComputePipelineDescription A struct describing the compute pipeline to create
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created compute pipeline
 		 */
-		virtual class IComputePipeline* CreateComputePipeline(const struct ComputePipelineDescription& a_ComputePipelineDescription) = 0;
+		virtual class IComputePipeline* CreateComputePipeline(const struct ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) = 0;
 
 		/**
 		 * @brief Create a new render target
 		 * @param a_RenderTargetDescription A struct describing the render target to create
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created render target
 		 */
-		virtual class IRenderTarget* CreateRenderTarget(const struct RenderTargetDescription& a_RenderTargetDescription) = 0;
+		virtual class IRenderTarget* CreateRenderTarget(const struct RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new command list
+		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created command list
 		 */
-		virtual class ICommandList* CreateCommandList() = 0;
+		virtual class ICommandList* CreateCommandList(const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Execute a command list
 		 * @param a_CommandList The command list to execute

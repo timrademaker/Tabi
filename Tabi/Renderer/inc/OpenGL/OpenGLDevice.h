@@ -14,17 +14,17 @@ namespace tabi
 		virtual void Initialize() override;
 		virtual void Finalize() override;
 
-		virtual Texture* CreateTexture(const TextureDescription& a_TextureDescription) override;
-		virtual Buffer* CreateBuffer(const BufferDescription& a_BufferDescription) override;
-		virtual Shader* CreateShader(const ShaderDescription& a_ShaderDescription) override;
-		virtual Sampler* CreateSampler(const SamplerDescription& a_SamplerDescription) override;
+		virtual Texture* CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName = nullptr) override;
+		virtual Buffer* CreateBuffer(const BufferDescription& a_BufferDescription, const char* a_DebugName = nullptr) override;
+		virtual Shader* CreateShader(const ShaderDescription& a_ShaderDescription, const char* a_DebugName = nullptr) override;
+		virtual Sampler* CreateSampler(const SamplerDescription& a_SamplerDescription, const char* a_DebugName = nullptr) override;
 
-		virtual IGraphicsPipeline* CreateGraphicsPipeline(const GraphicePipelineDescription& a_PipelineDescription) override;
-		virtual IComputePipeline* CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription) override;
+		virtual IGraphicsPipeline* CreateGraphicsPipeline(const GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) override;
+		virtual IComputePipeline* CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) override;
 
-		virtual IRenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription) override;
+		virtual IRenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) override;
 
-		virtual ICommandList* CreateCommandList() override;
+		virtual ICommandList* CreateCommandList(const char* a_DebugName = nullptr) override;
 
 		virtual void ExecuteCommandList(ICommandList* a_CommandList) override;
 

@@ -14,7 +14,7 @@
 #define TABI_UNUSED(var) (var)
 
 #if defined(_DEBUG)
-#define TABI_ASSERT(expression) assert(expression)
+#define TABI_ASSERT(expression, ...) assert(expression)
 #else
 #define TABI_ASSERT(expression) if(!(expression)) __debugbreak()
 #endif

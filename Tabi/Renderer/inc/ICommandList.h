@@ -97,12 +97,12 @@ namespace tabi
 		 * @brief Start using a certain graphics pipeline
 		 * @param a_GraphicsPipeline The graphics pipeline to use
 		 */
-		virtual void UseGraphicsPipeline(class IGraphicsPipeline* a_GraphicsPipeline) = 0;
+		virtual void UseGraphicsPipeline(class GraphicsPipeline* a_GraphicsPipeline) = 0;
 		/*
 		 * @brief Start using a certain compute pipeline
 		 * @param a_ComputePipeline The compute pipeline to use
 		 */
-		virtual void UseComputePipeline(class IComputePipeline* a_ComputePipeline) = 0;
+		virtual void UseComputePipeline(class ComputePipeline* a_ComputePipeline) = 0;
 
 		/**
 		 * @brief Copy data to a texture

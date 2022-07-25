@@ -57,14 +57,14 @@ namespace tabi
 		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created graphics pipeline
 		 */
-		virtual class IGraphicsPipeline* CreateGraphicsPipeline(const struct GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) = 0;
+		virtual class GraphicsPipeline* CreateGraphicsPipeline(const struct GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new compute pipeline object
 		 * @param a_ComputePipelineDescription A struct describing the compute pipeline to create
 		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created compute pipeline
 		 */
-		virtual class IComputePipeline* CreateComputePipeline(const struct ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) = 0;
+		virtual class ComputePipeline* CreateComputePipeline(const struct ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) = 0;
 
 		/**
 		 * @brief Create a new render target
@@ -89,8 +89,8 @@ namespace tabi
 		virtual void DestroyBuffer(class Buffer* a_Buffer) = 0;
 		virtual void DestroyShader(class Shader* a_Shader) = 0;
 		virtual void DestroySampler(class Sampler* a_Sampler) = 0;
-		virtual void DestroyGraphicsPipeline(class IGraphicsPipeline* a_GraphicsPipeline) = 0;
-		virtual void DestroyComputePipeline(class IComputePipeline* a_ComputePipeline) = 0;
+		virtual void DestroyGraphicsPipeline(class GraphicsPipeline* a_GraphicsPipeline) = 0;
+		virtual void DestroyComputePipeline(class ComputePipeline* a_ComputePipeline) = 0;
 		virtual void DestroyRenderTarget(class IRenderTarget* a_RenderTarget) = 0;
 		virtual void DestroyCommandList(class ICommandList* a_CommandList) = 0;
 

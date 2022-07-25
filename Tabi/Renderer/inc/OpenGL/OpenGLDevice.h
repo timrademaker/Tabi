@@ -19,8 +19,8 @@ namespace tabi
 		virtual Shader* CreateShader(const ShaderDescription& a_ShaderDescription, const char* a_DebugName = nullptr) override;
 		virtual Sampler* CreateSampler(const SamplerDescription& a_SamplerDescription, const char* a_DebugName = nullptr) override;
 
-		virtual IGraphicsPipeline* CreateGraphicsPipeline(const GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) override;
-		virtual IComputePipeline* CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) override;
+		virtual GraphicsPipeline* CreateGraphicsPipeline(const GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) override;
+		virtual ComputePipeline* CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) override;
 
 		virtual IRenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) override;
 
@@ -33,8 +33,8 @@ namespace tabi
 		virtual void DestroyShader(Shader* a_Shader) override;
 		virtual void DestroySampler(Sampler* a_Sampler) override;
 
-		virtual void DestroyGraphicsPipeline(IGraphicsPipeline* a_GraphicsPipeline) override;
-		virtual void DestroyComputePipeline(IComputePipeline* a_ComputePipeline) override;
+		virtual void DestroyGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline) override;
+		virtual void DestroyComputePipeline(ComputePipeline* a_ComputePipeline) override;
 
 		virtual void DestroyRenderTarget(IRenderTarget* a_RenderTarget) override;
 

@@ -15,7 +15,7 @@ namespace tabi
 		EFormat m_Format = EFormat::Unknown;
 		uint64_t m_Width = 0;
 		uint64_t m_Height = 0;
-		// Depth if 3D texture, array size if array type
+		// Depth if 3D texture, array size if m_Dimension is an array type
 		uint16_t m_Depth = 0;
 		uint16_t m_MipLevels = 1;
 	};

@@ -155,8 +155,20 @@ namespace tabi
 		VertexInputLayout m_VertexInputLayout;
 	};
 
-	class IGraphicsPipeline
+	class GraphicsPipeline
 	{
+	public:
+		inline const GraphicsPipelineDescription& GetPipelineDescription() const
+		{
+			return m_PipelineDescription;
+		}
 
+	protected:
+		GraphicsPipeline(const GraphicsPipelineDescription& a_PipelineDescription)
+			: m_PipelineDescription(a_PipelineDescription)
+		{}
+
+	private:
+		GraphicsPipelineDescription m_PipelineDescription;
 	};
 }

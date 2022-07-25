@@ -36,8 +36,8 @@ namespace tabi
 		virtual void ClearRenderTarget(class IRenderTarget* a_RenderTarget, float a_ClearColor[4]) override;
 		virtual void ClearDepthStencil(IRenderTarget* a_RenderTarget, float a_DepthValue, uint8_t a_StencilValue) override;
 
-		virtual void UseGraphicsPipeline(IGraphicsPipeline* a_GraphicsPipeline) override;
-		virtual void UseComputePipeline(IComputePipeline* a_ComputePipeline) override;
+		virtual void UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline) override;
+		virtual void UseComputePipeline(ComputePipeline* a_ComputePipeline) override;
 		
 		virtual void CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription) override;
 		virtual void CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset) override;

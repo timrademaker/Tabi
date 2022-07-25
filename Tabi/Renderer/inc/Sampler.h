@@ -62,6 +62,11 @@ namespace tabi
             return m_SamplerDescription;
         }
 
+    protected:
+        Sampler(const SamplerDescription& a_SamplerDescription)
+            : m_SamplerDescription(a_SamplerDescription)
+        {}
+
 	private:
         SamplerDescription m_SamplerDescription;
 	};

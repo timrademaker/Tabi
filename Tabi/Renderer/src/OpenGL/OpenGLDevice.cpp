@@ -7,6 +7,8 @@
 #include "OpenGL/OpenGLShader.h"
 #include "OpenGL/OpenGLTexture.h"
 
+#include "Helpers/RendererLogger.h"
+
 namespace tabi
 {
 	Texture* OpenGLDevice::CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName)
@@ -138,6 +140,54 @@ namespace tabi
 		);
 
 		return buf;
+	}
+
+	Shader* OpenGLDevice::CreateShader(const ShaderDescription& a_ShaderDescription, const char* a_DebugName)
+	{
+		auto* shader = new OpenGLShader(a_ShaderDescription.m_ShaderType);
+
+		m_CommandQueue.emplace_back([shader, data = a_ShaderDescription.m_Data, dataLen = a_ShaderDescription.m_DataLength, a_DebugName]
+			{
+				const GLuint id = glCreateShader(GLShaderType(shader->GetShaderType()));
+				TABI_ASSERT(id != 0, "Failed to create shader");
+
+				const GLint dataLength = dataLen;
+				glShaderSource(id, 1, &data, &dataLength);
+				glCompileShader(id);
+
+				GLint isCompiled = 0;
+				glGetShaderiv(id, GL_COMPILE_STATUS, &isCompiled);
+
+				if (isCompiled == GL_FALSE)
+				{
+					GLint shaderLogLength = 0;
+					glGetShaderiv(id, GL_INFO_LOG_LENGTH, &shaderLogLength);
+
+					std::vector<GLchar> shaderLog(shaderLogLength);
+					glGetShaderInfoLog(id, shaderLogLength, &shaderLogLength, &shaderLog[0]);
+					glDeleteShader(id);
+
+					LOG_ERROR("Failed to compile shader. Error: %s", shaderLog.data());
+					TABI_ASSERT(isCompiled == GL_TRUE, "Shader failed to compile!");
+
+					delete shader;
+					return nullptr;
+				}
+
+				// TODO: Create shader program (and use program pipeline objects for the graphics/compute pipeline classes)?
+
+#if defined(DEBUG_GRAPHICS)
+				if (a_DebugName)
+				{
+					glObjectLabel(GL_SHADER, id, strlen(a_DebugName), a_DebugName);
+				}
+#endif
+				
+				shader->SetID(id);
+			}
+		);
+
+		return shader;
 	}
 
 #define DESTROY_RESOURCE(T, resource) m_DeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { delete ptr; })

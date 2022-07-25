@@ -50,6 +50,8 @@ namespace tabi
 
 	private:
 		tabi::vector<std::function<void()>> m_CommandQueue{ 1024 };
+		tabi::vector<std::function<void()>> m_DeletionQueue{ 64 };
+
 		tabi::queue<class OpenGLFence*> m_PendingFences;
 	};
 }

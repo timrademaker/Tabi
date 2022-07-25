@@ -4,6 +4,7 @@
 #include "OpenGL/OpenGLBuffer.h"
 #include "OpenGL/OpenGLCommandList.h"
 #include "OpenGL/OpenGLFence.h"
+#include "OpenGL/OpenGLShader.h"
 #include "OpenGL/OpenGLTexture.h"
 
 namespace tabi
@@ -138,6 +139,25 @@ namespace tabi
 
 		return buf;
 	}
+
+#define DESTROY_RESOURCE(T, resource) m_DeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { delete ptr; })
+
+	void OpenGLDevice::DestroyTexture(Texture* a_Texture)
+	{
+		DESTROY_RESOURCE(OpenGLTexture, a_Texture);
+	}
+
+	void OpenGLDevice::DestroyBuffer(Buffer* a_Buffer)
+	{
+		DESTROY_RESOURCE(OpenGLBuffer, a_Buffer);
+	}
+
+	void OpenGLDevice::DestroyShader(Shader* a_Shader)
+	{
+		DESTROY_RESOURCE(OpenGLShader, a_Shader);
+	}
+#undef DESTROY_RESOURCE
+
 	IFence* OpenGLDevice::CreateFence()
 	{
 		return new OpenGLFence;
@@ -174,5 +194,10 @@ namespace tabi
 				}
 			}
 		);
+
+		for(auto& func : m_DeletionQueue)
+		{
+			func();
+		}
 	}
 }

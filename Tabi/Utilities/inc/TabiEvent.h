@@ -144,7 +144,7 @@ namespace tabi
 #if defined(_DEBUG)
         else
         {
-            tabi::logger::TabiWarn("Tried to unsubscribe all delegates from an object, but nothing was bound!");
+            TABI_WARN("Tried to unsubscribe all delegates from an object, but nothing was bound!");
         }
 #endif
         return false;
@@ -207,7 +207,7 @@ namespace tabi
 #if defined(_DEBUG)
         else
         {
-            tabi::logger::TabiWarn("[TabiEvent] Trying to add a callback that isn't valid!");
+            TABI_WARN("[TabiEvent] Trying to add a callback that isn't valid!");
         }
 #endif
     }

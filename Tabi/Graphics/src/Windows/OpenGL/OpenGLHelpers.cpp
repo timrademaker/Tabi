@@ -19,7 +19,7 @@ bool tabi::graphics::helpers::CheckShaderLoadSuccess(unsigned int a_Shader)
     {
         char info[INFO_BUFFER_SIZE];
         glGetShaderInfoLog(a_Shader, INFO_BUFFER_SIZE, nullptr, &info[0]);
-        s_GraphicsLogger->Log(tabi::logger::ELogLevel::Error, "Error while loading shader: " + tabi::string(info));
+        s_GraphicsLogger->Log(logger::ELogLevel::Error, "Error while loading shader: %s", info);
     }
 
     return success;
@@ -34,7 +34,7 @@ bool tabi::graphics::helpers::CheckShaderProgramSuccess(unsigned int a_Program)
     {
         char info[INFO_BUFFER_SIZE];
         glGetProgramInfoLog(a_Program, INFO_BUFFER_SIZE, nullptr, &info[0]);
-        s_GraphicsLogger->Log(tabi::logger::ELogLevel::Error, "Error while loading shader: " + tabi::string(info));
+        s_GraphicsLogger->Log(tabi::logger::ELogLevel::Error, "Error while loading shader: %s", info);
     }
 
     return success;
@@ -49,7 +49,7 @@ bool tabi::graphics::helpers::CheckForErrors()
 
         const auto errorString = ErrorToString(err);
 
-        s_GraphicsLogger->Log(logger::ELogLevel::Error, "Error " + tabi::to_string(err) + ": " + errorString);
+        s_GraphicsLogger->Log(logger::ELogLevel::Error, "Error %d: %s", err, errorString.c_str());
 
         err = glGetError();
     }
@@ -91,7 +91,7 @@ tabi::string tabi::graphics::helpers::ErrorToString(GLenum a_Error)
     default:
     {
         errorString = "";
-        logger::TabiLog(logger::ELogLevel::Debug, "No string conversion found for enum " + std::to_string(a_Error));
+        TABI_DEBUG("No string conversion found for enum %d", a_Error);
         break;
     }
     }
@@ -110,11 +110,8 @@ bool tabi::graphics::helpers::IsOpenGLVersionSupported(float a_MinimumRequiredVe
 
     if(number < a_MinimumRequiredVersion)
     {
-        s_GraphicsLogger->Log(logger::ELogLevel::Critical, "The supported OpenGL version ("
-            + versionNumber
-            + ") is lower than the minimum version required by this program ("
-            + tabi::to_string(a_MinimumRequiredVersion).substr(0, 3)
-            +")"
+        s_GraphicsLogger->Log(logger::ELogLevel::Critical, "The supported OpenGL version (%s) is lower than the minimum version required by this program (%s)",
+            versionNumber.c_str(), tabi::to_string(a_MinimumRequiredVersion).substr(0, 3).c_str()
         );
         return false;
     }
@@ -147,7 +144,7 @@ void GLAPIENTRY MessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLe
         break;
     }
     }
-    s_GraphicsLogger->Log(severity, "Type: " + std::to_string(a_Type) + "\nMessage: " + a_Message);
+    s_GraphicsLogger->Log(severity, "OpenGL message (type %d): %s", a_Type, a_Message);
 }
 
 

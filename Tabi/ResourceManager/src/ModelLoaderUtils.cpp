@@ -43,8 +43,7 @@ tinygltf::Model tabi::gltf::LoadGLTFModelFromPath(const char* a_Path)
 
     if (!loader.LoadASCIIFromString(&model, &err, &warn, &gltfContent[0], static_cast<unsigned int>(gltfContent.size()), "Assets"))
     {
-        logger::TabiLog(logger::ELogLevel::Error, "Unable to load gltf model from string. \nError: " + tabi::string(err.c_str())
-            + "\nWarning: " + tabi::string(warn.c_str()) + "Model path: " + a_Path);
+        TABI_ERROR("Unable to load gltf model from string. \nError: %s\nWarning:%s\nModel Path: %s", err.c_str(), warn.c_str(), a_Path);
     }
 
     return model;
@@ -63,8 +62,7 @@ tinygltf::Model tabi::gltf::LoadGLBModelFromPath(const char* a_Path)
     {
         if (!loader.LoadBinaryFromMemory(&model, &err, &warn, (unsigned char*)(&gltfContent[0]), static_cast<unsigned int>(gltfContent.size()), "Assets"))
         {
-            logger::TabiLog(logger::ELogLevel::Error, "Unable to load glb model from string. \nError: " + tabi::string(err.c_str())
-                + "\nWarning: " + tabi::string(warn.c_str()) + "Model path: " + a_Path);
+            TABI_ERROR("Unable to load glb model from string. \nError: %s\nWarning:%s\nModel Path: %s", err.c_str(), warn.c_str(), a_Path);
         }
     }
 
@@ -84,9 +82,9 @@ tabi::vector<char> tabi::gltf::LoadGLTFFileContentFromPath(const char* a_Path, b
     auto file = IFile::OpenFile(a_Path, flags);
     if (!file)
     {
-        logger::TabiLog(logger::ELogLevel::Error, "Unable to open file for model " + tabi::string(a_Path));
+        TABI_ERROR("Unable to open file for model %s", a_Path);
         assert(false);
-        return tabi::vector<char>();
+        return {};
     }
 
     FSize fileLength = 0;
@@ -97,9 +95,9 @@ tabi::vector<char> tabi::gltf::LoadGLTFFileContentFromPath(const char* a_Path, b
     auto res = file->Read(&gltfContent[0], fileLength, &read);
     if ((res & EFileResult::Ok) != EFileResult::Ok)
     {
-        logger::TabiLog(logger::ELogLevel::Error, "Something went wrong when reading the file for model " + tabi::string(a_Path));
+        TABI_ERROR("Something went wrong when reading the file for model %s", a_Path);
         assert(false);
-        return tabi::vector<char>();
+        return {};
     }
 
     if (a_IsBinary)

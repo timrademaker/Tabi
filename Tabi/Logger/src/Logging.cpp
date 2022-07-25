@@ -9,12 +9,15 @@ void tabi::logger::SetDefaultLogger(LoggerPtr a_Logger)
     LoggerRegistry::GetClientLoggerRegistry().SetDefaultLogger(a_Logger);
 }
 
-void tabi::logger::Log(ELogLevel a_LogLevel, Logger::LogMessage_t a_Message)
+void tabi::logger::Log(ELogLevel a_LogLevel, const char* a_Message, ...)
 {
     auto logger = LoggerRegistry::GetClientLoggerRegistry().GetDefaultLogger();
     if (logger)
     {
-        logger->Log(a_LogLevel, a_Message);
+        va_list args;
+        va_start(args, a_Message);
+        logger->Log(a_LogLevel, a_Message, args);
+        va_end(args);
     }
     else
     {
@@ -27,41 +30,13 @@ void tabi::logger::SetDefaultTabiLogger(LoggerPtr a_Logger)
     LoggerRegistry::GetTabiLoggerRegistry().SetDefaultLogger(a_Logger);
 }
 
-void tabi::logger::TabiLog(ELogLevel a_LogLevel, Logger::LogMessage_t a_Message)
+void tabi::logger::TabiLog(ELogLevel a_LogLevel, const char* a_Message, ...)
 {
     const auto logger = LoggerRegistry::GetTabiLoggerRegistry().GetDefaultLogger();
     assert(logger && "No default logger has been set!");
 
-    logger->Log(a_LogLevel, std::move(a_Message));
-}
-
-
-void tabi::logger::TabiTrace(Logger::LogMessage_t a_Message)
-{
-    TabiLog(ELogLevel::Trace, a_Message);
-}
-
-void tabi::logger::TabiDebug(Logger::LogMessage_t a_Message)
-{
-    TabiLog(ELogLevel::Debug, a_Message);
-}
-
-void tabi::logger::TabiInfo(Logger::LogMessage_t a_Message)
-{
-    TabiLog(ELogLevel::Info, a_Message);
-}
-
-void tabi::logger::TabiWarn(Logger::LogMessage_t a_Message)
-{
-    TabiLog(ELogLevel::Warning, a_Message);
-}
-
-void tabi::logger::TabiError(Logger::LogMessage_t a_Message)
-{
-    TabiLog(ELogLevel::Error, a_Message);
-}
-
-void tabi::logger::TabiCritical(Logger::LogMessage_t a_Message)
-{
-    TabiLog(ELogLevel::Critical, a_Message);
+    va_list args;
+    va_start(args, a_Message);
+    logger->Log(a_LogLevel, a_Message, args);
+    va_end(args);
 }

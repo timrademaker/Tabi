@@ -17,7 +17,7 @@ tabi::ISampler* tabi::ISampler::CreateSampler(tabi::EWrap a_WrapModeS, tabi::EWr
         delete sampler;
         sampler = nullptr;
 
-        tabi::logger::TabiError("Failed to create sampler!");
+        TABI_ERROR("Failed to create sampler!");
     }
    
     return sampler;

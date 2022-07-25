@@ -15,7 +15,7 @@ tabi::shared_ptr<tabi::Texture> tabi::Texture::LoadTextureFromModel(const tinygl
     // Texture
     if (a_TextureIndex >= a_Model.textures.size())
     {
-        logger::TabiWarn("Texture index out of bounds!");
+        TABI_WARN("Texture index out of bounds!");
         return nullptr;
     }
     

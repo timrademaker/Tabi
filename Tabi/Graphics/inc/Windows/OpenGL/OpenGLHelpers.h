@@ -42,9 +42,6 @@ namespace tabi
             static void EnableOpenGLDebugOutput();
 #endif
 #endif
-
-        private:
-            static tabi::logger::LoggerPtr m_GraphicsLogger;
         };
     }
 }

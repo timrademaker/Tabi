@@ -15,7 +15,7 @@ tabi::unique_ptr<IFile> tabi::IFile::OpenFile(const char* a_FilePath, const EFil
     auto result = file->Open(a_FilePath, a_OpenFlags);
     if ((result & EFileResult::Ok) != EFileResult::Ok)
     {
-        logger::TabiLog(logger::ELogLevel::Warning, "Unable to open file \"" + tabi::string(a_FilePath) + "\"");
+        TABI_WARN( "Unable to open file \"%s\"", a_FilePath);
         return nullptr;
     }
 

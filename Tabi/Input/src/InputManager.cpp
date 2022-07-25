@@ -114,7 +114,7 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
 #if defined(_DEBUG)
         if (!foundAny)
         {
-            tabi::logger::TabiWarn("Unable to unbind button " + tabi::to_string(a_Button) + " as it wasn't bound");
+            TABI_WARN("Unable to unbind button %d as it wasn't bound", a_Button);
         }
 #else
         TABI_UNUSED(foundAny);
@@ -146,7 +146,7 @@ void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
 #if defined(_DEBUG)
         if (!foundAny)
         {
-            tabi::logger::TabiWarn("Unable to unbind axis " + tabi::to_string(a_Axis) + " as it wasn't bound");
+            TABI_WARN("Unable to unbind axis %d as it wasn't bound", a_Axis);
         }
 #else
         TABI_UNUSED(foundAny);

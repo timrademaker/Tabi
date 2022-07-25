@@ -32,7 +32,7 @@ void tabi::graphics::Renderer::Initialize(tabi::shared_ptr<IWindow> a_Window)
 {
     if (m_Initialized)
     {
-        logger::TabiWarn("Renderer already initialized!");
+        TABI_WARN("Renderer already initialized!");
         return;
     }
 
@@ -61,7 +61,7 @@ bool tabi::graphics::Renderer::BufferMesh(Mesh& a_Mesh, const bool a_CleanUpMesh
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to buffer a mesh!");
+        TABI_ERROR("Please initialize the renderer before trying to buffer a mesh!");
         return false;
     }
 
@@ -163,7 +163,7 @@ bool tabi::graphics::Renderer::BufferTexture(Texture& a_Texture, const bool a_Cl
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to buffer a texture!");
+        TABI_ERROR("Please initialize the renderer before trying to buffer a texture!");
         return false;
     }
 
@@ -191,7 +191,7 @@ void tabi::graphics::Renderer::RenderMesh(const Mesh& a_Mesh, const mat4& a_Tran
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to render!");
+        TABI_ERROR("Please initialize the renderer before trying to render!");
         return;
     }
 
@@ -267,7 +267,7 @@ void Renderer::SetDrawMode(EDrawMode a_DrawMode)
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to set the draw mode!");
+        TABI_ERROR("Please initialize the renderer before trying to set the draw mode!");
         return;
     }
 
@@ -305,7 +305,7 @@ void tabi::graphics::Renderer::UseShader(tabi::shared_ptr<IShader> a_Shader)
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to use a sampler!");
+        TABI_ERROR("Please initialize the renderer before trying to use a sampler!");
         return;
     }
 
@@ -331,7 +331,7 @@ void Renderer::UseSampler(tabi::shared_ptr<ISampler> a_Sampler)
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to use a sampler!");
+        TABI_ERROR("Please initialize the renderer before trying to use a sampler!");
         return;
     }
 
@@ -358,7 +358,7 @@ void tabi::graphics::Renderer::SetCullingEnabled(bool a_Enabled)
 {
     if (!m_Initialized)
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to enable or disable culling!");
+        TABI_ERROR("Please initialize the renderer before trying to enable or disable culling!");
         return;
     }
 

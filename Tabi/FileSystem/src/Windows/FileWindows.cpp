@@ -64,11 +64,11 @@ EFileResult tabi::File::Open(const char* a_FilePath, const EFileOpenFlags a_Open
                     {
                         if (errno == EEXIST)
                         {
-                            logger::TabiLog(logger::ELogLevel::Info, "Directory " + currentPath + " not created as it already exists!");
+                            TABI_INFO("Directory %s not created as it already exists!", currentPath.c_str());
                         }
                         else if (errno == ENOENT)
                         {
-                            logger::TabiLog(logger::ELogLevel::Info, "Directory " + currentPath + " not found!");
+                            TABI_INFO("Directory %s not found!", currentPath.c_str());
                         }
                     }
                 }
@@ -97,7 +97,7 @@ EFileResult tabi::File::Close(const bool a_CancelPendingOperations)
 
     if (!m_FileHandle)
     {
-        logger::TabiLog(logger::ELogLevel::Info, "Trying to call close on a file that has already been closed!");
+        TABI_INFO("Trying to call close on a file that has already been closed!");
         return EFileResult::Ok;
     }
     m_FileHandle->flush();

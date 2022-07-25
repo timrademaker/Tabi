@@ -61,7 +61,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 
         auto frameEnd = std::chrono::high_resolution_clock::now();
         deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(frameEnd - frameStart).count();
-        TabiLog(ELogLevel::Trace, "DeltaTime: " + std::to_string(deltaTime));
+        //TabiLog(ELogLevel::Trace, "DeltaTime: " + std::to_string(deltaTime));
 
 #if defined(_WINDOWS)
         MSG msg = MSG();
@@ -78,7 +78,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 
     a_Game->OnDestroy();
 
-    TabiLog(ELogLevel::Trace, "Returning from " + tabi::string(__FUNCTION__));
+    TabiLog(ELogLevel::Trace, "Returning from %s",__FUNCTION__);
     return 0;
 }
 

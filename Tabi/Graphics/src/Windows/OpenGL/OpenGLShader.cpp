@@ -14,7 +14,7 @@ bool tabi::Shader::UseShader()
 {
     if (!tabi::graphics::IRenderer::GetInstance().HasBeenInitialized())
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to use a shader!");
+        TABI_ERROR("Please initialize the renderer before trying to use a shader!");
         return false;
     }
     
@@ -52,7 +52,7 @@ bool tabi::Shader::Initialize(const char* a_VertexShaderString, const size_t a_V
 {
     if (!tabi::graphics::IRenderer::GetInstance().HasBeenInitialized())
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to create a shader!");
+        TABI_ERROR("Please initialize the renderer before trying to create a shader!");
         return false;
     }
 

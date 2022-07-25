@@ -10,5 +10,5 @@ namespace tabi
 
 namespace testlog
 {
-    void LogToAllLevels(::tabi::logger::Logger* logger, const tabi::string& a_Message);
+    void LogToAllLevels(::tabi::logger::Logger* logger, const char* a_Message);
 }

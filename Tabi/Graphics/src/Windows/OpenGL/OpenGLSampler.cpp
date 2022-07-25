@@ -63,7 +63,7 @@ unsigned int tabi::Sampler::ConvertWrapMode(tabi::EWrap a_WrapMode)
     }
     default:
     {
-        tabi::logger::TabiWarn("Unable to convert wrap mode " + tabi::to_string(static_cast<unsigned int>(a_WrapMode)));
+        TABI_WARN("Unable to convert wrap mode %d", static_cast<unsigned int>(a_WrapMode));
         return 0;
         break;
     }
@@ -106,7 +106,7 @@ unsigned int tabi::Sampler::ConvertMinFilter(tabi::EMinFilter a_MinFilter)
     }
     default:
     {
-        tabi::logger::TabiWarn("Unable to convert min filter " + tabi::to_string(static_cast<unsigned int>(a_MinFilter)));
+        TABI_WARN("Unable to convert min filter %d", static_cast<unsigned int>(a_MinFilter));
         return 0;
         break;
     }
@@ -129,7 +129,7 @@ unsigned int tabi::Sampler::ConvertMagFilter(EMagFilter a_MagFilter)
     }
     default:
     {
-        tabi::logger::TabiWarn("Unable to convert mag filter " + tabi::to_string(static_cast<unsigned int>(a_MagFilter)));
+        TABI_WARN("Unable to convert mag filter %d", static_cast<unsigned int>(a_MagFilter));
         return 0;
         break;
     }

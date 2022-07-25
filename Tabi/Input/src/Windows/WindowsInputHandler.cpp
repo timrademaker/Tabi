@@ -114,7 +114,7 @@ bool tabi::InputHandler::IsButtonDown(unsigned int a_Button, bool* a_DownLastFra
     }
     else
     {
-        logger::TabiWarn("Trying to get button state for an unbound button: " + tabi::to_string(a_Button));
+        TABI_WARN("Trying to get button state for an unbound button: %d", a_Button);
         return false;
     }
 }
@@ -150,7 +150,7 @@ float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
     }
     else
     {
-        logger::TabiWarn("Trying to get button state for an unbound axis: " + tabi::to_string(a_Axis));
+        TABI_WARN("Trying to get button state for an unbound axis: %d", a_Axis);
         return 0.0f;
     }
 }
@@ -238,7 +238,7 @@ unsigned int tabi::InputHandler::ConvertButton(EMouse a_Button)
     }
     else
     {
-        logger::TabiWarn("Unable to convert mouse button " + tabi::to_string(static_cast<unsigned>(a_Button)));
+        TABI_WARN("Unable to convert mouse button %d", static_cast<unsigned>(a_Button));
         return 0;
     }
 }
@@ -252,7 +252,7 @@ unsigned int tabi::InputHandler::ConvertButton(EKeyboard a_Button)
     }
     else
     {
-        logger::TabiWarn("Unable to convert keyboard button " + tabi::to_string(static_cast<unsigned>(a_Button)));
+        TABI_WARN("Unable to convert keyboard button %d", static_cast<unsigned>(a_Button));
         return 0;
     }
 }
@@ -266,7 +266,7 @@ unsigned int tabi::InputHandler::ConvertButton(EController a_Button)
     }
     else
     {
-        logger::TabiWarn("Unable to convert controller button " + tabi::to_string(static_cast<unsigned>(a_Button)));
+        TABI_WARN("Unable to convert controller button %d", static_cast<unsigned>(a_Button));
         return 0;
     }
 }
@@ -286,7 +286,7 @@ EInputDevice tabi::InputHandler::DetermineDeviceType(unsigned int a_Button)
         return EInputDevice::Mouse;
     }
 
-    logger::TabiWarn("Unable to determine device type for button " + tabi::to_string(a_Button));
+    TABI_WARN("Unable to determine device type for button %d", a_Button);
     return EInputDevice();
 }
 
@@ -360,7 +360,7 @@ unsigned int tabi::InputHandler::ConvertDeviceType(EInputDevice a_Device)
     }
     else
     {
-        logger::TabiWarn("Unable to convert input device " + tabi::to_string(static_cast<unsigned>(a_Device)));
+        TABI_WARN("Unable to convert input device %d", static_cast<unsigned>(a_Device));
         return 0;
     }
 }

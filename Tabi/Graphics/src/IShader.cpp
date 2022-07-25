@@ -15,7 +15,7 @@ tabi::IShader* tabi::IShader::CreateShader(const char* a_VertexShaderPath, const
 {
     if (!tabi::graphics::IRenderer::GetInstance().HasBeenInitialized())
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to create a shader!");
+        TABI_ERROR("Please initialize the renderer before trying to create a shader!");
         return nullptr;
     }
 
@@ -34,7 +34,7 @@ tabi::IShader* tabi::IShader::CreateShader(const char* a_VertexShaderPath, const
     IShader* shader = new Shader;
     if (!shader->Initialize(&vertexShader[0], vertexShader.size(), &fragmentShader[0], fragmentShader.size()))
     {
-        tabi::logger::TabiError("Failed to create shader from vertex shader \"" + tabi::string(a_VertexShaderPath) + "\" and fragment shader \"" + tabi::string(a_FragmentShaderPath) + "\"!");
+        TABI_ERROR("Failed to create shader from vertex shader \"%s\" and fragment shader \"%s\"!", a_VertexShaderPath, a_FragmentShaderPath);
         return nullptr;
     }
 
@@ -51,7 +51,7 @@ tabi::IShader* tabi::IShader::CreateShader(const char* a_VertexShaderString, con
 {
     if (!tabi::graphics::IRenderer::GetInstance().HasBeenInitialized())
     {
-        tabi::logger::TabiError("Please initialize the renderer before trying to create a shader!");
+        TABI_ERROR("Please initialize the renderer before trying to create a shader!");
         return nullptr;
     }
 
@@ -61,7 +61,7 @@ tabi::IShader* tabi::IShader::CreateShader(const char* a_VertexShaderString, con
         delete shader;
         shader = nullptr;
 
-        tabi::logger::TabiError("Failed to create shader!");
+        TABI_ERROR("Failed to create shader!");
     }
 
     return shader;
@@ -97,7 +97,7 @@ bool tabi::IShader::LoadShaderContent(const char* a_ShaderPath, tabi::vector<cha
         auto result = shaderFile->Read(&a_Content[0], fileLen);
         if (!IFile::IsSuccess(result))
         {
-            tabi::logger::TabiError("Unable to read content from shader \"" + tabi::string(a_ShaderPath) + "\"");
+            TABI_ERROR("Unable to read content from shader \"%s\"", a_ShaderPath);
             shaderFile->Close();
             return false;
         }
@@ -106,7 +106,7 @@ bool tabi::IShader::LoadShaderContent(const char* a_ShaderPath, tabi::vector<cha
     }
     else
     {
-        tabi::logger::TabiError("Unable to read content from shader \"" + tabi::string(a_ShaderPath) + "\"");
+        TABI_ERROR("Unable to read content from shader \"%s\"", a_ShaderPath);
         return false;
     }
 

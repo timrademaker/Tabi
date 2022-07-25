@@ -31,9 +31,29 @@ void Logger::FlushOn(ELogLevel a_LogLevel)
     m_Logger->flush_on(TranslateLogLevel(a_LogLevel));
 }
 
-void Logger::Log(ELogLevel a_LogLevel, LogMessage_t a_LogMessage)
+void Logger::Log(ELogLevel a_LogLevel, const char* a_LogMessageFormat, ...) const
 {
-    m_Logger->log(TranslateLogLevel(a_LogLevel), std::string(a_LogMessage.c_str()));
+    va_list args;
+    va_start(args, a_LogMessageFormat);
+    Log(a_LogLevel, a_LogMessageFormat, args);
+    va_end(args);
+}
+
+void Logger::Log(ELogLevel a_LogLevel, const char* a_LogMessageFormat, va_list args) const
+{
+    thread_local tabi::vector<char> buffer(1024);
+
+    DISABLE_WARNING_PUSH
+    DISABLE_WARNING(4996)
+    const size_t charsWritten = vsprintf(buffer.data(), a_LogMessageFormat, args);
+    DISABLE_WARNING_POP
+
+    if (charsWritten > buffer.capacity())
+    {
+        buffer.resize(charsWritten + 1);
+    }
+
+    m_Logger->log(TranslateLogLevel(a_LogLevel), buffer.data());
 }
 
 Logger::InternalLogLevel_t Logger::TranslateLogLevel(const ELogLevel a_LogLevel)

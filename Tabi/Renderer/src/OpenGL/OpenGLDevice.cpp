@@ -171,9 +171,6 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 
 				LOG_ERROR("Failed to compile shader. Error: %s", shaderLog.data());
 				TABI_ASSERT(isCompiled == GL_TRUE, "Shader failed to compile!");
-
-				delete shader;
-				return nullptr;
 			}
 
 			// TODO: Create shader program (and use program pipeline objects for the graphics/compute pipeline classes)?

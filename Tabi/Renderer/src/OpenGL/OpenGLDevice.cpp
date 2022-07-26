@@ -4,6 +4,7 @@
 #include "OpenGL/OpenGLBuffer.h"
 #include "OpenGL/OpenGLCommandList.h"
 #include "OpenGL/OpenGLFence.h"
+#include "OpenGL/OpenGLSampler.h"
 #include "OpenGL/OpenGLShader.h"
 #include "OpenGL/OpenGLTexture.h"
 
@@ -32,7 +33,7 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 	TABI_ASSERT(a_TextureDescription.m_Dimension != ETextureDimension::Unknown);
 
 	auto* tex = new OpenGLTexture(a_TextureDescription);
-	m_CommandQueue.emplace_back([tex, a_DebugName]
+	m_ResourceCreationQueue.emplace_back([tex, a_DebugName]
 		{
 			GLuint id;
 			glGenTextures(1, &id);
@@ -99,7 +100,7 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_BufferDescription, const char* a_DebugName)
 {
 	auto* buf = new OpenGLBuffer(a_BufferDescription);
-	m_CommandQueue.emplace_back([buf, a_DebugName]
+	m_ResourceCreationQueue.emplace_back([buf, a_DebugName]
 		{
 			GLuint id;
 			glGenBuffers(1, &id);
@@ -147,7 +148,7 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 {
 	auto* shader = new OpenGLShader(a_ShaderDescription.m_ShaderType);
 
-	m_CommandQueue.emplace_back([shader, data = a_ShaderDescription.m_Data, dataLen = a_ShaderDescription.m_DataLength, a_DebugName]
+	m_ResourceCreationQueue.emplace_back([shader, data = a_ShaderDescription.m_Data, dataLen = a_ShaderDescription.m_DataLength, a_DebugName]
 		{
 			const GLuint id = glCreateShader(GLShaderType(shader->GetShaderType()));
 			TABI_ASSERT(id != 0, "Failed to create shader");
@@ -191,7 +192,54 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 	return shader;
 }
 
-#define DESTROY_RESOURCE(T, resource) m_DeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \
+tabi::Sampler* tabi::OpenGLDevice::CreateSampler(const SamplerDescription& a_SamplerDescription, const char* a_DebugName)
+{
+	auto* sampler = new OpenGLSampler(a_SamplerDescription);
+
+	m_ResourceCreationQueue.emplace_back([sampler, a_DebugName]
+		{
+			GLuint id = 0;
+			glGenSamplers(1, &id);
+			TABI_ASSERT(id != 0, "Failed to create sampler");
+
+			const auto& samplerDescription = sampler->GetSamplerDescription();
+
+			{
+				const GLenum wrapMode = GLWrapMode(samplerDescription.m_WrapMode);
+				glSamplerParameteri(id, GL_TEXTURE_WRAP_S, wrapMode);
+				glSamplerParameteri(id, GL_TEXTURE_WRAP_T, wrapMode);
+				glSamplerParameteri(id, GL_TEXTURE_WRAP_R, wrapMode);
+
+				if (samplerDescription.m_WrapMode == EWrapMode::Border)
+				{
+					glSamplerParameterfv(id, GL_TEXTURE_BORDER_COLOR, samplerDescription.m_BorderColor);
+				}
+			}
+
+			glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, GLMinFilter(samplerDescription.m_MinFilter, samplerDescription.m_MipMapMode));
+			glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, GLMagFilter(samplerDescription.m_MagFilter));
+
+			glSamplerParameterf(id, GL_TEXTURE_MIN_LOD, samplerDescription.m_MinLOD);
+			glSamplerParameterf(id, GL_TEXTURE_MAX_LOD, samplerDescription.m_MaxLOD);
+			glSamplerParameterf(id, GL_TEXTURE_LOD_BIAS, samplerDescription.m_MipLODBias);
+
+			glSamplerParameteri(id, GL_TEXTURE_COMPARE_FUNC, GLComparisonFunction(samplerDescription.m_ComparisonFunc));
+
+#if defined(DEBUG_GRAPHICS)
+			if (a_DebugName)
+			{
+				glObjectLabel(GL_SHADER, id, strlen(a_DebugName), a_DebugName);
+			}
+#endif
+
+			sampler->SetID(id);
+		}
+	);
+
+	return sampler;
+}
+
+#define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \
 	ptr->Destroy(); \
 	delete ptr;\
 })
@@ -212,6 +260,12 @@ void tabi::OpenGLDevice::DestroyShader(Shader* a_Shader)
 {
 	TABI_ASSERT(a_Shader != nullptr);
 	DESTROY_RESOURCE(OpenGLShader, a_Shader);
+}
+
+void tabi::OpenGLDevice::DestroySampler(Sampler* a_Sampler)
+{
+	TABI_ASSERT(a_Sampler != nullptr);
+	DESTROY_RESOURCE(OpenGLSampler, a_Sampler);
 }
 #undef DESTROY_RESOURCE
 
@@ -252,9 +306,15 @@ void tabi::OpenGLDevice::EndFrame()
 		}
 	);
 
-	for(auto& func : m_DeletionQueue)
+	for(auto& func : m_ResourceCreationQueue)
 	{
 		func();
 	}
-	m_DeletionQueue.clear();
+	m_ResourceCreationQueue.clear();
+
+	for(auto& func : m_ResourceDeletionQueue)
+	{
+		func();
+	}
+	m_ResourceDeletionQueue.clear();
 }

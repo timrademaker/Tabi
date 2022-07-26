@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Enums/BufferEnums.h"
+#include "Enums/ComparisonFunction.h"
 #include "Enums/Format.h"
 #include "Enums/ShaderEnums.h"
+#include "Enums/SamplerEnums.h"
 #include "Enums/TextureEnums.h"
 
 #include <glad/glad.h>
@@ -17,4 +19,9 @@ namespace tabi
 	GLenum GLCubeMapFace(ECubemapFace a_Face);
 	GLenum GLTarget(ETextureDimension a_TextureDimension);
 	GLenum GLTarget(EBufferRole a_BufferRole);
+
+	GLenum GLWrapMode(EWrapMode a_WrapMode);
+	GLenum GLMinFilter(EFilterMode a_MinFilter, EMipMapMode a_MipMapMode);
+	GLenum GLMagFilter(EFilterMode a_MagFilter);
+	GLenum GLComparisonFunction(EComparisonFunction a_ComparisonFunction);
 }

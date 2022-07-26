@@ -1,10 +1,10 @@
 #pragma once
 
-#include <functional>
-
 #include "IDevice.h"
 
 #include <TabiContainers.h>
+
+#include <functional>
 
 namespace tabi
 {
@@ -50,7 +50,9 @@ namespace tabi
 
 	private:
 		tabi::vector<std::function<void()>> m_CommandQueue{ 1024 };
-		tabi::vector<std::function<void()>> m_DeletionQueue{ 64 };
+
+		tabi::vector<std::function<void()>> m_ResourceCreationQueue{ 64 };
+		tabi::vector<std::function<void()>> m_ResourceDeletionQueue{ 64 };
 
 		tabi::queue<class OpenGLFence*> m_PendingFences;
 	};

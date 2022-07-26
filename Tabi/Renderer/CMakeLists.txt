@@ -19,6 +19,7 @@ set(HEADERS
     inc/Enums/BufferEnums.h
     inc/Enums/ComparisonFunction.h
     inc/Enums/Format.h
+    inc/Enums/SamplerEnums.h
     inc/Enums/ShaderEnums.h
     inc/Enums/TextureEnums.h
 
@@ -52,6 +53,7 @@ if(USE_OPENGL)
         inc/OpenGL/OpenGLCommandList.h
         inc/OpenGL/OpenGLDevice.h
         inc/OpenGL/OpenGLFence.h
+        inc/OpenGL/OpenGLSampler.h
         inc/OpenGL/OpenGLShader.h
 
         inc/OpenGL/Converters.h

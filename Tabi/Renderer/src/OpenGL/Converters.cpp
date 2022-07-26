@@ -388,4 +388,106 @@ namespace tabi
 				return GL_INVALID_ENUM;
 			}
 		}
+
+		GLenum GLWrapMode(EWrapMode a_WrapMode)
+		{
+			switch(a_WrapMode)
+			{
+			case EWrapMode::Wrap:
+				return GL_REPEAT;
+			case EWrapMode::Mirror:
+				return GL_MIRRORED_REPEAT;
+			case EWrapMode::Clamp:
+				return GL_CLAMP_TO_EDGE;
+			case EWrapMode::Border:
+				return GL_CLAMP_TO_BORDER;
+
+			default:
+				TABI_ASSERT(false, "Unknown wrap mode");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLMinFilter(EFilterMode a_MinFilter, EMipMapMode a_MipMapMode)
+		{
+			switch (a_MinFilter)
+			{
+			case EFilterMode::Nearest:
+			{
+				switch (a_MinFilter)
+				{
+				case EFilterMode::Nearest:
+					return GL_NEAREST_MIPMAP_NEAREST;
+				case EFilterMode::Linear:
+					return GL_LINEAR_MIPMAP_NEAREST;
+
+				default:
+					TABI_ASSERT(false, "Unknown filter mode");
+					return GL_INVALID_ENUM;
+				}
+				break;
+			}
+			case EFilterMode::Linear:
+			{
+				switch (a_MinFilter)
+				{
+				case EFilterMode::Nearest:
+					return GL_NEAREST_MIPMAP_LINEAR;
+				case EFilterMode::Linear:
+					return GL_LINEAR_MIPMAP_LINEAR;
+
+				default:
+					TABI_ASSERT(false, "Unknown filter mode");
+					return GL_INVALID_ENUM;
+				}
+				break;
+			}
+
+			default:
+				TABI_ASSERT(false, "Unknown min filter");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLMagFilter(EFilterMode a_MagFilter)
+		{
+			switch(a_MagFilter)
+			{
+			case EFilterMode::Nearest:
+				return GL_NEAREST;
+			case EFilterMode::Linear:
+				return GL_LINEAR;
+
+			default:
+				TABI_ASSERT(false, "Unknown filter mode");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLComparisonFunction(EComparisonFunction a_ComparisonFunction)
+		{
+			switch(a_ComparisonFunction)
+			{
+			case EComparisonFunction::Never:
+				return GL_NEVER;
+			case EComparisonFunction::Less:
+				return GL_LESS;
+			case EComparisonFunction::Equal:
+				return GL_EQUAL;
+			case EComparisonFunction::LessOrEqual:
+				return GL_LEQUAL;
+			case EComparisonFunction::Greater:
+				return GL_GREATER;
+			case EComparisonFunction::GreaterOrEqual:
+				return GL_GEQUAL;
+			case EComparisonFunction::NotEqual:
+				return GL_NOTEQUAL;
+			case EComparisonFunction::Always:
+				return GL_ALWAYS;
+
+			default:
+				TABI_ASSERT(false, "Unknown comparison function");
+				return GL_INVALID_ENUM;
+			}
+		}
 }

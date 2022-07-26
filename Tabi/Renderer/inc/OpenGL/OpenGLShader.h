@@ -7,9 +7,13 @@ namespace tabi
 	class OpenGLShader : public Shader
 	{
 	public:
+		TABI_NO_COPY(OpenGLShader);
+		TABI_NO_MOVE(OpenGLShader);
+
 		OpenGLShader(EShaderType a_ShaderType)
 			: Shader(a_ShaderType)
 		{}
+
 		void Destroy()
 		{
 			glDeleteShader(m_ShaderID);

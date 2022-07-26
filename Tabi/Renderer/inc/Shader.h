@@ -14,6 +14,9 @@ namespace tabi
 	class Shader
 	{
 	public:
+		TABI_NO_COPY(Shader);
+		TABI_NO_MOVE(Shader);
+
 		inline EShaderType GetShaderType() const
 		{
 			return m_ShaderType;
@@ -23,6 +26,7 @@ namespace tabi
 		Shader(EShaderType a_ShaderType)
 			: m_ShaderType(a_ShaderType)
 		{};
+		~Shader() = default;
 
 	private:
 		EShaderType m_ShaderType = EShaderType::Invalid;

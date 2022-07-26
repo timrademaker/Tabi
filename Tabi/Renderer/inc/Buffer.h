@@ -3,6 +3,8 @@
 #include "Enums/BufferEnums.h"
 #include "Enums/Format.h"
 
+#include <TabiMacros.h>
+
 namespace tabi
 {
 	struct BufferDescription
@@ -20,6 +22,9 @@ namespace tabi
 	class Buffer
 	{
 	public:
+		TABI_NO_COPY(Buffer);
+		TABI_NO_MOVE(Buffer);
+
 		inline const BufferDescription& GetBufferDescription() const
 		{
 			return m_BufferDescription;
@@ -29,6 +34,7 @@ namespace tabi
 		Buffer(BufferDescription a_BufferDescription)
 			: m_BufferDescription(a_BufferDescription)
 		{}
+		~Buffer() = default;
 
 	private:
 		BufferDescription m_BufferDescription{};

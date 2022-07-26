@@ -25,6 +25,9 @@ namespace tabi
 	class Texture
 	{
 	public:
+		TABI_NO_COPY(Texture);
+		TABI_NO_MOVE(Texture);
+
 		inline const TextureDescription& GetTextureDescription() const
 		{
 			return m_TextureDescription;
@@ -34,6 +37,7 @@ namespace tabi
 		Texture(const TextureDescription& a_TextureDescription)
 			: m_TextureDescription(a_TextureDescription)
 		{}
+		~Texture() = default;
 
 	private:
 		TextureDescription m_TextureDescription;

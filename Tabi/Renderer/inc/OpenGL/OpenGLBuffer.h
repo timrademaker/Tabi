@@ -11,9 +11,13 @@ namespace tabi
 	class OpenGLBuffer : public Buffer
 	{
 	public:
+		TABI_NO_COPY(OpenGLBuffer);
+		TABI_NO_MOVE(OpenGLBuffer);
+
 		OpenGLBuffer(BufferDescription a_BufferDescription)
 			: Buffer(a_BufferDescription)
 		{}
+
 		void Destroy()
 		{
 			glDeleteBuffers(1, &m_BufferID);

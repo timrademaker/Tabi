@@ -11,6 +11,9 @@ namespace tabi
 	class OpenGLTexture : public Texture
 	{
 	public:
+		TABI_NO_COPY(OpenGLTexture);
+		TABI_NO_MOVE(OpenGLTexture);
+
 		OpenGLTexture(const TextureDescription& a_TextureDescription)
 			: Texture(a_TextureDescription)
 		{}

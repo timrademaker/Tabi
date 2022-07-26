@@ -71,8 +71,14 @@ namespace tabi
 
 		/**
 		 * @brief Insert a memory barrier into the command stream
+		 * @param a_Texture The texture for which reads/writes before the barrier should be completed before any further reads/writes can begin
 		 */
-		virtual void InsertBarrier() = 0;
+		virtual void InsertBarrier(class Texture* a_Texture) = 0;
+		/**
+		 * @brief Insert a memory barrier into the command stream
+		 * @param a_Buffer The buffer for which reads/writes before the barrier should be completed before any further reads/writes can begin
+		 */
+		virtual void InsertBarrier(class Buffer* a_Buffer) = 0;
 
 		/**
 		 * @brief Attach a render target to render to with subsequent draw calls

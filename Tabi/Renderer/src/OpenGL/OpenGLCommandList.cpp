@@ -135,6 +135,28 @@ void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_
 	);
 }
 
+void tabi::OpenGLCommandList::InsertBarrier(Texture* a_Texture)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	m_PendingCommands.push_back([]
+		{
+			glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::InsertBarrier(Buffer* a_Buffer)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	m_PendingCommands.push_back([]
+		{
+			glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+		}
+	);
+}
+
 namespace tabi
 {
 	void CopyDataToTexture1D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription)

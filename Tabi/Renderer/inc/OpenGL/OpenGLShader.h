@@ -10,9 +10,10 @@ namespace tabi
 		OpenGLShader(EShaderType a_ShaderType)
 			: Shader(a_ShaderType)
 		{}
-		~OpenGLShader()
+		void Destroy()
 		{
 			glDeleteShader(m_ShaderID);
+			m_ShaderID = 0;
 		}
 
 		inline GLuint GetID() const { return m_ShaderID; }

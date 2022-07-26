@@ -14,9 +14,11 @@ namespace tabi
 		OpenGLTexture(const TextureDescription& a_TextureDescription)
 			: Texture(a_TextureDescription)
 		{}
-		~OpenGLTexture()
+
+		void Destroy()
 		{
 			glDeleteTextures(1, &m_TextureID);
+			m_TextureID = 0;
 		}
 
 		inline GLuint GetID() const { return m_TextureID; }

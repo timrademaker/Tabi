@@ -14,9 +14,10 @@ namespace tabi
 		OpenGLBuffer(BufferDescription a_BufferDescription)
 			: Buffer(a_BufferDescription)
 		{}
-		~OpenGLBuffer()
+		void Destroy()
 		{
 			glDeleteBuffers(1, &m_BufferID);
+			m_BufferID = 0;
 		}
 
 		inline GLuint GetID() const { return m_BufferID; }

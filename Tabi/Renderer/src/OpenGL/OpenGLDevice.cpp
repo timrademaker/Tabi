@@ -190,20 +190,26 @@ namespace tabi
 		return shader;
 	}
 
-#define DESTROY_RESOURCE(T, resource) m_DeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { delete ptr; })
+#define DESTROY_RESOURCE(T, resource) m_DeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \
+		ptr->Destroy(); \
+		delete ptr;\
+	})
 
 	void OpenGLDevice::DestroyTexture(Texture* a_Texture)
 	{
+		TABI_ASSERT(a_Texture != nullptr);
 		DESTROY_RESOURCE(OpenGLTexture, a_Texture);
 	}
 
 	void OpenGLDevice::DestroyBuffer(Buffer* a_Buffer)
 	{
+		TABI_ASSERT(a_Buffer != nullptr);
 		DESTROY_RESOURCE(OpenGLBuffer, a_Buffer);
 	}
 
 	void OpenGLDevice::DestroyShader(Shader* a_Shader)
 	{
+		TABI_ASSERT(a_Shader != nullptr);
 		DESTROY_RESOURCE(OpenGLShader, a_Shader);
 	}
 #undef DESTROY_RESOURCE

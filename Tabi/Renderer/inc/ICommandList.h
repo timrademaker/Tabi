@@ -70,6 +70,16 @@ namespace tabi
 		virtual void BindWritableTexture(class Texture* a_Texture, int32_t a_Slot) = 0;
 
 		/**
+		 * @brief Bind a sampler to a shader slot
+		 * @param a_Sampler The sampler to bind
+		 * @param a_Slot The slot to bind the sampler to
+		 *
+		 * @note What this function does might differ between OpenGL and D3D (though it shouldn't).
+		 * @note In OGL, a texture and sampler are bound together by the application (resulting in GLSL's sampler2D), whereas D3D's HLSL shaders have separate textures and samplers (texture.Sample(sampler))
+		 */
+		virtual void BindSampler(class Sampler* a_Sampler, int32_t a_Slot) = 0;
+
+		/**
 		 * @brief Insert a memory barrier into the command stream
 		 * @param a_Texture The texture for which reads/writes before the barrier should be completed before any further reads/writes can begin
 		 */

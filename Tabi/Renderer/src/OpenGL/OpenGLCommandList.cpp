@@ -60,10 +60,11 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_IndexBuffer != nullptr);
 
-	m_PendingCommands.push_back([a_IndexBuffer]
+	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_IndexBuffer)]
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, static_cast<OpenGLBuffer*>(a_IndexBuffer)->GetID());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf->GetID());
 		}
 	);
 
@@ -72,10 +73,11 @@ void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
 void tabi::OpenGLCommandList::BindConstantBuffer(Buffer* a_Buffer, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_Buffer != nullptr);
 
-	m_PendingCommands.push_back([a_Buffer, a_Slot]
+	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
-			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, static_cast<OpenGLBuffer*>(a_Buffer)->GetID());
+			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, buf->GetID());
 		}
 	);
 }
@@ -83,10 +85,11 @@ void tabi::OpenGLCommandList::BindConstantBuffer(Buffer* a_Buffer, int32_t a_Slo
 void tabi::OpenGLCommandList::BindReadWriteBuffer(Buffer* a_Buffer, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_Buffer != nullptr);
 
-	m_PendingCommands.push_back([a_Buffer, a_Slot]
+	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, static_cast<OpenGLBuffer*>(a_Buffer)->GetID());
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, buf->GetID());
 		}
 	);
 }
@@ -94,11 +97,12 @@ void tabi::OpenGLCommandList::BindReadWriteBuffer(Buffer* a_Buffer, int32_t a_Sl
 void tabi::OpenGLCommandList::BindTexture(Texture* a_Texture, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_Texture != nullptr);
 
-	m_PendingCommands.push_back([a_Texture, a_Slot]
+	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
 		{
 			glActiveTexture(GL_TEXTURE0 + a_Slot);
-			glBindTexture(GLTextureDimension(a_Texture->GetTextureDescription().m_Dimension), static_cast<OpenGLTexture*>(a_Texture)->GetID());
+			glBindTexture(GLTextureDimension(tex->GetTextureDescription().m_Dimension), tex->GetID());
 		}
 	);
 }
@@ -106,6 +110,7 @@ void tabi::OpenGLCommandList::BindTexture(Texture* a_Texture, int32_t a_Slot)
 void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_Texture != nullptr);
 
 	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
 		{
@@ -138,6 +143,7 @@ void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_
 void tabi::OpenGLCommandList::InsertBarrier(Texture* a_Texture)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_UNUSED(a_Texture);
 
 	m_PendingCommands.push_back([]
 		{
@@ -149,6 +155,7 @@ void tabi::OpenGLCommandList::InsertBarrier(Texture* a_Texture)
 void tabi::OpenGLCommandList::InsertBarrier(Buffer* a_Buffer)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_UNUSED(a_Buffer);
 
 	m_PendingCommands.push_back([]
 		{

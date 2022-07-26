@@ -30,6 +30,8 @@ namespace tabi
 		virtual void BindTexture(Texture* a_Texture, int32_t a_Slot) override;
 		virtual void BindWritableTexture(Texture* a_Texture, int32_t a_Slot) override;
 
+		virtual void BindSampler(Sampler* a_Sampler, int32_t a_Slot) override;
+
 		virtual void InsertBarrier(Texture* a_Texture) override;
 		virtual void InsertBarrier(Buffer* a_Buffer) override;
 

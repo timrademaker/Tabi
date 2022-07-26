@@ -249,5 +249,6 @@ namespace tabi
 		{
 			func();
 		}
+		m_DeletionQueue.clear();
 	}
 }

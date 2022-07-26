@@ -276,7 +276,7 @@ void tabi::OpenGLDevice::InsertFence(class IFence* a_Fence, uint64_t a_Value)
 	m_CommandQueue.emplace_back([fence = static_cast<OpenGLFence*>(a_Fence)]
 		{
 			fence->m_FenceSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-			TABI_ASSERT(fence->m_FenceSync != nullptr, "Failed to create buffer");
+			TABI_ASSERT(fence->m_FenceSync != nullptr, "Failed to create fence");
 		}
 	);
 }

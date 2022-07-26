@@ -3,6 +3,7 @@
 #include "OpenGL/Converters.h"
 #include "OpenGL/OpenGLBuffer.h"
 #include "OpenGL/OpenGLTexture.h"
+#include "OpenGL/OpenGLSampler.h"
 
 #include "TextureUpdateDescription.h"
 
@@ -136,6 +137,18 @@ void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_
 			}
 
 			glBindImageTexture(a_Slot, tex->GetID(), 0, textureIsLayered, 0, GL_READ_WRITE, GLFormat(tex->GetTextureDescription().m_Format));
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::BindSampler(Sampler* a_Sampler, int32_t a_Slot)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_Sampler != nullptr);
+
+	m_PendingCommands.push_back([samp = static_cast<OpenGLSampler*>(a_Sampler), a_Slot]
+		{
+			glBindSampler(a_Slot, samp->GetID());
 		}
 	);
 }

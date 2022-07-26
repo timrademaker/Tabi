@@ -3,6 +3,8 @@
 #include "Enums/Format.h"
 #include "Enums/TextureEnums.h"
 
+#include <TabiMacros.h>
+
 #include <cstdint>
 
 namespace tabi

@@ -2,6 +2,8 @@
 
 #include "Sampler.h"
 
+#include <glad/glad.h>
+
 namespace tabi
 {
 	class OpenGLSampler : public Sampler

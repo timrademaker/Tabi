@@ -11,8 +11,25 @@
 
 namespace tabi
 {
+	void CreateTexture1D(GLuint a_Texture, GLsizei a_MipLevels, EFormat a_Format, GLsizei a_Width)
+	{
+		glTextureStorage1D(a_Texture, a_MipLevels, GLInternalFormat(a_Format), a_Width);
+	}
+	
+	void CreateTexture2D(GLuint a_Texture, GLsizei a_MipLevels, EFormat a_Format, GLsizei a_Width, GLsizei a_Height)
+	{
+		glTextureStorage2D(a_Texture, a_MipLevels, GLInternalFormat(a_Format), a_Width, a_Height);
+	}
+
+	void CreateTexture3D(GLuint a_Texture, GLsizei a_MipLevels, EFormat a_Format, GLsizei a_Width, GLsizei a_Height, GLsizei a_Depth)
+	{
+		glTextureStorage3D(a_Texture, a_MipLevels, GLInternalFormat(a_Format), a_Width, a_Height, a_Depth);
+	}
+
 	Texture* OpenGLDevice::CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName)
 	{
+		TABI_ASSERT(a_TextureDescription.m_Dimension != ETextureDimension::Unknown);
+
 		auto* tex = new OpenGLTexture(a_TextureDescription);
 		m_CommandQueue.emplace_back([tex, a_DebugName]
 			{
@@ -21,65 +38,48 @@ namespace tabi
 				TABI_ASSERT(id != 0, "Failed to create texture");
 				
 				const auto& texDescription = tex->GetTextureDescription();
-				auto texHeight = texDescription.m_Height;
-
-				const GLenum bindTarget = GLTarget(texDescription.m_Dimension);
-				glBindTexture(bindTarget, id);
 
 				switch (texDescription.m_Dimension)
 				{
 				case ETextureDimension::Tex1D:
 				{
-					glTexImage1D(bindTarget, 0, GLInternalFormat(texDescription.m_Format),
-						texDescription.m_Width,
-						0, GLFormat(texDescription.m_Format), GLType(texDescription.m_Format),
-						nullptr
-					);
+					CreateTexture1D(id, texDescription.m_MipLevels, texDescription.m_Format, texDescription.m_Width);
 					break;
 				}
 				case ETextureDimension::Tex1DArray:
-					texHeight = texDescription.m_Depth;
+				{
+					CreateTexture2D(id, texDescription.m_MipLevels, texDescription.m_Format, texDescription.m_Width, texDescription.m_Depth);
+					break;
+				}
 				case ETextureDimension::Tex2D:
 				{
-					glTexImage2D(bindTarget, 0, GLInternalFormat(texDescription.m_Format),
-						texDescription.m_Width, texHeight,
-						0, GLFormat(texDescription.m_Format), GLType(texDescription.m_Format),
-						nullptr
-					);
+					CreateTexture2D(id, texDescription.m_MipLevels, texDescription.m_Format, texDescription.m_Width, texDescription.m_Height);
 					break;
 				}
 				case ETextureDimension::Tex2DArray:
 				case ETextureDimension::Tex3D:
 				{
-					glTexImage3D(bindTarget, 0, GLInternalFormat(texDescription.m_Format),
-						texDescription.m_Width, texDescription.m_Height, texDescription.m_Depth,
-						0, GLFormat(texDescription.m_Format), GLType(texDescription.m_Format),
-						nullptr
-					);
+					CreateTexture3D(id, texDescription.m_MipLevels, texDescription.m_Format, texDescription.m_Width, texDescription.m_Height, texDescription.m_Depth);
 					break;
 				}
 				case ETextureDimension::CubeMap:
 				{
 					TABI_ASSERT(texDescription.m_Width == texDescription.m_Height, "Width and height should be equal for cubemaps");
-					for (uint8_t i = 0; i < 6; ++i)
-					{
-						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, texDescription.m_Width, texDescription.m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-					}
+					CreateTexture2D(id, texDescription.m_MipLevels, texDescription.m_Format, texDescription.m_Width, texDescription.m_Height);
 					break;
 				}
 				case ETextureDimension::CubeMapArray:
 				{
 					TABI_ASSERT(texDescription.m_Width == texDescription.m_Height, "Width and height should be equal for cubemaps");
+					CreateTexture3D(id, texDescription.m_MipLevels, texDescription.m_Format, texDescription.m_Width, texDescription.m_Height, texDescription.m_Depth);
 					break;
 				}
 				}
 
 				if (texDescription.m_MipLevels > 0)
 				{
-					glTexParameteri(bindTarget, GL_TEXTURE_MAX_LEVEL, texDescription.m_MipLevels);
+					glTextureParameteri(id, GL_TEXTURE_MAX_LEVEL, texDescription.m_MipLevels);
 				}
-
-				glBindTexture(bindTarget, 0);
 
 #if defined(DEBUG_GRAPHICS)
 				if (a_DebugName)

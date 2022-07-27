@@ -19,7 +19,7 @@ namespace tabi
 		virtual Shader* CreateShader(const ShaderDescription& a_ShaderDescription, const char* a_DebugName = nullptr) override;
 		virtual Sampler* CreateSampler(const SamplerDescription& a_SamplerDescription, const char* a_DebugName = nullptr) override;
 
-		virtual GraphicsPipeline* CreateGraphicsPipeline(const GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) override;
+		virtual GraphicsPipeline* CreateGraphicsPipeline(const GraphicsPipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) override;
 		virtual ComputePipeline* CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) override;
 
 		virtual IRenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) override;

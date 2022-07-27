@@ -19,11 +19,13 @@ set(HEADERS
     inc/Enums/BufferEnums.h
     inc/Enums/ComparisonFunction.h
     inc/Enums/Format.h
+    inc/Enums/GraphicsPipelineEnums.h
     inc/Enums/SamplerEnums.h
     inc/Enums/ShaderEnums.h
     inc/Enums/TextureEnums.h
 
     inc/helpers/RendererLogger.h
+    inc/helpers/FormatInfo.h
 )
 
 # Set sources for Renderer
@@ -31,6 +33,7 @@ set(SOURCES
     src/IDevice.cpp
 
     src/helpers/RendererLogger.cpp
+    src/helpers/FormatInfo.cpp
 )
 
 if(DEBUG_GRAPHICS)
@@ -53,6 +56,7 @@ if(USE_OPENGL)
         inc/OpenGL/OpenGLCommandList.h
         inc/OpenGL/OpenGLDevice.h
         inc/OpenGL/OpenGLFence.h
+        inc/OpenGL/OpenGLGraphicsPipeline.h
         inc/OpenGL/OpenGLSampler.h
         inc/OpenGL/OpenGLShader.h
 

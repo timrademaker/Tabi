@@ -1,79 +1,12 @@
 #pragma once
 
-#include <TabiMacros.h>
 #include "Enums/ComparisonFunction.h"
+#include "Enums/GraphicsPipelineEnums.h"
+
+#include <TabiMacros.h>
 
 namespace tabi
 {
-	enum class EToplolgy : uint8_t
-	{
-		Point,
-		Line,
-		LineStrip,
-		Triangle,
-		TriangleStrip,
-	};
-
-	enum class EBlendFactor : uint8_t
-	{
-		Zero,
-		One,
-		SrcAlpha,
-		DstAlpha,
-		InvSrcAlpha,
-		InvDstAlpha,
-		SrcColor,
-		DstColor,
-		InvSrcColor,
-		InvDstColor,
-		SrcAlpha
-	};
-
-	enum class EBlendFunction : uint8_t
-	{
-		Add,
-		Subtract,
-		ReverseSubtract,
-		Min,
-		Max
-	};
-
-	enum class EPolygonMode : uint8_t
-	{
-		Point,
-		Line,
-		Fill
-	};
-
-	enum class ECullMode : uint8_t
-	{
-		None,
-		Front,
-		Back
-	};
-
-	enum class EColorMask : uint8_t
-	{
-		Red = 1 << 0,
-		Green = 1 << 1,
-		Blue = 1 << 2,
-		Alpha = 1 << 3,
-		All = Red | Green | Blue | Alpha
-	};
-	TABI_ENUM_FLAG(EColorMask);
-
-	enum class EStencilOperation : uint8_t
-	{
-		Zero,
-		Keep,
-		Replace,
-		Increment,
-		Decrement,
-		Invert.
-		IncrementWrap,
-		DecrementWrap
-	};
-
 	struct BlendState
 	{
 		bool m_BlendEnabled = false;
@@ -125,10 +58,12 @@ namespace tabi
 	// https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_input_element_desc
 	struct VertexInputElement
 	{
+		// The index of the vertex buffer to read this input element from
 		uint8_t m_InputSlot = 0;
-		uint8_t m_NumComponents = 0;
 		uint8_t m_SemanticIndex = 0;
 		const char* m_SemanticName = nullptr;
+		// The format in which the vertex input element is stored
+		EFormat m_Format = EFormat::Unknown;
 
 		// Indicates how often the data read from the vertex buffer advances to the next element
 		EInstanceDataStepClassification m_InstanceDataStepClassification = EInstanceDataStepClassification::PerVertex;
@@ -138,14 +73,14 @@ namespace tabi
 
 	struct VertexInputLayout
 	{
-		std::vector<VertexInputElement> m_InputElements{};
+		tabi::array<VertexInputElement, 8> m_InputElements{};
 		uint8_t m_NumInputElements = 0;
 	};
 
 	struct GraphicsPipelineDescription
 	{
-		class IShader* m_VertexShader = nullptr;
-		class IShader* m_PixelShader = nullptr;
+		class Shader* m_VertexShader = nullptr;
+		class Shader* m_PixelShader = nullptr;
 
 		EToplolgy m_Topology = EToplolgy::Triangle;
 		// TODO: Support multiple blend targets?
@@ -158,6 +93,9 @@ namespace tabi
 	class GraphicsPipeline
 	{
 	public:
+		TABI_NO_COPY(GraphicsPipeline);
+		TABI_NO_MOVE(GraphicsPipeline);
+
 		inline const GraphicsPipelineDescription& GetPipelineDescription() const
 		{
 			return m_PipelineDescription;
@@ -167,6 +105,7 @@ namespace tabi
 		GraphicsPipeline(const GraphicsPipelineDescription& a_PipelineDescription)
 			: m_PipelineDescription(a_PipelineDescription)
 		{}
+		~GraphicsPipeline() = default;
 
 	private:
 		GraphicsPipelineDescription m_PipelineDescription;

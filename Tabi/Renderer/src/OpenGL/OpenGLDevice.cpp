@@ -7,8 +7,10 @@
 #include "OpenGL/OpenGLSampler.h"
 #include "OpenGL/OpenGLShader.h"
 #include "OpenGL/OpenGLTexture.h"
+#include "OpenGL/OpenGLGraphicsPipeline.h"
 
 #include "Helpers/RendererLogger.h"
+#include "Helpers/FormatInfo.h"
 
 namespace tabi
 {
@@ -26,6 +28,13 @@ namespace tabi
 	{
 		glTextureStorage3D(a_Texture, a_MipLevels, GLInternalFormat(a_Format), a_Width, a_Height, a_Depth);
 	}
+
+	void SetObjectDebugLabel(GLenum a_Target, GLuint a_Id, const char* a_DebugName)
+	{
+#if defined(DEBUG_GRAPHICS)
+		glObjectLabel(a_Target, a_Id, -1, a_DebugName);
+#endif
+	}
 }
 
 tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName)
@@ -38,6 +47,8 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 			GLuint id;
 			glGenTextures(1, &id);
 			TABI_ASSERT(id != 0, "Failed to create texture");
+			tex->SetID(id);
+			SetObjectDebugLabel(GL_TEXTURE, id, a_DebugName);
 			
 			const auto& texDescription = tex->GetTextureDescription();
 
@@ -82,15 +93,6 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 			{
 				glTextureParameteri(id, GL_TEXTURE_MAX_LEVEL, texDescription.m_MipLevels);
 			}
-
-#if defined(DEBUG_GRAPHICS)
-			if (a_DebugName)
-			{
-				glObjectLabel(GL_TEXTURE, id, strlen(a_DebugName), a_DebugName);
-			}
-#endif
-
-			tex->SetID(id);
 		}
 	);
 
@@ -105,6 +107,8 @@ tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_Buffer
 			GLuint id;
 			glGenBuffers(1, &id);
 			TABI_ASSERT(id != 0, "Failed to create buffer");
+			buf->SetID(id);
+			SetObjectDebugLabel(GL_BUFFER, id, a_DebugName);
 
 			const auto& bufDescription = buf->GetBufferDescription();
 
@@ -129,15 +133,6 @@ tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_Buffer
 
 			glBufferData(bindTarget, bufDescription.m_SizeInBytes, nullptr, usage);
 			glBindBuffer(bindTarget, 0);
-
-#if defined(DEBUG_GRAPHICS)
-			if (a_DebugName)
-			{
-				glObjectLabel(GL_BUFFER, id, strlen(a_DebugName), a_DebugName);
-			}
-#endif
-
-			buf->SetID(id);
 		}
 	);
 
@@ -152,6 +147,8 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 		{
 			const GLuint id = glCreateShader(GLShaderType(shader->GetShaderType()));
 			TABI_ASSERT(id != 0, "Failed to create shader");
+			shader->SetID(id);
+			SetObjectDebugLabel(GL_SHADER, id, a_DebugName);
 
 			const GLint dataLength = dataLen;
 			glShaderSource(id, 1, &data, &dataLength);
@@ -174,15 +171,6 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 			}
 
 			// TODO: Create shader program (and use program pipeline objects for the graphics/compute pipeline classes)?
-
-#if defined(DEBUG_GRAPHICS)
-			if (a_DebugName)
-			{
-				glObjectLabel(GL_SHADER, id, strlen(a_DebugName), a_DebugName);
-			}
-#endif
-			
-			shader->SetID(id);
 		}
 	);
 
@@ -198,6 +186,8 @@ tabi::Sampler* tabi::OpenGLDevice::CreateSampler(const SamplerDescription& a_Sam
 			GLuint id = 0;
 			glGenSamplers(1, &id);
 			TABI_ASSERT(id != 0, "Failed to create sampler");
+			sampler->SetID(id);
+			SetObjectDebugLabel(GL_SAMPLER, id, a_DebugName);
 
 			const auto& samplerDescription = sampler->GetSamplerDescription();
 
@@ -221,19 +211,60 @@ tabi::Sampler* tabi::OpenGLDevice::CreateSampler(const SamplerDescription& a_Sam
 			glSamplerParameterf(id, GL_TEXTURE_LOD_BIAS, samplerDescription.m_MipLODBias);
 
 			glSamplerParameteri(id, GL_TEXTURE_COMPARE_FUNC, GLComparisonFunction(samplerDescription.m_ComparisonFunc));
-
-#if defined(DEBUG_GRAPHICS)
-			if (a_DebugName)
-			{
-				glObjectLabel(GL_SHADER, id, strlen(a_DebugName), a_DebugName);
-			}
-#endif
-
-			sampler->SetID(id);
 		}
 	);
 
 	return sampler;
+}
+
+tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
+	const GraphicsPipelineDescription& a_PipelineDescription, const char* a_DebugName)
+{
+	auto* pipeline = new OpenGLGraphicsPipeline(a_PipelineDescription);
+
+	m_CommandQueue.emplace_back([pipeline, a_DebugName]
+		{
+			GLuint pipelineId = 0;
+			glGenProgramPipelines(1, &pipelineId);
+			pipeline->SetID(pipelineId);
+			TABI_ASSERT(pipelineId != 0, "Failed to create program pipeline");
+
+			SetObjectDebugLabel(GL_PROGRAM_PIPELINE, pipelineId, a_DebugName);
+
+			const auto& pipelineDesc = pipeline->GetPipelineDescription();
+
+			if (pipelineDesc.m_VertexShader)
+			{
+				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<OpenGLShader*>(pipelineDesc.m_VertexShader)->GetID());
+			}
+			if (pipelineDesc.m_PixelShader)
+			{
+				glUseProgramStages(pipelineId, GL_FRAGMENT_SHADER_BIT, static_cast<OpenGLShader*>(pipelineDesc.m_PixelShader)->GetID());
+			}
+
+			GLuint vaoId = 0;
+			glGenVertexArrays(1, &vaoId);
+			TABI_ASSERT(vaoId != 0, "Failed to create VAO");
+			pipeline->SetVAO(vaoId);
+
+			GLuint dataOffset = 0;
+			for (GLuint i = 0; i < pipelineDesc.m_VertexInputLayout.m_NumInputElements; ++i)
+			{
+				const auto& inputElement = pipelineDesc.m_VertexInputLayout.m_InputElements[i];
+				const auto& formatInfo = GetFormatInfo(inputElement.m_Format);
+
+				glVertexArrayAttribFormat(vaoId, i, formatInfo.m_ComponentCount, GLType(inputElement.m_Format), formatInfo.m_IsNormalized ? GL_TRUE : GL_FALSE, dataOffset);
+				glEnableVertexArrayAttrib(vaoId, i);
+				glVertexArrayAttribBinding(vaoId, i, inputElement.m_InputSlot);
+
+				glVertexArrayBindingDivisor(vaoId, i, inputElement.m_InstanceDataStepRate);
+
+				dataOffset += formatInfo.m_ComponentSizeInBits * formatInfo.m_ComponentCount;
+			}
+		}
+	);
+
+	return pipeline;
 }
 
 #define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \

@@ -80,5 +80,7 @@ namespace tabi
 		Depth24Stencil8,
 
 		// TODO: Some whacky formats (and compressed formats?)
+
+		Count
 	};
 }

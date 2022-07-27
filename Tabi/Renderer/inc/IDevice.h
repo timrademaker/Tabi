@@ -57,7 +57,7 @@ namespace tabi
 		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created graphics pipeline
 		 */
-		virtual class GraphicsPipeline* CreateGraphicsPipeline(const struct GraphicePipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) = 0;
+		virtual class GraphicsPipeline* CreateGraphicsPipeline(const struct GraphicsPipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new compute pipeline object
 		 * @param a_ComputePipelineDescription A struct describing the compute pipeline to create

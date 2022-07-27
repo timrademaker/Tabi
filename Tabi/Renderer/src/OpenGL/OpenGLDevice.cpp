@@ -33,7 +33,7 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 	TABI_ASSERT(a_TextureDescription.m_Dimension != ETextureDimension::Unknown);
 
 	auto* tex = new OpenGLTexture(a_TextureDescription);
-	m_ResourceCreationQueue.emplace_back([tex, a_DebugName]
+	m_CommandQueue.emplace_back([tex, a_DebugName]
 		{
 			GLuint id;
 			glGenTextures(1, &id);
@@ -100,7 +100,7 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_BufferDescription, const char* a_DebugName)
 {
 	auto* buf = new OpenGLBuffer(a_BufferDescription);
-	m_ResourceCreationQueue.emplace_back([buf, a_DebugName]
+	m_CommandQueue.emplace_back([buf, a_DebugName]
 		{
 			GLuint id;
 			glGenBuffers(1, &id);
@@ -148,7 +148,7 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 {
 	auto* shader = new OpenGLShader(a_ShaderDescription.m_ShaderType);
 
-	m_ResourceCreationQueue.emplace_back([shader, data = a_ShaderDescription.m_Data, dataLen = a_ShaderDescription.m_DataLength, a_DebugName]
+	m_CommandQueue.emplace_back([shader, data = a_ShaderDescription.m_Data, dataLen = a_ShaderDescription.m_DataLength, a_DebugName]
 		{
 			const GLuint id = glCreateShader(GLShaderType(shader->GetShaderType()));
 			TABI_ASSERT(id != 0, "Failed to create shader");
@@ -193,7 +193,7 @@ tabi::Sampler* tabi::OpenGLDevice::CreateSampler(const SamplerDescription& a_Sam
 {
 	auto* sampler = new OpenGLSampler(a_SamplerDescription);
 
-	m_ResourceCreationQueue.emplace_back([sampler, a_DebugName]
+	m_CommandQueue.emplace_back([sampler, a_DebugName]
 		{
 			GLuint id = 0;
 			glGenSamplers(1, &id);
@@ -303,11 +303,11 @@ void tabi::OpenGLDevice::EndFrame()
 		}
 	);
 
-	for(auto& func : m_ResourceCreationQueue)
+	for (auto& func : m_CommandQueue)
 	{
 		func();
 	}
-	m_ResourceCreationQueue.clear();
+	m_CommandQueue.clear();
 
 	for(auto& func : m_ResourceDeletionQueue)
 	{

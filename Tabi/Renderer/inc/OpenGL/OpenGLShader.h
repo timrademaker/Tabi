@@ -16,18 +16,18 @@ namespace tabi
 
 		void Destroy()
 		{
-			glDeleteShader(m_ShaderID);
-			m_ShaderID = 0;
+			glDeleteProgram(m_ProgramID);
+			m_ProgramID = 0;
 		}
 
-		inline GLuint GetID() const { return m_ShaderID; }
-		inline void SetID(const GLuint a_ShaderID)
+		inline GLuint GetID() const { return m_ProgramID; }
+		inline void SetID(const GLuint a_ProgramID)
 		{
-			TABI_ASSERT(m_ShaderID == 0, "Buffer ID already set!");
-			m_ShaderID = a_ShaderID;
+			TABI_ASSERT(m_ProgramID == 0, "Program ID already set!");
+			m_ProgramID = a_ProgramID;
 		}
 
 	private:
-		GLuint m_ShaderID = 0;
+		GLuint m_ProgramID = 0;
 	};
 }

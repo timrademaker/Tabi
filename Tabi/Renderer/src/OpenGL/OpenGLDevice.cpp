@@ -145,32 +145,60 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 
 	m_CommandQueue.emplace_back([shader, data = a_ShaderDescription.m_Data, dataLen = a_ShaderDescription.m_DataLength, a_DebugName]
 		{
-			const GLuint id = glCreateShader(GLShaderType(shader->GetShaderType()));
-			TABI_ASSERT(id != 0, "Failed to create shader");
-			shader->SetID(id);
-			SetObjectDebugLabel(GL_SHADER, id, a_DebugName);
+			const GLuint shaderId = glCreateShader(GLShaderType(shader->GetShaderType()));
+			TABI_ASSERT(shaderId != 0, "Failed to create shader");
 
 			const GLint dataLength = dataLen;
-			glShaderSource(id, 1, &data, &dataLength);
-			glCompileShader(id);
+			glShaderSource(shaderId, 1, &data, &dataLength);
+			glCompileShader(shaderId);
 
 			GLint isCompiled = 0;
-			glGetShaderiv(id, GL_COMPILE_STATUS, &isCompiled);
+			glGetShaderiv(shaderId, GL_COMPILE_STATUS, &isCompiled);
 
 			if (isCompiled == GL_FALSE)
 			{
 				GLint shaderLogLength = 0;
-				glGetShaderiv(id, GL_INFO_LOG_LENGTH, &shaderLogLength);
+				glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &shaderLogLength);
 
 				std::vector<GLchar> shaderLog(shaderLogLength);
-				glGetShaderInfoLog(id, shaderLogLength, &shaderLogLength, &shaderLog[0]);
-				glDeleteShader(id);
+				glGetShaderInfoLog(shaderId, shaderLogLength, &shaderLogLength, &shaderLog[0]);
+				glDeleteShader(shaderId);
 
 				LOG_ERROR("Failed to compile shader. Error: %s", shaderLog.data());
 				TABI_ASSERT(isCompiled == GL_TRUE, "Shader failed to compile!");
+				return;
+			}
+			const GLuint programId = glCreateProgram();
+			TABI_ASSERT(shaderId != 0, "Failed to create shader program");
+
+			glProgramParameteri(programId, GL_PROGRAM_SEPARABLE, GL_TRUE);
+			glAttachShader(programId, shaderId);
+			glLinkProgram(programId);
+
+			glDetachShader(programId, shaderId);
+			glDeleteShader(shaderId);
+
+			GLint isLinked = 0;
+			glGetProgramiv(programId, GL_LINK_STATUS, &isLinked);
+
+			if(isLinked == GL_FALSE)
+			{
+				GLint programLogLength = 0;
+				glGetShaderiv(programId, GL_INFO_LOG_LENGTH, &programLogLength);
+
+				std::vector<GLchar> programLog(programLogLength);
+				glGetShaderInfoLog(programId, programLogLength, &programLogLength, programLog.data());
+				glDeleteProgram(programId);
+
+				LOG_ERROR("Failed to link shader program. Error: %s", programLog.data());
+				TABI_ASSERT(isLinked == GL_TRUE, "Shader program failed to link!");
+
+				glDeleteProgram(programId);
+				return;
 			}
 
-			// TODO: Create shader program (and use program pipeline objects for the graphics/compute pipeline classes)?
+			SetObjectDebugLabel(GL_PROGRAM, programId, a_DebugName);
+			shader->SetID(programId);
 		}
 	);
 
@@ -241,6 +269,8 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 			{
 				glUseProgramStages(pipelineId, GL_FRAGMENT_SHADER_BIT, static_cast<OpenGLShader*>(pipelineDesc.m_PixelShader)->GetID());
 			}
+
+			glValidateProgramPipeline(pipelineId);
 
 			GLuint vaoId = 0;
 			glGenVertexArrays(1, &vaoId);

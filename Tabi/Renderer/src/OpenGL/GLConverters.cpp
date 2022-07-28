@@ -437,4 +437,115 @@ namespace tabi
 				return GL_INVALID_ENUM;
 			}
 		}
+
+		GLenum GLStencilOperation(EStencilOperation a_StencilOperation)
+		{
+			switch(a_StencilOperation)
+			{
+			case EStencilOperation::Zero:
+				return GL_ZERO;
+			case EStencilOperation::Keep:
+				return GL_KEEP;
+			case EStencilOperation::Replace:
+				return GL_REPLACE;
+			case EStencilOperation::Increment:
+				return GL_INCR;
+			case EStencilOperation::Decrement:
+				return GL_DECR;
+			case EStencilOperation::Invert:
+				return GL_INVERT;
+			case EStencilOperation::IncrementWrap:
+				return GL_INCR_WRAP;
+			case EStencilOperation::DecrementWrap:
+				return GL_DECR_WRAP;
+
+			default:
+				TABI_ASSERT(false, "Unknown stencil operation");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLCullMode(ECullMode a_CullMode)
+		{
+			switch(a_CullMode)
+			{
+			case ECullMode::Front:
+				return GL_FRONT;
+			case ECullMode::Back:
+				return GL_BACK;
+
+			default:
+				TABI_ASSERT(false, "Unknown cull mode");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLPolygonMode(EPolygonMode a_PolygonMode)
+		{
+			switch (a_PolygonMode)
+			{
+			case EPolygonMode::Point:
+				return GL_POINT;
+			case EPolygonMode::Line:
+				return GL_LINE;
+			case EPolygonMode::Fill:
+				return GL_FILL;
+
+			default:
+				TABI_ASSERT(false, "Unknown polygon mode");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLBlendEquation(EBlendOperation a_BlendOperation)
+		{
+			switch (a_BlendOperation)
+			{
+			case EBlendOperation::Add:
+				return GL_FUNC_ADD;
+			case EBlendOperation::Subtract:
+				return GL_FUNC_SUBTRACT;
+			case EBlendOperation::ReverseSubtract:
+				return GL_FUNC_REVERSE_SUBTRACT;
+			case EBlendOperation::Min:
+				return GL_MIN;
+			case EBlendOperation::Max:
+				return GL_MAX;
+
+			default:
+				TABI_ASSERT(false, "Unknown blend operation");
+				return GL_INVALID_ENUM;
+			}
+		}
+
+		GLenum GLBlendFactor(EBlendFactor a_BlendFactor)
+		{
+			switch(a_BlendFactor)
+			{
+			case EBlendFactor::Zero:
+				return GL_ZERO;
+			case EBlendFactor::One:
+				return GL_ONE;
+			case EBlendFactor::SrcAlpha:
+				return GL_SRC_ALPHA;
+			case EBlendFactor::DstAlpha:
+				return GL_DST_ALPHA;
+			case EBlendFactor::InvSrcAlpha:
+				return GL_ONE_MINUS_SRC_ALPHA;
+			case EBlendFactor::InvDstAlpha:
+				return GL_ONE_MINUS_DST_ALPHA;
+			case EBlendFactor::SrcColor:
+				return GL_SRC_COLOR;
+			case EBlendFactor::DstColor:
+				return GL_DST_COLOR;
+			case EBlendFactor::InvSrcColor:
+				return GL_ONE_MINUS_SRC_COLOR;
+			case EBlendFactor::InvDstColor:
+				return GL_ONE_MINUS_DST_COLOR;
+
+			default:
+				TABI_ASSERT(false, "Unknown blend factor");
+				return GL_INVALID_ENUM;
+			}
+		}
 }

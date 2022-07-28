@@ -12,11 +12,11 @@ namespace tabi
 		bool m_BlendEnabled = false;
 		EBlendFactor m_SourceBlendFactorRGB = EBlendFactor::One;
 		EBlendFactor m_DestBlendFactorRGB = EBlendFactor::Zero;
-		EBlendFunction m_BlendFunctionRGB = EBlendFunction::Add;
+		EBlendOperation m_BlendOperationRGB = EBlendOperation::Add;
 
 		EBlendFactor m_SourceBlendFactorAlpha = EBlendFactor::One;
 		EBlendFactor m_DestBlendFactorAlpha = EBlendFactor::Zero;
-		EBlendFunction m_BlendFunctionAlpha = EBlendFunction::Add;
+		EBlendOperation m_BlendOperationAlpha = EBlendOperation::Add;
 	};
 
 	struct RasterizerState
@@ -36,7 +36,7 @@ namespace tabi
 		EStencilOperation m_StencilOp = EStencilOperation::Keep;
 
 		uint32_t m_ReferenceValue = 0;
-		uint8_t m_StencilMask = 255;
+		uint8_t m_StencilMask = 0b11111111;
 	};
 
 	struct DepthStencilState

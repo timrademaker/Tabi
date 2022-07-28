@@ -1,5 +1,7 @@
 #pragma once
 
+#include <TabiMacros.h>
+
 namespace tabi
 {
 	enum class EToplolgy : uint8_t
@@ -25,7 +27,7 @@ namespace tabi
 		InvDstColor
 	};
 
-	enum class EBlendFunction : uint8_t
+	enum class EBlendOperation : uint8_t
 	{
 		Add,
 		Subtract,

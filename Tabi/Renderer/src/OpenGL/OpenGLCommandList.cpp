@@ -2,6 +2,7 @@
 
 #include "OpenGL/GLConverters.h"
 #include "OpenGL/OpenGLBuffer.h"
+#include "OpenGL/OpenGLGraphicsPipeline.h"
 #include "OpenGL/OpenGLTexture.h"
 #include "OpenGL/OpenGLSampler.h"
 
@@ -232,6 +233,100 @@ namespace tabi
 			);
 		}
 	}
+}
+
+void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	m_PendingCommands.emplace_back([pipeline = static_cast<OpenGLGraphicsPipeline*>(a_GraphicsPipeline)]
+		{
+			glBindProgramPipeline(pipeline->GetID());
+			glBindVertexArray(pipeline->GetVAO());
+
+			const auto & pipelineDesc = pipeline->GetPipelineDescription();
+
+			if (pipelineDesc.m_BlendState.m_BlendEnabled)
+			{
+				const auto& blend = pipelineDesc.m_BlendState;
+
+				glEnable(GL_BLEND);
+
+				// TODO: glBlend*i() instead when supporting multiple blend targets
+
+				if (blend.m_BlendOperationRGB == blend.m_BlendOperationAlpha)
+				{
+					glBlendEquation(GLBlendEquation(blend.m_BlendOperationRGB));
+				}
+				else
+				{
+					glBlendEquationSeparate(GLBlendEquation(blend.m_BlendOperationRGB), GLBlendEquation(blend.m_BlendOperationAlpha));
+				}
+
+				if (blend.m_SourceBlendFactorRGB == blend.m_SourceBlendFactorAlpha && blend.m_DestBlendFactorRGB == blend.m_DestBlendFactorAlpha)
+				{
+					glBlendFunc(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB));
+				}
+				else
+				{
+					glBlendFuncSeparate(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
+				}
+			}
+			else
+			{
+				glDisable(GL_BLEND);
+			}
+
+			if (pipelineDesc.m_DepthStencilState.m_EnableDepthTest)
+			{
+				const auto& back = pipelineDesc.m_DepthStencilState.m_BackStencilState;
+				const auto& front = pipelineDesc.m_DepthStencilState.m_FrontStencilState;
+
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GLComparisonFunction(pipelineDesc.m_DepthStencilState.m_ComparisonFunction));
+
+				if (front.m_StencilFunc == back.m_StencilFunc
+					&& front.m_ReferenceValue == back.m_ReferenceValue
+					&& front.m_StencilMask == back.m_StencilMask)
+				{
+					glStencilFunc(GLComparisonFunction(front.m_StencilFunc), front.m_ReferenceValue, front.m_StencilMask);
+				}
+				else
+				{
+					glStencilFuncSeparate(GL_FRONT, GLComparisonFunction(front.m_StencilFunc), front.m_ReferenceValue, front.m_StencilMask);
+					glStencilFuncSeparate(GL_BACK, GLComparisonFunction(back.m_StencilFunc), back.m_ReferenceValue, back.m_StencilMask);
+				}
+
+				if (front.m_StencilFailOp == back.m_StencilFailOp
+					&& front.m_DepthFailOp == back.m_DepthFailOp
+					&& front.m_StencilOp == back.m_StencilOp)
+				{
+					glStencilOp(GLStencilOperation(front.m_StencilFailOp), GLStencilOperation(front.m_DepthFailOp), GLStencilOperation(front.m_StencilOp));
+				}
+				else
+				{
+					glStencilOpSeparate(GL_FRONT, GLStencilOperation(front.m_StencilFailOp), GLStencilOperation(front.m_DepthFailOp), GLStencilOperation(front.m_StencilOp));
+					glStencilOpSeparate(GL_BACK, GLStencilOperation(back.m_StencilFailOp), GLStencilOperation(back.m_DepthFailOp), GLStencilOperation(back.m_StencilOp));
+				}
+			}
+			else
+			{
+				glDisable(GL_DEPTH_TEST);
+			}
+
+			if (pipelineDesc.m_RasterizerState.m_CullMode == ECullMode::None)
+			{
+				glDisable(GL_CULL_FACE);
+			}
+			else
+			{
+				glEnable(GL_CULL_FACE);
+
+				glCullFace(GLCullMode(pipelineDesc.m_RasterizerState.m_CullMode));
+				glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(pipelineDesc.m_RasterizerState.m_PolygonMode));
+			}
+		}
+	);
 }
 
 void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription)

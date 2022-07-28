@@ -3,6 +3,7 @@
 #include "Enums/BufferEnums.h"
 #include "Enums/ComparisonFunction.h"
 #include "Enums/Format.h"
+#include "Enums/GraphicsPipelineEnums.h"
 #include "Enums/ShaderEnums.h"
 #include "Enums/SamplerEnums.h"
 #include "Enums/TextureEnums.h"
@@ -24,4 +25,9 @@ namespace tabi
 	GLenum GLMinFilter(EFilterMode a_MinFilter, EMipMapMode a_MipMapMode);
 	GLenum GLMagFilter(EFilterMode a_MagFilter);
 	GLenum GLComparisonFunction(EComparisonFunction a_ComparisonFunction);
+	GLenum GLStencilOperation(EStencilOperation a_StencilOperation);
+	GLenum GLCullMode(ECullMode a_CullMode);
+	GLenum GLPolygonMode(EPolygonMode a_PolygonMode);
+	GLenum GLBlendEquation(EBlendOperation a_BlendOperation);
+	GLenum GLBlendFactor(EBlendFactor a_BlendFactor);
 }

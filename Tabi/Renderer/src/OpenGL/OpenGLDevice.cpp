@@ -283,13 +283,13 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 				const auto& inputElement = pipelineDesc.m_VertexInputLayout.m_InputElements[i];
 				const auto& formatInfo = GetFormatInfo(inputElement.m_Format);
 
-				glVertexArrayAttribFormat(vaoId, i, formatInfo.m_ComponentCount, GLType(inputElement.m_Format), formatInfo.m_IsNormalized ? GL_TRUE : GL_FALSE, dataOffset);
+				glVertexArrayAttribFormat(vaoId, i, formatInfo.m_ComponentCount, GLType(formatInfo.m_DataType), formatInfo.m_IsNormalized ? GL_TRUE : GL_FALSE, dataOffset);
 				glEnableVertexArrayAttrib(vaoId, i);
 				glVertexArrayAttribBinding(vaoId, i, inputElement.m_InputSlot);
 
 				glVertexArrayBindingDivisor(vaoId, i, inputElement.m_InstanceDataStepRate);
 
-				dataOffset += formatInfo.m_ComponentSizeInBits * formatInfo.m_ComponentCount;
+				dataOffset += formatInfo.m_FormatSizeInBits;
 			}
 		}
 	);

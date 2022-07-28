@@ -74,7 +74,6 @@ namespace tabi
 
 		/* Depth */
 		Depth16,
-		Depth24,
 		Depth32_float,
 
 		Depth24Stencil8,
@@ -82,5 +81,18 @@ namespace tabi
 		// TODO: Some whacky formats (and compressed formats?)
 
 		Count
+	};
+
+	enum class EDataType : uint8_t
+	{
+		Float,
+		Int,
+		Uint,
+		Short,
+		Ushort,
+		Byte,
+		Ubyte,
+
+		Int24_8
 	};
 }

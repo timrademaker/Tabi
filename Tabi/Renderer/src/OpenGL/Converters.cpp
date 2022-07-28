@@ -93,7 +93,6 @@ namespace tabi
 				return GL_RED;
 
 			case EFormat::Depth16:
-			case EFormat::Depth24:
 			case EFormat::Depth32_float:
 				return  GL_DEPTH_COMPONENT;
 
@@ -209,8 +208,6 @@ namespace tabi
 				return GL_R8I;
 			case EFormat::Depth16:
 				return GL_DEPTH_COMPONENT16;
-			case EFormat::Depth24:
-				return GL_DEPTH_COMPONENT24;
 			case EFormat::Depth32_float:
 				return GL_DEPTH_COMPONENT32F;
 			case EFormat::Depth24Stencil8:
@@ -223,82 +220,34 @@ namespace tabi
 			}
 		}
 
-		GLenum GLType(EFormat a_Format)
+		GLenum GLType(EDataType a_DataType)
 		{
-			switch(a_Format)
+			switch(a_DataType)
 			{
-			case EFormat::RGBA32_float:
-			case EFormat::RGB32_float:
-			case EFormat::RG32_float:
-			case EFormat::R32_float:
-			case EFormat::Depth32_float:
-			case EFormat::RGBA16_float:
-			case EFormat::RGB16_float:
-			case EFormat::RG16_float:
-			case EFormat::R16_float:
+			case EDataType::Float:
 				return GL_FLOAT;
 
-			case EFormat::RGBA32_uint:
-			case EFormat::RGB32_uint:
-			case EFormat::RG32_uint:
-			case EFormat::R32_uint:
+			case EDataType::Uint:
 				return GL_UNSIGNED_INT;
 
-			case EFormat::RGBA16_unorm:
-			case EFormat::RGBA16_uint:
-			case EFormat::RGB16_unorm:
-			case EFormat::RGB16_uint:
-			case EFormat::RG16_unorm:
-			case EFormat::RG16_uint:
-			case EFormat::R16_unorm:
-			case EFormat::R16_uint:
+			case EDataType::Ushort:
 				return GL_UNSIGNED_SHORT;
 
-			case EFormat::RGBA8_unorm:
-			case EFormat::RGBA8_uint:
-			case EFormat::RGB8_unorm:
-			case EFormat::RGB8_uint:
-			case EFormat::RG8_unorm:
-			case EFormat::RG8_uint:
-			case EFormat::R8_unorm:
-			case EFormat::R8_uint:
+			case EDataType::Ubyte:
 				return GL_UNSIGNED_BYTE;
 
-			case EFormat::RGBA32_sint:
-			case EFormat::RGB32_sint:
-			case EFormat::RG32_sint:
-			case EFormat::R32_sint:
+			case EDataType::Int:
 				return GL_INT;
 
-			case EFormat::RGBA16_snorm:
-			case EFormat::RGBA16_sint:
-			case EFormat::RGB16_snorm:
-			case EFormat::RGB16_sint:
-			case EFormat::RG16_snorm:
-			case EFormat::RG16_sint:
-			case EFormat::R16_snorm:
-			case EFormat::R16_sint:
+			case EDataType::Short:
 				return GL_SHORT;
 
-			case EFormat::RGBA8_snorm:
-			case EFormat::RGBA8_sint:
-			case EFormat::RGB8_snorm:
-			case EFormat::RGB8_sint:
-			case EFormat::RG8_snorm:
-			case EFormat::RG8_sint:
-			case EFormat::R8_snorm:
-			case EFormat::R8_sint:
+			case EDataType::Byte:
 				return GL_BYTE;
 
-			case EFormat::Depth16:
-				return GL_UNSIGNED_SHORT;
-			case EFormat::Depth24:
-				return GL_UNSIGNED_INT;
-
-			case EFormat::Depth24Stencil8:
+			case EDataType::Int24_8:
 				return GL_UNSIGNED_INT_24_8;
 
-			case EFormat::Unknown:
 			default:
 				TABI_ASSERT(false, "Unknown data type");
 				return GL_INVALID_ENUM;

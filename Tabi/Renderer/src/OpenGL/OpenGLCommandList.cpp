@@ -5,6 +5,7 @@
 #include "OpenGL/OpenGLTexture.h"
 #include "OpenGL/OpenGLSampler.h"
 
+#include "Helpers/FormatInfo.h"
 #include "TextureUpdateDescription.h"
 
 #include <glad/glad.h>
@@ -184,7 +185,7 @@ namespace tabi
 		glTextureSubImage1D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 			a_UpdateDescription.m_OffsetX,
 			a_UpdateDescription.m_DataWidth,
-			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
 			a_UpdateDescription.m_Data
 		);
 	}
@@ -194,7 +195,7 @@ namespace tabi
 		glTextureSubImage2D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 			a_UpdateDescription.m_OffsetX, a_OffsetY,
 			a_UpdateDescription.m_DataWidth, a_DataHeight,
-			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
 			a_UpdateDescription.m_Data
 		);
 	}
@@ -204,7 +205,7 @@ namespace tabi
 		glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 			a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ,
 			a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, a_UpdateDescription.m_DataDepth,
-			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
 			a_UpdateDescription.m_Data
 		);
 	}
@@ -217,7 +218,7 @@ namespace tabi
 			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, faceIndex,
 				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
-				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
 				a_UpdateDescription.m_Data
 			);
 		}
@@ -226,7 +227,7 @@ namespace tabi
 			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ * 6 + faceIndex,
 				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
-				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(a_Texture->GetTextureDescription().m_Format),
+				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
 				a_UpdateDescription.m_Data
 			);
 		}

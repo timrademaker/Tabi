@@ -60,7 +60,7 @@ if(USE_OPENGL)
         inc/OpenGL/OpenGLSampler.h
         inc/OpenGL/OpenGLShader.h
 
-        inc/OpenGL/Converters.h
+        inc/OpenGL/GLConverters.h
     )
     
     list(APPEND SOURCES
@@ -68,7 +68,7 @@ if(USE_OPENGL)
         src/OpenGL/OpenGLDevice.cpp
         src/OpenGL/OpenGLFence.cpp
 
-        src/OpenGL/Converters.cpp
+        src/OpenGL/GLConverters.cpp
     )
 endif()
 

@@ -1,6 +1,6 @@
 #include "OpenGL/OpenGLCommandList.h"
 
-#include "OpenGL/Converters.h"
+#include "OpenGL/GLConverters.h"
 #include "OpenGL/OpenGLBuffer.h"
 #include "OpenGL/OpenGLTexture.h"
 #include "OpenGL/OpenGLSampler.h"

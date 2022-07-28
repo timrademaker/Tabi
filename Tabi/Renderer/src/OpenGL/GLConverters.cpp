@@ -1,4 +1,4 @@
-#include "OpenGL/Converters.h"
+#include "OpenGL/GLConverters.h"
 
 #include "Texture.h"
 
@@ -359,9 +359,9 @@ namespace tabi
 
 		GLenum GLMinFilter(EFilterMode a_MinFilter, EMipMapMode a_MipMapMode)
 		{
-			switch (a_MinFilter)
+			switch (a_MipMapMode)
 			{
-			case EFilterMode::Nearest:
+			case EMipMapMode::Nearest:
 			{
 				switch (a_MinFilter)
 				{
@@ -374,9 +374,8 @@ namespace tabi
 					TABI_ASSERT(false, "Unknown filter mode");
 					return GL_INVALID_ENUM;
 				}
-				break;
 			}
-			case EFilterMode::Linear:
+			case EMipMapMode::Linear:
 			{
 				switch (a_MinFilter)
 				{
@@ -389,7 +388,6 @@ namespace tabi
 					TABI_ASSERT(false, "Unknown filter mode");
 					return GL_INVALID_ENUM;
 				}
-				break;
 			}
 
 			default:

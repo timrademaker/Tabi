@@ -46,7 +46,7 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 	m_CommandQueue.emplace_back([tex, a_DebugName]
 		{
 			GLuint id;
-			glGenTextures(1, &id);
+			glCreateTextures(GLTarget(tex->GetTextureDescription().m_Dimension), 1, &id);
 			TABI_ASSERT(id != 0, "Failed to create texture");
 			tex->SetID(id);
 			SetObjectDebugLabel(GL_TEXTURE, id, a_DebugName);
@@ -111,15 +111,12 @@ tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_Buffer
 	m_CommandQueue.emplace_back([buf, a_DebugName]
 		{
 			GLuint id;
-			glGenBuffers(1, &id);
+			glCreateBuffers(1, &id);
 			TABI_ASSERT(id != 0, "Failed to create buffer");
 			buf->SetID(id);
 			SetObjectDebugLabel(GL_BUFFER, id, a_DebugName);
 
 			const auto& bufDescription = buf->GetBufferDescription();
-
-			const GLenum bindTarget = GLTarget(bufDescription.m_Role);
-			glBindBuffer(bindTarget, id);
 
 			GLenum usage = GL_STATIC_DRAW;
 			switch (bufDescription.m_Role)
@@ -137,8 +134,11 @@ tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_Buffer
 			}
 			}
 
-			glBufferData(bindTarget, bufDescription.m_SizeInBytes, nullptr, usage);
-			glBindBuffer(bindTarget, 0);
+			// Create a buffer with no data to at least allocate memory for the buffer
+			glNamedBufferData(id, bufDescription.m_SizeInBytes, nullptr, usage);
+
+			// TODO: Check if glBufferStorage with flag GL_DYNAMIC_STORAGE_BIT would be a better fit here.
+			// Maybe pass data to the buffer creation already in order to not always require that flag.
 		}
 	);
 
@@ -218,7 +218,7 @@ tabi::Sampler* tabi::OpenGLDevice::CreateSampler(const SamplerDescription& a_Sam
 	m_CommandQueue.emplace_back([sampler, a_DebugName]
 		{
 			GLuint id = 0;
-			glGenSamplers(1, &id);
+			glCreateSamplers(1, &id);
 			TABI_ASSERT(id != 0, "Failed to create sampler");
 			sampler->SetID(id);
 			SetObjectDebugLabel(GL_SAMPLER, id, a_DebugName);
@@ -259,7 +259,7 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 	m_CommandQueue.emplace_back([pipeline, a_DebugName]
 		{
 			GLuint pipelineId = 0;
-			glGenProgramPipelines(1, &pipelineId);
+			glCreateProgramPipelines(1, &pipelineId);
 			pipeline->SetID(pipelineId);
 			TABI_ASSERT(pipelineId != 0, "Failed to create program pipeline");
 
@@ -279,7 +279,7 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 			glValidateProgramPipeline(pipelineId);
 
 			GLuint vaoId = 0;
-			glGenVertexArrays(1, &vaoId);
+			glCreateVertexArrays(1, &vaoId);
 			TABI_ASSERT(vaoId != 0, "Failed to create VAO");
 			pipeline->SetVAO(vaoId);
 
@@ -310,7 +310,7 @@ tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePi
 	m_CommandQueue.emplace_back([pipeline, a_DebugName]
 		{
 			GLuint pipelineId = 0;
-			glGenProgramPipelines(1, &pipelineId);
+			glCreateProgramPipelines(1, &pipelineId);
 			pipeline->SetID(pipelineId);
 			TABI_ASSERT(pipelineId != 0, "Failed to create program pipeline");
 

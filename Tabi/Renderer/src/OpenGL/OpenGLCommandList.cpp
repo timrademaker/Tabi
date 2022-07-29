@@ -353,34 +353,48 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), updateDescription = a_TextureUpdateDescription]
+	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_TextureUpdateDescription]
 		{
-			auto offsetY = updateDescription.m_OffsetY;
-			auto dataHeight = updateDescription.m_DataHeight;
+			auto offsetY = a_TextureUpdateDescription.m_OffsetY;
+			auto dataHeight = a_TextureUpdateDescription.m_DataHeight;
 
 			switch(tex->GetTextureDescription().m_Dimension)
 			{
 			case ETextureDimension::Tex1D:
-				CopyDataToTexture1D(tex, updateDescription);
+				CopyDataToTexture1D(tex, a_TextureUpdateDescription);
 				break;
 			case ETextureDimension::Tex1DArray:
-				offsetY = updateDescription.m_OffsetZ;
-				dataHeight = updateDescription.m_DataDepth;
+				offsetY = a_TextureUpdateDescription.m_OffsetZ;
+				dataHeight = a_TextureUpdateDescription.m_DataDepth;
 			case ETextureDimension::Tex2D:
-				CopyDataToTexture2D(tex, updateDescription, dataHeight, offsetY);
+				CopyDataToTexture2D(tex, a_TextureUpdateDescription, dataHeight, offsetY);
 				break;
 			case ETextureDimension::Tex2DArray:
 			case ETextureDimension::Tex3D:
-				CopyDataToTexture3D(tex, updateDescription);
+				CopyDataToTexture3D(tex, a_TextureUpdateDescription);
 				break;
 			case ETextureDimension::CubeMap:
 			case ETextureDimension::CubeMapArray:
-				CopyDataToTextureCubemap(tex, updateDescription);
+				CopyDataToTextureCubemap(tex, a_TextureUpdateDescription);
 				break;
 			default: 
 				TABI_ASSERT(false, "Attempting to copy data to a texture with unexpected dimensions");
 				break;
 			}
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_Buffer != nullptr);
+
+	TABI_ASSERT(a_Buffer->GetBufferDescription().m_SizeInBytes >= (a_DataSize + a_Offset), "Trying to copy more data into a buffer than would fit");
+
+	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Data, a_DataSize, a_Offset]
+		{
+			glNamedBufferSubData(buf->GetID(), a_Offset, a_DataSize, a_Data);
 		}
 	);
 }

@@ -411,8 +411,21 @@ void tabi::OpenGLCommandList::DrawVertices(uint32_t a_VertexCount, uint32_t a_St
 	);
 }
 
-void tabi::OpenGLCommandList::DrawIndexed(uint32_t a_IndexCount, uint32_t a_StartIndexLocation,
+void tabi::OpenGLCommandList::DrawInstanced(uint32_t a_VertexCountPerInstance, uint32_t a_InstanceCount,
 	uint32_t a_StartVertexLocation)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(m_GraphicsPipeline != nullptr);
+
+	m_PendingCommands.emplace_back([a_VertexCountPerInstance, a_StartVertexLocation, a_InstanceCount, topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology)]
+		{
+			glDrawArraysInstanced(topology, a_StartVertexLocation, a_VertexCountPerInstance, a_InstanceCount);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::DrawIndexed(uint32_t a_IndexCount, uint32_t a_StartIndexLocation,
+                                          uint32_t a_StartVertexLocation)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(m_GraphicsPipeline != nullptr);

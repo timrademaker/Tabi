@@ -46,6 +46,7 @@ namespace tabi
 		virtual void CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset) override;
 
 		virtual void DrawVertices(uint32_t a_VertexCount, uint32_t a_StartVertexLocation) override;
+		virtual void DrawInstanced(uint32_t a_VertexCountPerInstance, uint32_t a_InstanceCount, uint32_t a_StartVertexLocation = 0) override;
 		virtual void DrawIndexed(uint32_t a_IndexCount, uint32_t a_StartIndexLocation, uint32_t a_StartVertexLocation) override;
 		virtual void DrawIndexedInstanced(uint32_t a_IndexCountPerInstance, uint32_t a_InstanceCount,
 			uint32_t a_StartIndexLocation, uint32_t a_StartVertexLocation) override;

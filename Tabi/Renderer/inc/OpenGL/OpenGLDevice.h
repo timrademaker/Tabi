@@ -22,7 +22,7 @@ namespace tabi
 		virtual GraphicsPipeline* CreateGraphicsPipeline(const GraphicsPipelineDescription& a_PipelineDescription, const char* a_DebugName = nullptr) override;
 		virtual ComputePipeline* CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName = nullptr) override;
 
-		virtual IRenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) override;
+		virtual RenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) override;
 
 		virtual ICommandList* CreateCommandList(const char* a_DebugName = nullptr) override;
 

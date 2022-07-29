@@ -35,9 +35,9 @@ namespace tabi
 		virtual void InsertBarrier(Texture* a_Texture) override;
 		virtual void InsertBarrier(Buffer* a_Buffer) override;
 
-		virtual void SetRenderTarget(IRenderTarget* a_RenderTarget) override;
-		virtual void ClearRenderTarget(class IRenderTarget* a_RenderTarget, float a_ClearColor[4]) override;
-		virtual void ClearDepthStencil(IRenderTarget* a_RenderTarget, float a_DepthValue, uint8_t a_StencilValue) override;
+		virtual void SetRenderTarget(RenderTarget* a_RenderTarget) override;
+		virtual void ClearRenderTarget(RenderTarget* a_RenderTarget, float a_ClearColor[4]) override;
+		virtual void ClearDepthStencil(RenderTarget* a_RenderTarget, float a_DepthValue, uint8_t a_StencilValue) override;
 
 		virtual void UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline) override;
 		virtual void UseComputePipeline(ComputePipeline* a_ComputePipeline) override;

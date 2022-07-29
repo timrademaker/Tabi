@@ -9,7 +9,7 @@ set(HEADERS
     inc/ICommandList.h
     inc/IDevice.h
     inc/IFence.h
-    inc/IRenderTarget.h
+    inc/RenderTarget.h
     inc/Sampler.h
     inc/Shader.h
     inc/Texture.h

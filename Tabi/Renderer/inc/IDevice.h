@@ -72,7 +72,7 @@ namespace tabi
 		 * @param a_DebugName The debug name to assign to the created object (if supported)
 		 * @returns The created render target
 		 */
-		virtual class IRenderTarget* CreateRenderTarget(const struct RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) = 0;
+		virtual class RenderTarget* CreateRenderTarget(const struct RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) = 0;
 		/**
 		 * @brief Create a new command list
 		 * @param a_DebugName The debug name to assign to the created object (if supported)
@@ -91,7 +91,7 @@ namespace tabi
 		virtual void DestroySampler(class Sampler* a_Sampler) = 0;
 		virtual void DestroyGraphicsPipeline(class GraphicsPipeline* a_GraphicsPipeline) = 0;
 		virtual void DestroyComputePipeline(class ComputePipeline* a_ComputePipeline) = 0;
-		virtual void DestroyRenderTarget(class IRenderTarget* a_RenderTarget) = 0;
+		virtual void DestroyRenderTarget(class RenderTarget* a_RenderTarget) = 0;
 		virtual void DestroyCommandList(class ICommandList* a_CommandList) = 0;
 
 		/**

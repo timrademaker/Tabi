@@ -548,4 +548,25 @@ namespace tabi
 				return GL_INVALID_ENUM;
 			}
 		}
+
+		GLenum GLTopology(EToplolgy a_Topology)
+		{
+			switch (a_Topology)
+			{
+			case EToplolgy::Point:
+				return GL_POINTS;
+			case EToplolgy::Line:
+				return GL_LINES;
+			case EToplolgy::LineStrip:
+				return GL_LINE_STRIP;
+			case EToplolgy::Triangle:
+				return GL_TRIANGLES;
+			case EToplolgy::TriangleStrip:
+				return GL_TRIANGLE_STRIP;
+
+			default:
+				TABI_ASSERT(false, "Unknown topology");
+				return GL_INVALID_ENUM;
+			}
+		}
 }

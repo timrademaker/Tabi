@@ -101,6 +101,11 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 
 tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_BufferDescription, const char* a_DebugName)
 {
+	{
+		const auto dataType = GetFormatInfo(a_BufferDescription.m_Format).m_DataType;
+		TABI_ASSERT(dataType == EDataType::Ubyte || dataType == EDataType::Ushort || dataType == EDataType::Uint, "Unsupported index buffer data type");
+	}
+
 	auto* buf = new OpenGLBuffer(a_BufferDescription);
 	m_CommandQueue.emplace_back([buf, a_DebugName]
 		{

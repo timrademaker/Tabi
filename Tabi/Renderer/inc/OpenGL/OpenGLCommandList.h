@@ -55,6 +55,11 @@ namespace tabi
 	private:
 		bool m_IsRecording = false;
 
+		class OpenGLGraphicsPipeline* m_GraphicsPipeline = nullptr;
+		class OpenGLComputePipeline* m_ComputePipeline = nullptr;
+
+		Buffer* m_IndexBuffer = nullptr;
+
 		// TODO: This is private now, but OpenGLDevice will need to access this in order to execute a command list
 		tabi::vector<std::function<void()>> m_PendingCommands{128};
 	};

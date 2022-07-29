@@ -65,6 +65,8 @@ void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_IndexBuffer != nullptr);
 
+	m_IndexBuffer = a_IndexBuffer;
+
 	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_IndexBuffer)]
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf->GetID());
@@ -238,8 +240,11 @@ namespace tabi
 void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_GraphicsPipeline != nullptr);
+	
+	m_GraphicsPipeline = static_cast<OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
 
-	m_PendingCommands.emplace_back([pipeline = static_cast<OpenGLGraphicsPipeline*>(a_GraphicsPipeline)]
+	m_PendingCommands.emplace_back([pipeline = m_GraphicsPipeline]
 		{
 			glBindProgramPipeline(pipeline->GetID());
 			glBindVertexArray(pipeline->GetVAO());
@@ -361,6 +366,71 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 				TABI_ASSERT(false, "Attempting to copy data to a texture with unexpected dimensions");
 				break;
 			}
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::DrawVertices(uint32_t a_VertexCount, uint32_t a_StartVertexLocation)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(m_GraphicsPipeline != nullptr);
+
+	m_PendingCommands.emplace_back([a_VertexCount, a_StartVertexLocation, topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology)]
+		{
+			glDrawArrays(topology, a_StartVertexLocation, a_VertexCount);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::DrawIndexed(uint32_t a_IndexCount, uint32_t a_StartIndexLocation,
+	uint32_t a_StartVertexLocation)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(m_GraphicsPipeline != nullptr);
+
+	const auto indexBufferStride = m_IndexBuffer->GetBufferDescription().m_Stride;
+	const GLenum indexType = GLType(GetFormatInfo(m_IndexBuffer->GetBufferDescription().m_Format).m_DataType);
+	TABI_ASSERT(indexType == GL_UNSIGNED_SHORT || indexType == GL_UNSIGNED_INT || indexType == GL_UNSIGNED_BYTE, "Unsupported index buffer data type");
+
+	const auto startIndexPosition = a_StartIndexLocation * indexBufferStride;
+	const auto topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology);
+
+	m_PendingCommands.emplace_back([a_IndexCount, a_StartVertexLocation, topology, startIndexPosition, indexType]
+		{
+			glDrawElementsBaseVertex(topology, a_IndexCount, indexType, reinterpret_cast<void*>(startIndexPosition), a_StartVertexLocation);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::DrawIndexedInstanced(uint32_t a_IndexCountPerInstance, uint32_t a_InstanceCount,
+	uint32_t a_StartIndexLocation, uint32_t a_StartVertexLocation)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(m_GraphicsPipeline != nullptr);
+
+	const auto indexBufferStride = m_IndexBuffer->GetBufferDescription().m_Stride;
+	const GLenum indexType = GLType(GetFormatInfo(m_IndexBuffer->GetBufferDescription().m_Format).m_DataType);
+	TABI_ASSERT(indexType == GL_UNSIGNED_SHORT || indexType == GL_UNSIGNED_INT || indexType == GL_UNSIGNED_BYTE, "Unsupported index buffer data type");
+
+	const auto startIndexPosition = a_StartIndexLocation * indexBufferStride;
+	const auto topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology);
+
+	m_PendingCommands.emplace_back([a_IndexCountPerInstance, a_InstanceCount, a_StartVertexLocation, topology, indexType, startIndexPosition]
+		{
+			glDrawElementsInstancedBaseVertex(topology, a_IndexCountPerInstance, indexType, reinterpret_cast<void*>(startIndexPosition), a_InstanceCount, a_StartVertexLocation);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::DispatchComputePipeline(uint32_t a_GroupCountX, uint32_t a_GroupCountY,
+                                                      uint32_t a_GroupCountZ)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(m_ComputePipeline != nullptr);
+
+	m_PendingCommands.emplace_back([a_GroupCountX, a_GroupCountY, a_GroupCountZ]
+		{
+			glDispatchCompute(a_GroupCountX, a_GroupCountY, a_GroupCountZ);
 		}
 	);
 }

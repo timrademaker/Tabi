@@ -36,7 +36,7 @@ namespace tabi
 		virtual void DestroyGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline) override;
 		virtual void DestroyComputePipeline(ComputePipeline* a_ComputePipeline) override;
 
-		virtual void DestroyRenderTarget(IRenderTarget* a_RenderTarget) override;
+		virtual void DestroyRenderTarget(RenderTarget* a_RenderTarget) override;
 
 		virtual void DestroyCommandList(ICommandList* a_CommandList) override;
 

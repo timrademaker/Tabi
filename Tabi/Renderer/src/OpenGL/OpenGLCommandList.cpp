@@ -4,8 +4,9 @@
 #include "OpenGL/OpenGLBuffer.h"
 #include "OpenGL/OpenGLComputePipeline.h"
 #include "OpenGL/OpenGLGraphicsPipeline.h"
-#include "OpenGL/OpenGLTexture.h"
+#include "OpenGL/OpenGLRenderTarget.h"
 #include "OpenGL/OpenGLSampler.h"
+#include "OpenGL/OpenGLTexture.h"
 
 #include "Helpers/FormatInfo.h"
 #include "TextureUpdateDescription.h"
@@ -180,6 +181,56 @@ void tabi::OpenGLCommandList::InsertBarrier(Buffer* a_Buffer)
 			glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 		}
 	);
+}
+
+void tabi::OpenGLCommandList::SetRenderTarget(RenderTarget* a_RenderTarget)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	m_CurrentRenderTarget = static_cast<OpenGLRenderTarget*>(a_RenderTarget);
+
+	m_PendingCommands.emplace_back([renderTarget = m_CurrentRenderTarget]
+		{
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderTarget ? renderTarget->GetID() : 0);
+			TABI_ASSERT(glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, float a_ClearColor[4])
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	auto* originalRenderTarget = m_CurrentRenderTarget;
+	SetRenderTarget(a_RenderTarget);
+
+	m_PendingCommands.emplace_back([a_ClearColor]
+		{
+			glClearColor(a_ClearColor[0], a_ClearColor[1], a_ClearColor[2], a_ClearColor[3]);
+		}
+	);
+
+	// Rebind the target that was originally bound to prevent unexpectedly rendering to a different render target
+	SetRenderTarget(originalRenderTarget);
+}
+
+void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, float a_DepthValue,
+	uint8_t a_StencilValue)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	auto* originalRenderTarget = m_CurrentRenderTarget;
+	SetRenderTarget(a_RenderTarget);
+
+	m_PendingCommands.emplace_back([a_DepthValue, a_StencilValue]
+		{
+			glClearDepthf(a_DepthValue);
+			glClearStencil(a_StencilValue);
+		}
+	);
+
+	// Rebind the target that was originally bound to prevent unexpectedly rendering to a different render target
+	SetRenderTarget(originalRenderTarget);
 }
 
 namespace tabi

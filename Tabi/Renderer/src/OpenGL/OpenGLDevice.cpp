@@ -4,6 +4,7 @@
 #include "OpenGL/OpenGLBuffer.h"
 #include "OpenGL/OpenGLCommandList.h"
 #include "OpenGL/OpenGLFence.h"
+#include "OpenGL/OpenGLRenderTarget.h"
 #include "OpenGL/OpenGLSampler.h"
 #include "OpenGL/OpenGLShader.h"
 #include "OpenGL/OpenGLTexture.h"
@@ -330,6 +331,43 @@ tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePi
 	return pipeline;
 }
 
+tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription,
+	const char* a_DebugName)
+{
+	{
+		const auto* tex = a_RenderTargetDescription.m_RenderTexture;
+		const auto* depth = a_RenderTargetDescription.m_DepthStencilBuffer;
+		TABI_ASSERT(tex && tex->GetTextureDescription().m_Role == ETextureRole::RenderTexture);
+		TABI_ASSERT(depth && depth->GetTextureDescription().m_Role == ETextureRole::DepthStencil);
+	}
+
+	auto* renderTarget = new OpenGLRenderTarget(a_RenderTargetDescription);
+
+	m_CommandQueue.emplace_back([renderTarget, a_DebugName]
+		{
+			GLuint id = 0;
+			glCreateFramebuffers(1, &id);
+			renderTarget->SetID(id);
+			TABI_ASSERT(id != 0, "Failed to create render target");
+
+			const auto& desc = renderTarget->GetRenderTargetDescription();
+			const auto* colorBuffer = static_cast<OpenGLTexture*>(desc.m_RenderTexture);
+			const auto* depthStencil = static_cast<OpenGLTexture*>(desc.m_DepthStencilBuffer);
+			glNamedFramebufferTexture(id, GL_COLOR_ATTACHMENT0, colorBuffer->GetID(), desc.m_MipLevel);
+			glNamedFramebufferTexture(id, GL_DEPTH_STENCIL_ATTACHMENT, depthStencil->GetID(), desc.m_MipLevel);
+
+			// TODO: m_TextureLayer is ignored as glFramebufferTexture3D() is not used. Does this matter?
+
+			SetObjectDebugLabel(GL_FRAMEBUFFER, id, a_DebugName);
+		}
+	);
+}
+
+tabi::ICommandList* tabi::OpenGLDevice::CreateCommandList(const char* a_DebugName)
+{
+	return new OpenGLCommandList;
+}
+
 #define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \
 	ptr->Destroy(); \
 	delete ptr;\
@@ -369,6 +407,12 @@ void tabi::OpenGLDevice::DestroyComputePipeline(ComputePipeline* a_ComputePipeli
 {
 	TABI_ASSERT(a_ComputePipeline != nullptr);
 	DESTROY_RESOURCE(OpenGLComputePipeline, a_ComputePipeline);
+}
+
+void tabi::OpenGLDevice::DestroyRenderTarget(RenderTarget* a_RenderTarget)
+{
+	TABI_ASSERT(a_RenderTarget != nullptr);
+	DESTROY_RESOURCE(OpenGLRenderTarget, a_RenderTarget);
 }
 #undef DESTROY_RESOURCE
 

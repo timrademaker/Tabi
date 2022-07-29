@@ -18,6 +18,8 @@ namespace tabi
 		~OpenGLCommandList() = default;
 
 	public:
+		OpenGLCommandList() = default;
+
 		virtual void BeginRecording() override;
 		virtual void EndRecording() override;
 		virtual void Reset() override;
@@ -59,6 +61,7 @@ namespace tabi
 		class OpenGLGraphicsPipeline* m_GraphicsPipeline = nullptr;
 		class OpenGLComputePipeline* m_ComputePipeline = nullptr;
 
+		class OpenGLRenderTarget* m_CurrentRenderTarget = nullptr;
 		Buffer* m_IndexBuffer = nullptr;
 
 		// TODO: This is private now, but OpenGLDevice will need to access this in order to execute a command list

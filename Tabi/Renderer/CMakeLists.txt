@@ -58,6 +58,7 @@ if(USE_OPENGL)
         inc/OpenGL/OpenGLDevice.h
         inc/OpenGL/OpenGLFence.h
         inc/OpenGL/OpenGLGraphicsPipeline.h
+        inc/OpenGL/OpenGLRenderTarget.h
         inc/OpenGL/OpenGLSampler.h
         inc/OpenGL/OpenGLShader.h
 

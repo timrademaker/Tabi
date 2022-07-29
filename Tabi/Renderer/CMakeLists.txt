@@ -54,6 +54,7 @@ if(USE_OPENGL)
     list(APPEND HEADERS 
         inc/OpenGL/OpenGLBuffer.h
         inc/OpenGL/OpenGLCommandList.h
+        inc/OpenGL/OpenGLComputePipeline.h
         inc/OpenGL/OpenGLDevice.h
         inc/OpenGL/OpenGLFence.h
         inc/OpenGL/OpenGLGraphicsPipeline.h

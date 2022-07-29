@@ -2,6 +2,7 @@
 
 #include "OpenGL/GLConverters.h"
 #include "OpenGL/OpenGLBuffer.h"
+#include "OpenGL/OpenGLComputePipeline.h"
 #include "OpenGL/OpenGLGraphicsPipeline.h"
 #include "OpenGL/OpenGLTexture.h"
 #include "OpenGL/OpenGLSampler.h"
@@ -330,6 +331,20 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPi
 				glCullFace(GLCullMode(pipelineDesc.m_RasterizerState.m_CullMode));
 				glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(pipelineDesc.m_RasterizerState.m_PolygonMode));
 			}
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::UseComputePipeline(ComputePipeline* a_ComputePipeline)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_ComputePipeline != nullptr);
+
+	m_ComputePipeline = static_cast<OpenGLComputePipeline*>(a_ComputePipeline);
+
+	m_PendingCommands.emplace_back([pipeline = m_GraphicsPipeline]
+		{
+			glBindProgramPipeline(pipeline->GetID());
 		}
 	);
 }

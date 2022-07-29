@@ -8,6 +8,7 @@
 #include "OpenGL/OpenGLShader.h"
 #include "OpenGL/OpenGLTexture.h"
 #include "OpenGL/OpenGLGraphicsPipeline.h"
+#include "OpenGL/OpenGLComputePipeline.h"
 
 #include "Helpers/RendererLogger.h"
 #include "Helpers/FormatInfo.h"
@@ -302,6 +303,33 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 	return pipeline;
 }
 
+tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePipelineDescription& a_ComputePipelineDescription, const char* a_DebugName)
+{
+	auto* pipeline = new OpenGLComputePipeline(a_ComputePipelineDescription);
+
+	m_CommandQueue.emplace_back([pipeline, a_DebugName]
+		{
+			GLuint pipelineId = 0;
+			glGenProgramPipelines(1, &pipelineId);
+			pipeline->SetID(pipelineId);
+			TABI_ASSERT(pipelineId != 0, "Failed to create program pipeline");
+
+			SetObjectDebugLabel(GL_PROGRAM_PIPELINE, pipelineId, a_DebugName);
+
+			const auto& pipelineDesc = pipeline->GetPipelineDescription();
+
+			if (pipelineDesc.m_ComputeShader)
+			{
+				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<OpenGLShader*>(pipelineDesc.m_ComputeShader)->GetID());
+			}
+
+			glValidateProgramPipeline(pipelineId);
+		}
+	);
+
+	return pipeline;
+}
+
 #define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \
 	ptr->Destroy(); \
 	delete ptr;\
@@ -330,6 +358,18 @@ void tabi::OpenGLDevice::DestroySampler(Sampler* a_Sampler)
 	TABI_ASSERT(a_Sampler != nullptr);
 	DESTROY_RESOURCE(OpenGLSampler, a_Sampler);
 }
+
+void tabi::OpenGLDevice::DestroyGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline)
+{
+	TABI_ASSERT(a_GraphicsPipeline != nullptr);
+	DESTROY_RESOURCE(OpenGLGraphicsPipeline, a_GraphicsPipeline);
+}
+
+void tabi::OpenGLDevice::DestroyComputePipeline(ComputePipeline* a_ComputePipeline)
+{
+	TABI_ASSERT(a_ComputePipeline != nullptr);
+	DESTROY_RESOURCE(OpenGLComputePipeline, a_ComputePipeline);
+}
 #undef DESTROY_RESOURCE
 
 tabi::IFence* tabi::OpenGLDevice::CreateFence()
@@ -339,8 +379,9 @@ tabi::IFence* tabi::OpenGLDevice::CreateFence()
 
 void tabi::OpenGLDevice::InsertFence(class IFence* a_Fence, uint64_t a_Value)
 {
-	m_CommandQueue.emplace_back([fence = static_cast<OpenGLFence*>(a_Fence)]
+	m_CommandQueue.emplace_back([a_Value, fence = static_cast<OpenGLFence*>(a_Fence)]
 		{
+			fence->SetCompletionValue(a_Value);
 			fence->m_FenceSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 			TABI_ASSERT(fence->m_FenceSync != nullptr, "Failed to create fence");
 		}

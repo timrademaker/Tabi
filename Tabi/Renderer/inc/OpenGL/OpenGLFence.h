@@ -16,6 +16,12 @@ namespace tabi
 
 		virtual uint64_t GetFenceValue() override;
 
+		void Destroy()
+		{
+			glDeleteSync(m_FenceSync);
+			m_FenceSync = nullptr;
+		}
+
 	public:
 		::GLsync m_FenceSync;
 

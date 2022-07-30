@@ -15,10 +15,9 @@ namespace tabi
 		TABI_NO_COPY(OpenGLCommandList);
 		TABI_NO_MOVE(OpenGLCommandList);
 
-		~OpenGLCommandList() = default;
-
 	public:
-		OpenGLCommandList() = default;
+		OpenGLCommandList() { m_PendingCommands.reserve(128); }
+		~OpenGLCommandList() = default;
 
 		virtual void BeginRecording() override;
 		virtual void EndRecording() override;
@@ -38,7 +37,7 @@ namespace tabi
 		virtual void InsertBarrier(Buffer* a_Buffer) override;
 
 		virtual void SetRenderTarget(RenderTarget* a_RenderTarget) override;
-		virtual void ClearRenderTarget(RenderTarget* a_RenderTarget, float a_ClearColor[4]) override;
+		virtual void ClearRenderTarget(RenderTarget* a_RenderTarget, const float a_ClearColor[4]) override;
 		virtual void ClearDepthStencil(RenderTarget* a_RenderTarget, float a_DepthValue, uint8_t a_StencilValue) override;
 
 		virtual void UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline) override;
@@ -65,6 +64,6 @@ namespace tabi
 		Buffer* m_IndexBuffer = nullptr;
 
 		// TODO: This is private now, but OpenGLDevice will need to access this in order to execute a command list
-		tabi::vector<std::function<void()>> m_PendingCommands{128};
+		tabi::vector<std::function<void()>> m_PendingCommands;
 	};
 }

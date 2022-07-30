@@ -25,8 +25,10 @@ namespace tabi
 		virtual RenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) override;
 
 		virtual ICommandList* CreateCommandList(const char* a_DebugName = nullptr) override;
-
 		virtual void ExecuteCommandList(ICommandList* a_CommandList) override;
+
+		virtual IFence* CreateFence() override;
+		virtual void InsertFence(IFence* a_Fence, uint64_t a_Value) override;
 
 		virtual void DestroyTexture(Texture* a_Texture) override;
 		virtual void DestroyBuffer(Buffer* a_Buffer) override;
@@ -40,8 +42,7 @@ namespace tabi
 
 		virtual void DestroyCommandList(ICommandList* a_CommandList) override;
 
-		virtual IFence* CreateFence() override;
-		virtual void InsertFence(class IFence* a_Fence, uint64_t a_Value) override;
+		virtual void DestroyFence(IFence* a_Fence) override;
 
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
@@ -49,9 +50,10 @@ namespace tabi
 		virtual void Present() override;
 
 	private:
-		tabi::vector<std::function<void()>> m_CommandQueue{ 1024 };
+		const struct GLDeviceContext* m_DeviceContext = nullptr;
 
-		tabi::vector<std::function<void()>> m_ResourceDeletionQueue{ 64 };
+		tabi::vector<std::function<void()>> m_CommandQueue;
+		tabi::vector<std::function<void()>> m_ResourceDeletionQueue;
 
 		tabi::queue<class OpenGLFence*> m_PendingFences;
 	};

@@ -100,7 +100,7 @@ namespace tabi
 		 * @param a_RenderTarget The render target to clear. nullptr represents the screen's render target
 		 * @param a_ClearColor The RGBA color to fill the render target with
 		 */
-		virtual void ClearRenderTarget(class RenderTarget* a_RenderTarget, float a_ClearColor[4]) = 0;
+		virtual void ClearRenderTarget(class RenderTarget* a_RenderTarget, const float a_ClearColor[4]) = 0;
 		/**
 		 * @brief Clear a render target's depth-stencil buffer
 		 * @param a_RenderTarget The render target to clear. nullptr represents the screen's render target

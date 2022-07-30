@@ -38,7 +38,8 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	// Copy the buffers to a vector so we don't have to rely on a_VertexBuffers remaining valid until the command list is executed
-	tabi::vector<Buffer*> buffers{ a_NumBuffers };
+	tabi::vector<Buffer*> buffers;
+	buffers.reserve(8);
 	for (size_t i = 0; i < a_NumBuffers; ++i)
 	{
 		buffers.push_back(a_VertexBuffers[i]);
@@ -46,8 +47,12 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 
 	m_PendingCommands.push_back([a_FirstSlot, a_NumBuffers, buffers = std::move(buffers)]
 		{
-			tabi::vector<GLuint> vertexBuffers{8};
-			tabi::vector<GLsizei> strides{8};
+			tabi::vector<GLuint> vertexBuffers;
+			vertexBuffers.reserve(8);
+			tabi::vector<GLintptr> offsets;
+			offsets.reserve(8);
+			tabi::vector<GLsizei> strides;
+			strides.reserve(8);
 
 			for (size_t i = 0; i < a_NumBuffers; ++i)
 			{
@@ -55,9 +60,10 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 
 				vertexBuffers.push_back(oglBuffer->GetID());
 				strides.push_back(buffers[i]->GetBufferDescription().m_Stride);
+				offsets.push_back(0);
 			}
 
-			glBindVertexBuffers(a_FirstSlot, a_NumBuffers, vertexBuffers.data(), nullptr, strides.data());
+			glBindVertexBuffers(a_FirstSlot, a_NumBuffers, vertexBuffers.data(), offsets.data(), strides.data());
 		}
 	);
 }
@@ -197,7 +203,7 @@ void tabi::OpenGLCommandList::SetRenderTarget(RenderTarget* a_RenderTarget)
 	);
 }
 
-void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, float a_ClearColor[4])
+void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, const float a_ClearColor[4])
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 

@@ -6,7 +6,7 @@ namespace tabi
 {
 	struct ComputePipelineDescription
 	{
-		class Shader* m_ComputeShader = nullptr;
+		const class Shader* m_ComputeShader = nullptr;
 	};
 
 	class ComputePipeline

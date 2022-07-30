@@ -3,6 +3,7 @@
 #include "Enums/ComparisonFunction.h"
 #include "Enums/GraphicsPipelineEnums.h"
 
+#include <TabiContainers.h>
 #include <TabiMacros.h>
 
 namespace tabi
@@ -79,8 +80,8 @@ namespace tabi
 
 	struct GraphicsPipelineDescription
 	{
-		class Shader* m_VertexShader = nullptr;
-		class Shader* m_PixelShader = nullptr;
+		const class Shader* m_VertexShader = nullptr;
+		const class Shader* m_PixelShader = nullptr;
 
 		EToplolgy m_Topology = EToplolgy::Triangle;
 		// TODO: Support multiple blend targets?

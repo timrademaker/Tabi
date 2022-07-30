@@ -103,6 +103,7 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 
 tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_BufferDescription, const char* a_DebugName)
 {
+	if (a_BufferDescription.m_Role == EBufferRole::Index)
 	{
 		const auto dataType = GetFormatInfo(a_BufferDescription.m_Format).m_DataType;
 		TABI_ASSERT(dataType == EDataType::Ubyte || dataType == EDataType::Ushort || dataType == EDataType::Uint, "Unsupported index buffer data type");
@@ -155,8 +156,17 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 			const GLuint shaderId = glCreateShader(GLShaderType(shader->GetShaderType()));
 			TABI_ASSERT(shaderId != 0, "Failed to create shader");
 
-			const GLint dataLength = dataLen;
-			glShaderSource(shaderId, 1, &data, &dataLength);
+			
+			if(dataLen > 0)
+			{
+				const GLint dataLength = dataLen;
+				glShaderSource(shaderId, 1, &data, &dataLength);
+			}
+			else
+			{
+				glShaderSource(shaderId, 1, &data, nullptr);
+			}
+			
 			glCompileShader(shaderId);
 
 			GLint isCompiled = 0;
@@ -175,6 +185,7 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				TABI_ASSERT(isCompiled == GL_TRUE, "Shader failed to compile!");
 				return;
 			}
+
 			const GLuint programId = glCreateProgram();
 			TABI_ASSERT(shaderId != 0, "Failed to create shader program");
 
@@ -182,20 +193,18 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 			glAttachShader(programId, shaderId);
 			glLinkProgram(programId);
 
-			glDetachShader(programId, shaderId);
-			glDeleteShader(shaderId);
-
 			GLint isLinked = 0;
 			glGetProgramiv(programId, GL_LINK_STATUS, &isLinked);
 
 			if(isLinked == GL_FALSE)
 			{
 				GLint programLogLength = 0;
-				glGetShaderiv(programId, GL_INFO_LOG_LENGTH, &programLogLength);
+				glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &programLogLength);
 
 				std::vector<GLchar> programLog(programLogLength);
-				glGetShaderInfoLog(programId, programLogLength, &programLogLength, programLog.data());
+				glGetProgramInfoLog(programId, programLogLength, &programLogLength, programLog.data());
 				glDeleteProgram(programId);
+				glDeleteShader(shaderId);
 
 				LOG_ERROR("Failed to link shader program. Error: %s", programLog.data());
 				TABI_ASSERT(isLinked == GL_TRUE, "Shader program failed to link!");
@@ -203,6 +212,8 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				glDeleteProgram(programId);
 				return;
 			}
+
+			glDetachShader(programId, shaderId);
 
 			SetObjectDebugLabel(GL_PROGRAM, programId, a_DebugName);
 			shader->SetID(programId);
@@ -270,11 +281,11 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 
 			if (pipelineDesc.m_VertexShader)
 			{
-				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<OpenGLShader*>(pipelineDesc.m_VertexShader)->GetID());
+				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<const OpenGLShader*>(pipelineDesc.m_VertexShader)->GetID());
 			}
 			if (pipelineDesc.m_PixelShader)
 			{
-				glUseProgramStages(pipelineId, GL_FRAGMENT_SHADER_BIT, static_cast<OpenGLShader*>(pipelineDesc.m_PixelShader)->GetID());
+				glUseProgramStages(pipelineId, GL_FRAGMENT_SHADER_BIT, static_cast<const OpenGLShader*>(pipelineDesc.m_PixelShader)->GetID());
 			}
 
 			glValidateProgramPipeline(pipelineId);
@@ -321,7 +332,7 @@ tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePi
 
 			if (pipelineDesc.m_ComputeShader)
 			{
-				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<OpenGLShader*>(pipelineDesc.m_ComputeShader)->GetID());
+				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<const OpenGLShader*>(pipelineDesc.m_ComputeShader)->GetID());
 			}
 
 			glValidateProgramPipeline(pipelineId);
@@ -361,10 +372,13 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 			SetObjectDebugLabel(GL_FRAMEBUFFER, id, a_DebugName);
 		}
 	);
+
+	return renderTarget;
 }
 
 tabi::ICommandList* tabi::OpenGLDevice::CreateCommandList(const char* a_DebugName)
 {
+	TABI_UNUSED(a_DebugName);
 	return new OpenGLCommandList;
 }
 
@@ -414,6 +428,18 @@ void tabi::OpenGLDevice::DestroyRenderTarget(RenderTarget* a_RenderTarget)
 	TABI_ASSERT(a_RenderTarget != nullptr);
 	DESTROY_RESOURCE(OpenGLRenderTarget, a_RenderTarget);
 }
+
+void tabi::OpenGLDevice::DestroyCommandList(ICommandList* a_CommandList)
+{
+	TABI_ASSERT(a_CommandList != nullptr);
+	delete static_cast<OpenGLCommandList*>(a_CommandList);
+}
+
+void tabi::OpenGLDevice::DestroyFence(IFence* a_Fence)
+{
+	TABI_ASSERT(a_Fence != nullptr);
+	DESTROY_RESOURCE(OpenGLFence, a_Fence);
+}
 #undef DESTROY_RESOURCE
 
 tabi::IFence* tabi::OpenGLDevice::CreateFence()
@@ -421,7 +447,7 @@ tabi::IFence* tabi::OpenGLDevice::CreateFence()
 	return new OpenGLFence;
 }
 
-void tabi::OpenGLDevice::InsertFence(class IFence* a_Fence, uint64_t a_Value)
+void tabi::OpenGLDevice::InsertFence(IFence* a_Fence, uint64_t a_Value)
 {
 	m_CommandQueue.emplace_back([a_Value, fence = static_cast<OpenGLFence*>(a_Fence)]
 		{

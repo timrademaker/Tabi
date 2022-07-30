@@ -392,6 +392,7 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPi
 			{
 				glEnable(GL_CULL_FACE);
 
+				glFrontFace(pipelineDesc.m_RasterizerState.m_TriangleFrontIsCounterClockwise ? GL_CCW : GL_CW);
 				glCullFace(GLCullMode(pipelineDesc.m_RasterizerState.m_CullMode));
 				glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(pipelineDesc.m_RasterizerState.m_PolygonMode));
 			}

@@ -246,20 +246,25 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 {
 	auto* shader = new OpenGLShader(a_ShaderDescription.m_ShaderType);
 
-	m_CommandQueue.emplace_back([shader, data = a_ShaderDescription.m_Data, dataLen = a_ShaderDescription.m_DataLength, a_DebugName]
+	const size_t shaderDataLen = a_ShaderDescription.m_DataLength != 0 ? a_ShaderDescription.m_DataLength : strlen(a_ShaderDescription.m_Data);
+	tabi::vector<char> stagedShaderData(shaderDataLen);
+	std::copy_n(a_ShaderDescription.m_Data, shaderDataLen, stagedShaderData.begin());
+
+	m_CommandQueue.emplace_back([shader, data = std::move(stagedShaderData), dataLen = shaderDataLen, a_DebugName]
 		{
 			const GLuint shaderId = glCreateShader(GLShaderType(shader->GetShaderType()));
 			TABI_ASSERT(shaderId != 0, "Failed to create shader");
 
-			
+			const char* dataPtr = data.data();
+
 			if(dataLen > 0)
 			{
 				const GLint dataLength = dataLen;
-				glShaderSource(shaderId, 1, &data, &dataLength);
+				glShaderSource(shaderId, 1, &dataPtr, &dataLength);
 			}
 			else
 			{
-				glShaderSource(shaderId, 1, &data, nullptr);
+				glShaderSource(shaderId, 1, &dataPtr, nullptr);
 			}
 			
 			glCompileShader(shaderId);

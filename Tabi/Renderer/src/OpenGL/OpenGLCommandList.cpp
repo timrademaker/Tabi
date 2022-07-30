@@ -38,30 +38,23 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	// Copy the buffers to a vector so we don't have to rely on a_VertexBuffers remaining valid until the command list is executed
-	tabi::vector<Buffer*> buffers;
-	buffers.reserve(8);
-	for (size_t i = 0; i < a_NumBuffers; ++i)
-	{
-		buffers.push_back(a_VertexBuffers[i]);
-	}
+	tabi::vector<Buffer*> buffers(a_NumBuffers);
+	std::copy_n(a_VertexBuffers, a_NumBuffers, buffers.data());
 
 	m_PendingCommands.push_back([a_FirstSlot, a_NumBuffers, buffers = std::move(buffers)]
 		{
-			tabi::vector<GLuint> vertexBuffers;
-			vertexBuffers.reserve(8);
-			tabi::vector<GLintptr> offsets;
-			offsets.reserve(8);
-			tabi::vector<GLsizei> strides;
-			strides.reserve(8);
+			tabi::vector<GLuint> vertexBuffers(a_NumBuffers);
+			tabi::vector<GLsizei> strides(a_NumBuffers);
 
 			for (size_t i = 0; i < a_NumBuffers; ++i)
 			{
 				const OpenGLBuffer* oglBuffer = static_cast<OpenGLBuffer*>(buffers[i]);
 
-				vertexBuffers.push_back(oglBuffer->GetID());
-				strides.push_back(buffers[i]->GetBufferDescription().m_Stride);
-				offsets.push_back(0);
+				vertexBuffers[i] = oglBuffer->GetID();
+				strides[i] = buffers[i]->GetBufferDescription().m_Stride;
 			}
+
+			const tabi::vector<GLintptr> offsets(a_NumBuffers);
 
 			glBindVertexBuffers(a_FirstSlot, a_NumBuffers, vertexBuffers.data(), offsets.data(), strides.data());
 		}
@@ -193,6 +186,11 @@ void tabi::OpenGLCommandList::SetRenderTarget(RenderTarget* a_RenderTarget)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
+	if(a_RenderTarget == m_CurrentRenderTarget)
+	{
+		return;
+	}
+
 	m_CurrentRenderTarget = static_cast<OpenGLRenderTarget*>(a_RenderTarget);
 
 	m_PendingCommands.emplace_back([renderTarget = m_CurrentRenderTarget]
@@ -209,9 +207,12 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, co
 	auto* originalRenderTarget = m_CurrentRenderTarget;
 	SetRenderTarget(a_RenderTarget);
 
-	m_PendingCommands.emplace_back([a_ClearColor]
+	tabi::array<float, 4> clearColor;
+	std::copy_n(a_ClearColor, 4, clearColor.begin());
+
+	m_PendingCommands.emplace_back([clearColor = std::move(clearColor)]
 		{
-			glClearColor(a_ClearColor[0], a_ClearColor[1], a_ClearColor[2], a_ClearColor[3]);
+			glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 	);
@@ -242,37 +243,37 @@ void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, fl
 
 namespace tabi
 {
-	void CopyDataToTexture1D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription)
+	void CopyDataToTexture1D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
 	{
 		glTextureSubImage1D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 			a_UpdateDescription.m_OffsetX,
 			a_UpdateDescription.m_DataWidth,
 			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-			a_UpdateDescription.m_Data
+			a_Data.data()
 		);
 	}
 
-	void CopyDataToTexture2D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, uint32_t a_DataHeight, uint32_t a_OffsetY)
+	void CopyDataToTexture2D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, uint32_t a_DataHeight, uint32_t a_OffsetY, const tabi::vector<char>& a_Data)
 	{
 		glTextureSubImage2D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 			a_UpdateDescription.m_OffsetX, a_OffsetY,
 			a_UpdateDescription.m_DataWidth, a_DataHeight,
 			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-			a_UpdateDescription.m_Data
+			a_Data.data()
 		);
 	}
 
-	void CopyDataToTexture3D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription)
+	void CopyDataToTexture3D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
 	{
 		glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
 			a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ,
 			a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, a_UpdateDescription.m_DataDepth,
 			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-			a_UpdateDescription.m_Data
+			a_Data.data()
 		);
 	}
 
-	void CopyDataToTextureCubemap(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription)
+	void CopyDataToTextureCubemap(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
 	{
 		const auto faceIndex = static_cast<uint8_t>(a_UpdateDescription.m_CubeFace);
 		if(a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMap)
@@ -281,7 +282,7 @@ namespace tabi
 				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, faceIndex,
 				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
 				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-				a_UpdateDescription.m_Data
+				a_Data.data()
 			);
 		}
 		else if (a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMapArray)
@@ -290,7 +291,7 @@ namespace tabi
 				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ * 6 + faceIndex,
 				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
 				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-				a_UpdateDescription.m_Data
+				a_Data.data()
 			);
 		}
 	}
@@ -300,6 +301,11 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPi
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_GraphicsPipeline != nullptr);
+
+	if (a_GraphicsPipeline == m_GraphicsPipeline)
+	{
+		return;
+	}
 	
 	m_GraphicsPipeline = static_cast<OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
 
@@ -398,6 +404,11 @@ void tabi::OpenGLCommandList::UseComputePipeline(ComputePipeline* a_ComputePipel
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_ComputePipeline != nullptr);
 
+	if(a_ComputePipeline == m_ComputePipeline)
+	{
+		return;
+	}
+
 	m_ComputePipeline = static_cast<OpenGLComputePipeline*>(a_ComputePipeline);
 
 	m_PendingCommands.emplace_back([pipeline = m_GraphicsPipeline]
@@ -411,7 +422,19 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_TextureUpdateDescription]
+	// Copy texture data to a staging buffer
+	const size_t width = std::max<size_t>(a_TextureUpdateDescription.m_DataWidth, 1);
+	const size_t height = std::max<size_t>(a_TextureUpdateDescription.m_DataHeight, 1);
+	const size_t depth = std::max<size_t>(a_TextureUpdateDescription.m_DataDepth, 1);
+	const size_t bitsPerTexel = GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_FormatSizeInBits / 8;
+	const size_t dataSizeDivisor = pow(2, a_TextureUpdateDescription.m_MipLevel);	// Each mip level takes up half the memory of the previous mip level
+
+	// TODO: Is this correct?
+	const size_t texDataBytes = (width * height * depth * bitsPerTexel) / dataSizeDivisor;
+	tabi::vector<char> stagedTextureData(texDataBytes);
+	std::copy_n(a_TextureUpdateDescription.m_Data, texDataBytes, stagedTextureData.begin());
+
+	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_TextureUpdateDescription, data = std::move(stagedTextureData)]
 		{
 			auto offsetY = a_TextureUpdateDescription.m_OffsetY;
 			auto dataHeight = a_TextureUpdateDescription.m_DataHeight;
@@ -419,21 +442,21 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 			switch(tex->GetTextureDescription().m_Dimension)
 			{
 			case ETextureDimension::Tex1D:
-				CopyDataToTexture1D(tex, a_TextureUpdateDescription);
+				CopyDataToTexture1D(tex, a_TextureUpdateDescription, data);
 				break;
 			case ETextureDimension::Tex1DArray:
 				offsetY = a_TextureUpdateDescription.m_OffsetZ;
 				dataHeight = a_TextureUpdateDescription.m_DataDepth;
 			case ETextureDimension::Tex2D:
-				CopyDataToTexture2D(tex, a_TextureUpdateDescription, dataHeight, offsetY);
+				CopyDataToTexture2D(tex, a_TextureUpdateDescription, dataHeight, offsetY, data);
 				break;
 			case ETextureDimension::Tex2DArray:
 			case ETextureDimension::Tex3D:
-				CopyDataToTexture3D(tex, a_TextureUpdateDescription);
+				CopyDataToTexture3D(tex, a_TextureUpdateDescription, data);
 				break;
 			case ETextureDimension::CubeMap:
 			case ETextureDimension::CubeMapArray:
-				CopyDataToTextureCubemap(tex, a_TextureUpdateDescription);
+				CopyDataToTextureCubemap(tex, a_TextureUpdateDescription, data);
 				break;
 			default: 
 				TABI_ASSERT(false, "Attempting to copy data to a texture with unexpected dimensions");
@@ -450,9 +473,12 @@ void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_D
 
 	TABI_ASSERT(a_Buffer->GetBufferDescription().m_SizeInBytes >= (a_DataSize + a_Offset), "Trying to copy more data into a buffer than would fit");
 
-	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Data, a_DataSize, a_Offset]
+	tabi::vector<char> stagedBufferData(a_DataSize);
+	std::copy_n(a_Data, a_DataSize, stagedBufferData.begin());
+
+	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), data = std::move(stagedBufferData), a_DataSize, a_Offset]
 		{
-			glNamedBufferSubData(buf->GetID(), a_Offset, a_DataSize, a_Data);
+			glNamedBufferSubData(buf->GetID(), a_Offset, a_DataSize, data.data());
 		}
 	);
 }

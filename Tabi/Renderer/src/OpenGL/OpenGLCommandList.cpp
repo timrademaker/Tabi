@@ -207,6 +207,7 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, fl
 	m_PendingCommands.emplace_back([a_ClearColor]
 		{
 			glClearColor(a_ClearColor[0], a_ClearColor[1], a_ClearColor[2], a_ClearColor[3]);
+			glClear(GL_COLOR_BUFFER_BIT);
 		}
 	);
 
@@ -226,6 +227,7 @@ void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, fl
 		{
 			glClearDepthf(a_DepthValue);
 			glClearStencil(a_StencilValue);
+			glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		}
 	);
 

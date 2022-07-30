@@ -369,6 +369,8 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 
 			// TODO: m_TextureLayer is ignored as glFramebufferTexture3D() is not used. Does this matter?
 
+			TABI_ASSERT(glCheckNamedFramebufferStatus(id, GL_FRAMEBUFFER_COMPLETE) == GL_FRAMEBUFFER_COMPLETE);
+
 			SetObjectDebugLabel(GL_FRAMEBUFFER, id, a_DebugName);
 		}
 	);

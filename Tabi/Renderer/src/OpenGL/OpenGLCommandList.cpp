@@ -198,7 +198,6 @@ void tabi::OpenGLCommandList::SetRenderTarget(RenderTarget* a_RenderTarget)
 	m_PendingCommands.emplace_back([renderTarget = m_CurrentRenderTarget]
 		{
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderTarget ? renderTarget->GetID() : 0);
-			TABI_ASSERT(glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 		}
 	);
 }

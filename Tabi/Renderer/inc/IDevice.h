@@ -15,8 +15,11 @@ namespace tabi
 
 		/**
 		 * @brief Initialize the rendering device
+		 * @param a_Window The window to initialize the device for
+		 * @param a_Width The width of the window
+		 * @param a_Height The height of the window
 		 */
-		virtual void Initialize() = 0;
+		virtual void Initialize(void* a_Window, uint32_t a_Width, uint32_t a_Height) = 0;
 		/**
 		 * @brief Finalize the rendering device
 		 */

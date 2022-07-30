@@ -11,7 +11,7 @@ namespace tabi
 	class OpenGLDevice : public IDevice
 	{
 	public:
-		virtual void Initialize() override;
+		virtual void Initialize(void* a_Window, uint32_t a_Width, uint32_t a_Height) override;
 		virtual void Finalize() override;
 
 		virtual Texture* CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName = nullptr) override;

@@ -16,6 +16,12 @@
 
 namespace tabi
 {
+	struct GLDeviceContext
+	{
+		HWND m_WindowHandle = nullptr;
+		HDC m_DeviceContext = nullptr;
+	};
+
 	void CreateTexture1D(GLuint a_Texture, GLsizei a_MipLevels, EFormat a_Format, GLsizei a_Width)
 	{
 		glTextureStorage1D(a_Texture, a_MipLevels, GLInternalFormat(a_Format), a_Width);
@@ -37,6 +43,95 @@ namespace tabi
 		glObjectLabel(a_Target, a_Id, -1, a_DebugName);
 #endif
 	}
+
+#if defined(GL_DEBUG_OUTPUT)
+	void GLAPIENTRY GLMessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLenum a_Severity, GLsizei a_Length, const GLchar* a_Message, const void* a_UserParam)
+	{
+		TABI_UNUSED(a_UserParam);
+
+		auto severity = tabi::logger::ELogLevel::Debug;
+		switch (a_Severity)
+		{
+		case GL_DEBUG_SEVERITY_HIGH:
+		{
+			severity = tabi::logger::ELogLevel::Error;
+			break;
+		}
+		case GL_DEBUG_SEVERITY_MEDIUM:
+		{
+			severity = tabi::logger::ELogLevel::Warning;
+			break;
+		}
+		case GL_DEBUG_SEVERITY_LOW:
+		{
+			severity = tabi::logger::ELogLevel::Info;
+			break;
+		}
+		}
+
+		tabi::renderer::s_GraphicsLogger->Log(severity, "OpenGL message (type %d): %s", a_Type, a_Message);
+	}
+#endif
+}
+
+void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a_Height)
+{
+	TABI_ASSERT(m_DeviceContext == nullptr, "Device already initialized");
+
+	auto* window = static_cast<HWND>(a_Window);
+	auto* context = GetDC(window);
+	m_DeviceContext = new GLDeviceContext{ window, context };
+
+	const PIXELFORMATDESCRIPTOR pfd =
+	{
+		sizeof(PIXELFORMATDESCRIPTOR),
+		1,
+		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+		PFD_TYPE_RGBA,
+		32,             // Color depth of the framebuffer.
+		0, 0, 0, 0, 0, 0,
+		0,
+		0,
+		0,
+		0, 0, 0, 0,
+		24,				// Number of bits in the depth buffer
+		8,				// Number of bits in the stencil buffer
+		0,
+		PFD_MAIN_PLANE,
+		0,
+		0, 0, 0
+	};
+
+	const int pixelFormat = ChoosePixelFormat(context, &pfd);
+	TABI_ASSERT(pixelFormat != 0, "Failed to choose pixel format");
+	SetPixelFormat(context, pixelFormat, &pfd);
+
+	const auto renderingContext = wglCreateContext(context);
+	wglMakeCurrent(context, renderingContext);
+
+	TABI_ASSERT(gladLoadGL(), "Failed to initialize OpenGL context");
+	
+
+#if defined(GL_DEBUG_OUTPUT)
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(GLMessageCallback, 0);
+#endif
+
+	glViewport(0, 0, a_Width, a_Height);
+
+	m_CommandQueue.reserve(1024);
+	m_ResourceDeletionQueue.reserve(64);
+}
+
+void tabi::OpenGLDevice::Finalize()
+{
+	while(!m_PendingFences.empty())
+	{
+		DestroyFence(m_PendingFences.front());
+		m_PendingFences.pop();
+	}
+
+	EndFrame();
 }
 
 tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName)
@@ -307,7 +402,7 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 
 				glVertexArrayBindingDivisor(vaoId, i, inputElement.m_InstanceDataStepRate);
 
-				dataOffset += formatInfo.m_FormatSizeInBits;
+				dataOffset += formatInfo.m_FormatSizeInBits / 8;
 			}
 		}
 	);
@@ -460,6 +555,10 @@ void tabi::OpenGLDevice::InsertFence(IFence* a_Fence, uint64_t a_Value)
 	);
 }
 
+void tabi::OpenGLDevice::BeginFrame()
+{
+}
+
 void tabi::OpenGLDevice::EndFrame()
 {
 	m_CommandQueue.emplace_back([pendingFences = &m_PendingFences]
@@ -493,4 +592,9 @@ void tabi::OpenGLDevice::EndFrame()
 		func();
 	}
 	m_ResourceDeletionQueue.clear();
+}
+
+void tabi::OpenGLDevice::Present()
+{
+	SwapBuffers(m_DeviceContext->m_DeviceContext);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Shader.h"
+
 #include "Enums/ComparisonFunction.h"
 #include "Enums/GraphicsPipelineEnums.h"
 
@@ -105,7 +107,10 @@ namespace tabi
 	protected:
 		GraphicsPipeline(const GraphicsPipelineDescription& a_PipelineDescription)
 			: m_PipelineDescription(a_PipelineDescription)
-		{}
+		{
+			TABI_ASSERT(a_PipelineDescription.m_VertexShader && a_PipelineDescription.m_VertexShader->GetShaderType() == EShaderType::Vertex);
+			TABI_ASSERT(a_PipelineDescription.m_PixelShader && a_PipelineDescription.m_PixelShader->GetShaderType() == EShaderType::Pixel);
+		}
 		~GraphicsPipeline() = default;
 
 	private:

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Shader.h"
+
 #include <TabiMacros.h>
 
 namespace tabi
@@ -23,7 +25,9 @@ namespace tabi
 	protected:
 		ComputePipeline(const ComputePipelineDescription& a_PipelineDescription)
 			: m_PipelineDescription(a_PipelineDescription)
-		{}
+		{
+			TABI_ASSERT(a_PipelineDescription.m_ComputeShader && a_PipelineDescription.m_ComputeShader->GetShaderType() == EShaderType::Compute);
+		}
 		~ComputePipeline() = default;
 
 	private:

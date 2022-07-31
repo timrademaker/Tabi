@@ -427,7 +427,7 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 	const size_t width = std::max<size_t>(a_TextureUpdateDescription.m_DataWidth, 1);
 	const size_t height = std::max<size_t>(a_TextureUpdateDescription.m_DataHeight, 1);
 	const size_t depth = std::max<size_t>(a_TextureUpdateDescription.m_DataDepth, 1);
-	const size_t bitsPerTexel = GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_FormatSizeInBits / 8;
+	const size_t bitsPerTexel = GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_FormatSizeInBytes;
 	const size_t dataSizeDivisor = pow(2, a_TextureUpdateDescription.m_MipLevel);	// Each mip level takes up half the memory of the previous mip level
 
 	// TODO: Is this correct?

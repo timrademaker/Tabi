@@ -407,7 +407,7 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 
 				glVertexArrayBindingDivisor(vaoId, i, inputElement.m_InstanceDataStepRate);
 
-				dataOffset += formatInfo.m_FormatSizeInBits / 8;
+				dataOffset += formatInfo.m_FormatSizeInBytes;
 			}
 		}
 	);

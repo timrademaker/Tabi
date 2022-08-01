@@ -16,7 +16,15 @@ namespace tabi
 		TABI_NO_MOVE(OpenGLCommandList);
 
 	public:
-		OpenGLCommandList() { m_PendingCommands.reserve(128); }
+		OpenGLCommandList(const char* a_DebugName = nullptr)
+		{
+			if(a_DebugName)
+			{
+				m_DebugName = tabi::string(a_DebugName);
+			}
+
+			m_PendingCommands.reserve(128);
+		}
 		~OpenGLCommandList() = default;
 
 		virtual void BeginRecording() override;
@@ -65,5 +73,7 @@ namespace tabi
 
 		// TODO: This is private now, but OpenGLDevice will need to access this in order to execute a command list
 		tabi::vector<std::function<void()>> m_PendingCommands;
+
+		tabi::string m_DebugName;
 	};
 }

@@ -44,6 +44,16 @@ namespace tabi
 #endif
 	}
 
+	void SetObjectDebugLabel(GLenum a_Target, GLuint a_Id, const tabi::string& a_DebugName)
+	{
+#if defined(DEBUG_GRAPHICS)
+		if(!a_DebugName.empty())
+		{
+			SetObjectDebugLabel(a_Target, a_Id, a_DebugName.c_str());
+		}
+#endif
+	}
+
 #if defined(GL_DEBUG_OUTPUT)
 	void GLAPIENTRY GLMessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLenum a_Severity, GLsizei a_Length, const GLchar* a_Message, const void* a_UserParam)
 	{
@@ -139,13 +149,13 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 	TABI_ASSERT(a_TextureDescription.m_Dimension != ETextureDimension::Unknown);
 
 	auto* tex = new OpenGLTexture(a_TextureDescription);
-	m_CommandQueue.emplace_back([tex, a_DebugName]
+	m_CommandQueue.emplace_back([tex, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id;
 			glCreateTextures(GLTarget(tex->GetTextureDescription().m_Dimension), 1, &id);
 			TABI_ASSERT(id != 0, "Failed to create texture");
 			tex->SetID(id);
-			SetObjectDebugLabel(GL_TEXTURE, id, a_DebugName);
+			SetObjectDebugLabel(GL_TEXTURE, id, debugName);
 			
 			const auto& texDescription = tex->GetTextureDescription();
 
@@ -205,13 +215,16 @@ tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_Buffer
 	}
 
 	auto* buf = new OpenGLBuffer(a_BufferDescription);
-	m_CommandQueue.emplace_back([buf, a_DebugName]
+	m_CommandQueue.emplace_back([buf, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id;
 			glCreateBuffers(1, &id);
 			TABI_ASSERT(id != 0, "Failed to create buffer");
 			buf->SetID(id);
-			SetObjectDebugLabel(GL_BUFFER, id, a_DebugName);
+			if (!debugName.empty())
+			{
+				SetObjectDebugLabel(GL_BUFFER, id, debugName);
+			}
 
 			const auto& bufDescription = buf->GetBufferDescription();
 
@@ -250,10 +263,11 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 	tabi::vector<char> stagedShaderData(shaderDataLen);
 	std::copy_n(a_ShaderDescription.m_Data, shaderDataLen, stagedShaderData.begin());
 
-	m_CommandQueue.emplace_back([shader, data = std::move(stagedShaderData), dataLen = shaderDataLen, a_DebugName]
+	m_CommandQueue.emplace_back([shader, data = std::move(stagedShaderData), dataLen = shaderDataLen, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			const GLuint shaderId = glCreateShader(GLShaderType(shader->GetShaderType()));
 			TABI_ASSERT(shaderId != 0, "Failed to create shader");
+			SetObjectDebugLabel(GL_SHADER, shaderId, debugName);
 
 			const char* dataPtr = data.data();
 
@@ -315,7 +329,7 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 
 			glDetachShader(programId, shaderId);
 
-			SetObjectDebugLabel(GL_PROGRAM, programId, a_DebugName);
+			SetObjectDebugLabel(GL_PROGRAM, programId, debugName);
 			shader->SetID(programId);
 		}
 	);
@@ -327,13 +341,13 @@ tabi::Sampler* tabi::OpenGLDevice::CreateSampler(const SamplerDescription& a_Sam
 {
 	auto* sampler = new OpenGLSampler(a_SamplerDescription);
 
-	m_CommandQueue.emplace_back([sampler, a_DebugName]
+	m_CommandQueue.emplace_back([sampler, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id = 0;
 			glCreateSamplers(1, &id);
 			TABI_ASSERT(id != 0, "Failed to create sampler");
 			sampler->SetID(id);
-			SetObjectDebugLabel(GL_SAMPLER, id, a_DebugName);
+			SetObjectDebugLabel(GL_SAMPLER, id, debugName);
 
 			const auto& samplerDescription = sampler->GetSamplerDescription();
 
@@ -368,14 +382,14 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 {
 	auto* pipeline = new OpenGLGraphicsPipeline(a_PipelineDescription);
 
-	m_CommandQueue.emplace_back([pipeline, a_DebugName]
+	m_CommandQueue.emplace_back([pipeline, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint pipelineId = 0;
 			glCreateProgramPipelines(1, &pipelineId);
 			pipeline->SetID(pipelineId);
 			TABI_ASSERT(pipelineId != 0, "Failed to create program pipeline");
 
-			SetObjectDebugLabel(GL_PROGRAM_PIPELINE, pipelineId, a_DebugName);
+			SetObjectDebugLabel(GL_PROGRAM_PIPELINE, pipelineId, debugName);
 
 			const auto& pipelineDesc = pipeline->GetPipelineDescription();
 
@@ -419,14 +433,14 @@ tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePi
 {
 	auto* pipeline = new OpenGLComputePipeline(a_ComputePipelineDescription);
 
-	m_CommandQueue.emplace_back([pipeline, a_DebugName]
+	m_CommandQueue.emplace_back([pipeline, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint pipelineId = 0;
 			glCreateProgramPipelines(1, &pipelineId);
 			pipeline->SetID(pipelineId);
 			TABI_ASSERT(pipelineId != 0, "Failed to create program pipeline");
 
-			SetObjectDebugLabel(GL_PROGRAM_PIPELINE, pipelineId, a_DebugName);
+			SetObjectDebugLabel(GL_PROGRAM_PIPELINE, pipelineId, debugName);
 
 			const auto& pipelineDesc = pipeline->GetPipelineDescription();
 
@@ -454,7 +468,7 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 
 	auto* renderTarget = new OpenGLRenderTarget(a_RenderTargetDescription);
 
-	m_CommandQueue.emplace_back([renderTarget, a_DebugName]
+	m_CommandQueue.emplace_back([renderTarget, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id = 0;
 			glCreateFramebuffers(1, &id);
@@ -471,7 +485,7 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 
 			TABI_ASSERT(glCheckNamedFramebufferStatus(id, GL_FRAMEBUFFER_COMPLETE) == GL_FRAMEBUFFER_COMPLETE);
 
-			SetObjectDebugLabel(GL_FRAMEBUFFER, id, a_DebugName);
+			SetObjectDebugLabel(GL_FRAMEBUFFER, id, debugName);
 		}
 	);
 
@@ -480,8 +494,8 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 
 tabi::ICommandList* tabi::OpenGLDevice::CreateCommandList(const char* a_DebugName)
 {
-	TABI_UNUSED(a_DebugName);
-	return new OpenGLCommandList;
+	return new OpenGLCommandList(a_DebugName);
+}
 }
 
 #define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \

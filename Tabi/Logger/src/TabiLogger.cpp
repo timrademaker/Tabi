@@ -43,15 +43,14 @@ void Logger::Log(ELogLevel a_LogLevel, const char* a_LogMessageFormat, va_list a
 {
     thread_local tabi::vector<char> buffer(1024);
 
-    DISABLE_WARNING_PUSH
-    DISABLE_WARNING(4996)
-    const size_t charsWritten = vsprintf(buffer.data(), a_LogMessageFormat, args);
-    DISABLE_WARNING_POP
+    const size_t requiredBufferCapacity = vsnprintf(nullptr, 0, a_LogMessageFormat, args) + 1;
 
-    if (charsWritten > buffer.capacity())
+    if (requiredBufferCapacity > buffer.size())
     {
-        buffer.resize(charsWritten + 1);
+        buffer.resize(requiredBufferCapacity);
     }
+
+    vsnprintf(buffer.data(), requiredBufferCapacity, a_LogMessageFormat, args);
 
     m_Logger->log(TranslateLogLevel(a_LogLevel), buffer.data());
 }

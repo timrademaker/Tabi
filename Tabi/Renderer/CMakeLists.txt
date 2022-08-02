@@ -24,16 +24,18 @@ set(HEADERS
     inc/Enums/ShaderEnums.h
     inc/Enums/TextureEnums.h
 
-    inc/helpers/RendererLogger.h
     inc/helpers/FormatInfo.h
+    inc/helpers/ExecutionQueue.h
+    inc/helpers/RendererLogger.h
 )
 
 # Set sources for Renderer
 set(SOURCES
     src/IDevice.cpp
 
-    src/helpers/RendererLogger.cpp
     src/helpers/FormatInfo.cpp
+    src/helpers/ExecutionQueue.cpp
+    src/helpers/RendererLogger.cpp
 )
 
 if(DEBUG_GRAPHICS)

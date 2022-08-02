@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IDevice.h"
+#include "Helpers/ExecutionQueue.h"
 
 #include <TabiContainers.h>
 
@@ -52,8 +53,8 @@ namespace tabi
 	private:
 		const struct GLDeviceContext* m_DeviceContext = nullptr;
 
-		tabi::vector<std::function<void()>> m_CommandQueue;
-		tabi::vector<std::function<void()>> m_ResourceDeletionQueue;
+		tabi::ExecutionQueue m_CommandQueue{ 1024 };
+		tabi::ExecutionQueue m_ResourceDeletionQueue{ 64 };
 
 		tabi::queue<class OpenGLFence*> m_PendingFences;
 	};

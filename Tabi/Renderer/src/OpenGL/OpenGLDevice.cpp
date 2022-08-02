@@ -128,9 +128,6 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 #endif
 
 	glViewport(0, 0, a_Width, a_Height);
-
-	m_CommandQueue.reserve(1024);
-	m_ResourceDeletionQueue.reserve(64);
 }
 
 void tabi::OpenGLDevice::Finalize()
@@ -149,7 +146,7 @@ tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_Tex
 	TABI_ASSERT(a_TextureDescription.m_Dimension != ETextureDimension::Unknown);
 
 	auto* tex = new OpenGLTexture(a_TextureDescription);
-	m_CommandQueue.emplace_back([tex, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
+	m_CommandQueue.Add([tex, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id;
 			glCreateTextures(GLTarget(tex->GetTextureDescription().m_Dimension), 1, &id);
@@ -215,7 +212,7 @@ tabi::Buffer* tabi::OpenGLDevice::CreateBuffer(const BufferDescription& a_Buffer
 	}
 
 	auto* buf = new OpenGLBuffer(a_BufferDescription);
-	m_CommandQueue.emplace_back([buf, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
+	m_CommandQueue.Add([buf, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id;
 			glCreateBuffers(1, &id);
@@ -263,7 +260,7 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 	tabi::vector<char> stagedShaderData(shaderDataLen);
 	std::copy_n(a_ShaderDescription.m_Data, shaderDataLen, stagedShaderData.begin());
 
-	m_CommandQueue.emplace_back([shader, data = std::move(stagedShaderData), dataLen = shaderDataLen, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
+	m_CommandQueue.Add([shader, data = std::move(stagedShaderData), dataLen = shaderDataLen, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			const GLuint shaderId = glCreateShader(GLShaderType(shader->GetShaderType()));
 			TABI_ASSERT(shaderId != 0, "Failed to create shader");
@@ -341,7 +338,7 @@ tabi::Sampler* tabi::OpenGLDevice::CreateSampler(const SamplerDescription& a_Sam
 {
 	auto* sampler = new OpenGLSampler(a_SamplerDescription);
 
-	m_CommandQueue.emplace_back([sampler, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
+	m_CommandQueue.Add([sampler, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id = 0;
 			glCreateSamplers(1, &id);
@@ -382,7 +379,7 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 {
 	auto* pipeline = new OpenGLGraphicsPipeline(a_PipelineDescription);
 
-	m_CommandQueue.emplace_back([pipeline, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
+	m_CommandQueue.Add([pipeline, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint pipelineId = 0;
 			glCreateProgramPipelines(1, &pipelineId);
@@ -433,7 +430,7 @@ tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePi
 {
 	auto* pipeline = new OpenGLComputePipeline(a_ComputePipelineDescription);
 
-	m_CommandQueue.emplace_back([pipeline, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
+	m_CommandQueue.Add([pipeline, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint pipelineId = 0;
 			glCreateProgramPipelines(1, &pipelineId);
@@ -468,7 +465,7 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 
 	auto* renderTarget = new OpenGLRenderTarget(a_RenderTargetDescription);
 
-	m_CommandQueue.emplace_back([renderTarget, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
+	m_CommandQueue.Add([renderTarget, debugName = a_DebugName ? tabi::string(a_DebugName) : tabi::string{}]
 		{
 			GLuint id = 0;
 			glCreateFramebuffers(1, &id);
@@ -496,9 +493,14 @@ tabi::ICommandList* tabi::OpenGLDevice::CreateCommandList(const char* a_DebugNam
 {
 	return new OpenGLCommandList(a_DebugName);
 }
+
+void tabi::OpenGLDevice::ExecuteCommandList(ICommandList* a_CommandList)
+{
+	const auto* commandList = static_cast<OpenGLCommandList*>(a_CommandList);
+	m_CommandQueue.CopyQueue(commandList->GetPendingCommands());
 }
 
-#define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.emplace_back([ptr = static_cast<T*>(resource)] { \
+#define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.Add([ptr = static_cast<T*>(resource)] { \
 	ptr->Destroy(); \
 	delete ptr;\
 })
@@ -565,7 +567,7 @@ tabi::IFence* tabi::OpenGLDevice::CreateFence()
 
 void tabi::OpenGLDevice::InsertFence(IFence* a_Fence, uint64_t a_Value)
 {
-	m_CommandQueue.emplace_back([a_Value, fence = static_cast<OpenGLFence*>(a_Fence)]
+	m_CommandQueue.Add([a_Value, fence = static_cast<OpenGLFence*>(a_Fence)]
 		{
 			fence->SetCompletionValue(a_Value);
 			fence->m_FenceSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
@@ -580,7 +582,7 @@ void tabi::OpenGLDevice::BeginFrame()
 
 void tabi::OpenGLDevice::EndFrame()
 {
-	m_CommandQueue.emplace_back([pendingFences = &m_PendingFences]
+	m_CommandQueue.Add([pendingFences = &m_PendingFences]
 		{
 			while (!pendingFences->empty())
 			{
@@ -600,17 +602,11 @@ void tabi::OpenGLDevice::EndFrame()
 		}
 	);
 
-	for (auto& func : m_CommandQueue)
-	{
-		func();
-	}
-	m_CommandQueue.clear();
+	m_CommandQueue.Execute();
+	m_CommandQueue.Reset();
 
-	for(auto& func : m_ResourceDeletionQueue)
-	{
-		func();
-	}
-	m_ResourceDeletionQueue.clear();
+	m_ResourceDeletionQueue.Execute();
+	m_ResourceDeletionQueue.Reset();
 }
 
 void tabi::OpenGLDevice::Present()

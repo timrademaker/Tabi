@@ -29,7 +29,7 @@ void tabi::OpenGLCommandList::EndRecording()
 
 void tabi::OpenGLCommandList::Reset()
 {
-	m_PendingCommands.clear();
+	m_PendingCommands.Reset();
 	m_IsRecording = false;
 }
 
@@ -41,7 +41,7 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 	tabi::vector<Buffer*> buffers(a_NumBuffers);
 	std::copy_n(a_VertexBuffers, a_NumBuffers, buffers.data());
 
-	m_PendingCommands.push_back([a_FirstSlot, a_NumBuffers, buffers = std::move(buffers)]
+	m_PendingCommands.Add([a_FirstSlot, a_NumBuffers, buffers = std::move(buffers)]
 		{
 			tabi::vector<GLuint> vertexBuffers(a_NumBuffers);
 			tabi::vector<GLsizei> strides(a_NumBuffers);
@@ -68,7 +68,7 @@ void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
 
 	m_IndexBuffer = a_IndexBuffer;
 
-	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_IndexBuffer)]
+	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_IndexBuffer)]
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf->GetID());
 		}
@@ -81,7 +81,7 @@ void tabi::OpenGLCommandList::BindConstantBuffer(Buffer* a_Buffer, int32_t a_Slo
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Buffer != nullptr);
 
-	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
+	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
 			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, buf->GetID());
 		}
@@ -93,7 +93,7 @@ void tabi::OpenGLCommandList::BindReadWriteBuffer(Buffer* a_Buffer, int32_t a_Sl
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Buffer != nullptr);
 
-	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
+	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, buf->GetID());
 		}
@@ -105,7 +105,7 @@ void tabi::OpenGLCommandList::BindTexture(Texture* a_Texture, int32_t a_Slot)
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Texture != nullptr);
 
-	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
+	m_PendingCommands.Add([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
 		{
 			glActiveTexture(GL_TEXTURE0 + a_Slot);
 			glBindTexture(GLTextureDimension(tex->GetTextureDescription().m_Dimension), tex->GetID());
@@ -118,7 +118,7 @@ void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Texture != nullptr);
 
-	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
+	m_PendingCommands.Add([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
 		{
 			bool textureIsLayered = GL_FALSE;
 
@@ -151,7 +151,7 @@ void tabi::OpenGLCommandList::BindSampler(Sampler* a_Sampler, int32_t a_Slot)
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Sampler != nullptr);
 
-	m_PendingCommands.push_back([samp = static_cast<OpenGLSampler*>(a_Sampler), a_Slot]
+	m_PendingCommands.Add([samp = static_cast<OpenGLSampler*>(a_Sampler), a_Slot]
 		{
 			glBindSampler(a_Slot, samp->GetID());
 		}
@@ -163,7 +163,7 @@ void tabi::OpenGLCommandList::InsertBarrier(Texture* a_Texture)
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_UNUSED(a_Texture);
 
-	m_PendingCommands.push_back([]
+	m_PendingCommands.Add([]
 		{
 			glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		}
@@ -175,7 +175,7 @@ void tabi::OpenGLCommandList::InsertBarrier(Buffer* a_Buffer)
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_UNUSED(a_Buffer);
 
-	m_PendingCommands.push_back([]
+	m_PendingCommands.Add([]
 		{
 			glMemoryBarrier(GL_BUFFER_UPDATE_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 		}
@@ -193,7 +193,7 @@ void tabi::OpenGLCommandList::SetRenderTarget(RenderTarget* a_RenderTarget)
 
 	m_CurrentRenderTarget = static_cast<OpenGLRenderTarget*>(a_RenderTarget);
 
-	m_PendingCommands.emplace_back([renderTarget = m_CurrentRenderTarget]
+	m_PendingCommands.Add([renderTarget = m_CurrentRenderTarget]
 		{
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderTarget ? renderTarget->GetID() : 0);
 		}
@@ -210,7 +210,7 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, co
 	tabi::array<float, 4> clearColor;
 	std::copy_n(a_ClearColor, 4, clearColor.begin());
 
-	m_PendingCommands.emplace_back([clearColor = std::move(clearColor)]
+	m_PendingCommands.Add([clearColor = std::move(clearColor)]
 		{
 			glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -229,7 +229,7 @@ void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, fl
 	auto* originalRenderTarget = m_CurrentRenderTarget;
 	SetRenderTarget(a_RenderTarget);
 
-	m_PendingCommands.emplace_back([a_DepthValue, a_StencilValue]
+	m_PendingCommands.Add([a_DepthValue, a_StencilValue]
 		{
 			glClearDepthf(a_DepthValue);
 			glClearStencil(a_StencilValue);
@@ -309,7 +309,7 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPi
 	
 	m_GraphicsPipeline = static_cast<OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
 
-	m_PendingCommands.emplace_back([pipeline = m_GraphicsPipeline]
+	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
 		{
 			glBindProgramPipeline(pipeline->GetID());
 			glBindVertexArray(pipeline->GetVAO());
@@ -412,7 +412,7 @@ void tabi::OpenGLCommandList::UseComputePipeline(ComputePipeline* a_ComputePipel
 
 	m_ComputePipeline = static_cast<OpenGLComputePipeline*>(a_ComputePipeline);
 
-	m_PendingCommands.emplace_back([pipeline = m_GraphicsPipeline]
+	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
 		{
 			glBindProgramPipeline(pipeline->GetID());
 		}
@@ -435,7 +435,7 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 	tabi::vector<char> stagedTextureData(texDataBytes);
 	std::copy_n(a_TextureUpdateDescription.m_Data, texDataBytes, stagedTextureData.begin());
 
-	m_PendingCommands.push_back([tex = static_cast<OpenGLTexture*>(a_Texture), a_TextureUpdateDescription, data = std::move(stagedTextureData)]
+	m_PendingCommands.Add([tex = static_cast<OpenGLTexture*>(a_Texture), a_TextureUpdateDescription, data = std::move(stagedTextureData)]
 		{
 			auto offsetY = a_TextureUpdateDescription.m_OffsetY;
 			auto dataHeight = a_TextureUpdateDescription.m_DataHeight;
@@ -477,7 +477,7 @@ void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_D
 	tabi::vector<char> stagedBufferData(a_DataSize);
 	std::copy_n(a_Data, a_DataSize, stagedBufferData.begin());
 
-	m_PendingCommands.push_back([buf = static_cast<OpenGLBuffer*>(a_Buffer), data = std::move(stagedBufferData), a_DataSize, a_Offset]
+	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_Buffer), data = std::move(stagedBufferData), a_DataSize, a_Offset]
 		{
 			glNamedBufferSubData(buf->GetID(), a_Offset, a_DataSize, data.data());
 		}
@@ -489,7 +489,7 @@ void tabi::OpenGLCommandList::DrawVertices(uint32_t a_VertexCount, uint32_t a_St
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(m_GraphicsPipeline != nullptr);
 
-	m_PendingCommands.emplace_back([a_VertexCount, a_StartVertexLocation, topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology)]
+	m_PendingCommands.Add([a_VertexCount, a_StartVertexLocation, topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology)]
 		{
 			glDrawArrays(topology, a_StartVertexLocation, a_VertexCount);
 		}
@@ -502,7 +502,7 @@ void tabi::OpenGLCommandList::DrawInstanced(uint32_t a_VertexCountPerInstance, u
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(m_GraphicsPipeline != nullptr);
 
-	m_PendingCommands.emplace_back([a_VertexCountPerInstance, a_StartVertexLocation, a_InstanceCount, topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology)]
+	m_PendingCommands.Add([a_VertexCountPerInstance, a_StartVertexLocation, a_InstanceCount, topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology)]
 		{
 			glDrawArraysInstanced(topology, a_StartVertexLocation, a_VertexCountPerInstance, a_InstanceCount);
 		}
@@ -522,7 +522,7 @@ void tabi::OpenGLCommandList::DrawIndexed(uint32_t a_IndexCount, uint32_t a_Star
 	const auto startIndexPosition = a_StartIndexLocation * indexBufferStride;
 	const auto topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology);
 
-	m_PendingCommands.emplace_back([a_IndexCount, a_StartVertexLocation, topology, startIndexPosition, indexType]
+	m_PendingCommands.Add([a_IndexCount, a_StartVertexLocation, topology, startIndexPosition, indexType]
 		{
 			glDrawElementsBaseVertex(topology, a_IndexCount, indexType, reinterpret_cast<void*>(startIndexPosition), a_StartVertexLocation);
 		}
@@ -542,7 +542,7 @@ void tabi::OpenGLCommandList::DrawIndexedInstanced(uint32_t a_IndexCountPerInsta
 	const auto startIndexPosition = a_StartIndexLocation * indexBufferStride;
 	const auto topology = GLTopology(m_GraphicsPipeline->GetPipelineDescription().m_Topology);
 
-	m_PendingCommands.emplace_back([a_IndexCountPerInstance, a_InstanceCount, a_StartVertexLocation, topology, indexType, startIndexPosition]
+	m_PendingCommands.Add([a_IndexCountPerInstance, a_InstanceCount, a_StartVertexLocation, topology, indexType, startIndexPosition]
 		{
 			glDrawElementsInstancedBaseVertex(topology, a_IndexCountPerInstance, indexType, reinterpret_cast<void*>(startIndexPosition), a_InstanceCount, a_StartVertexLocation);
 		}
@@ -555,7 +555,7 @@ void tabi::OpenGLCommandList::DispatchComputePipeline(uint32_t a_GroupCountX, ui
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(m_ComputePipeline != nullptr);
 
-	m_PendingCommands.emplace_back([a_GroupCountX, a_GroupCountY, a_GroupCountZ]
+	m_PendingCommands.Add([a_GroupCountX, a_GroupCountY, a_GroupCountZ]
 		{
 			glDispatchCompute(a_GroupCountX, a_GroupCountY, a_GroupCountZ);
 		}

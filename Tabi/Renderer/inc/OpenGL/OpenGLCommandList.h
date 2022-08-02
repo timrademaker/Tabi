@@ -2,6 +2,7 @@
 
 #include "ICommandList.h"
 #include "TextureUpdateDescription.h"
+#include "Helpers/ExecutionQueue.h"
 
 #include <TabiContainers.h>
 
@@ -22,8 +23,6 @@ namespace tabi
 			{
 				m_DebugName = tabi::string(a_DebugName);
 			}
-
-			m_PendingCommands.reserve(128);
 		}
 		~OpenGLCommandList() = default;
 
@@ -62,6 +61,10 @@ namespace tabi
 
 		virtual void DispatchComputePipeline(uint32_t a_GroupCountX, uint32_t a_GroupCountY, uint32_t a_GroupCountZ) override;
 
+		/**
+		 * @brief Get the command list's pending commands
+		 */
+		inline const tabi::ExecutionQueue& GetPendingCommands() const { return m_PendingCommands; }
 	private:
 		bool m_IsRecording = false;
 
@@ -71,8 +74,7 @@ namespace tabi
 		class OpenGLRenderTarget* m_CurrentRenderTarget = nullptr;
 		Buffer* m_IndexBuffer = nullptr;
 
-		// TODO: This is private now, but OpenGLDevice will need to access this in order to execute a command list
-		tabi::vector<std::function<void()>> m_PendingCommands;
+		tabi::ExecutionQueue m_PendingCommands{ 128 };
 
 		tabi::string m_DebugName;
 	};

@@ -9,7 +9,7 @@ namespace tabi
         class Window : public IWindow
         {
         public:
-            Window(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
+            Window(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height);
             virtual ~Window() = default;
 
             static const char* GetWindowClassName();

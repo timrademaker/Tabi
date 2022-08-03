@@ -37,8 +37,6 @@ namespace tabi
         void Destroy();
 
     private:
-        tabi::shared_ptr<tabi::graphics::IWindow> m_Window;
-
         bool m_Running = false;
 
         bool m_Initialized = false;

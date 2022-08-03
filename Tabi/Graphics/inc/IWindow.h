@@ -2,22 +2,35 @@
 
 #include <TabiTypes.h>
 
-#include "IContext.h"
+#include <TabiEvent.h>
 
 namespace tabi
 {
+    struct WindowResizeEventData
+    {
+        uint32_t m_NewWidth = 0;
+        uint32_t m_NewHeight = 0;
+    };
+    DECLARE_EVENT(WindowResizeEvent, WindowResizeEventData);
+
     namespace graphics
     {
         class IWindow
         {
         public:
-            static tabi::shared_ptr<IWindow> OpenWindow(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height);
-
-            void SwapBuffer() const;
+        	static void Initialize(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height);
+            static IWindow& GetInstance();
 
             const char* GetWindowName() const;
             WindowHandle GetHandle() const;
-            IContext* GetContext() const;
+            void Resize(uint32_t a_Width, uint32_t a_Height);
+            void GetWindowDimensions(uint32_t& a_Width, uint32_t& a_Height) const
+            {
+                a_Width = m_Width;
+                a_Height = m_Height;
+            }
+
+            WindowResizeEvent& OnWindowResize() { return m_OnWindowResizeEvent; }
 
         protected:
             IWindow()
@@ -29,7 +42,12 @@ namespace tabi
         protected:
             const char* m_WindowName;
             WindowHandle m_WindowHandle;
-            tabi::shared_ptr<IContext> m_Context;
+
+        private:
+            uint32_t m_Width = 0;
+            uint32_t m_Height = 0;
+
+            WindowResizeEvent m_OnWindowResizeEvent;
         };
     }
 }

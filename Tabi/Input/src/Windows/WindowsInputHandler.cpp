@@ -10,7 +10,6 @@
 
 #include <TabiMacros.h>
 
-#include <IRenderer.h>
 #include <IWindow.h>
 
 DISABLE_WARNING_PUSH
@@ -27,19 +26,12 @@ using tabi::EInputDevice;
 
 tabi::InputHandler::InputHandler()
     : m_InputMap(m_GaInputManager)
-    , m_MouseDeltaX(0)
-    , m_MouseDeltaY(0)
+	, m_WindowHandle(tabi::graphics::IWindow::GetInstance().GetHandle())
 {
-    tabi::graphics::IRenderer::GetInstance().GetWindowDimensions(m_WindowWidth, m_WindowHeight);
-
-    m_GaInputManager.SetDisplaySize(m_WindowWidth, m_WindowHeight);
-
     m_InputDeviceTable[EInputDevice::Controller] = m_GaInputManager.CreateDevice<gainput::InputDevicePad>();
     m_InputDeviceTable[EInputDevice::Keyboard] = m_GaInputManager.CreateDevice<gainput::InputDeviceKeyboard>();
     m_InputDeviceTable[EInputDevice::Mouse] = m_GaInputManager.CreateDevice<gainput::InputDeviceMouse>();
 
-
-    m_RawInputDevice;
     // Raw input device
     m_RawInputDevice.hwndTarget = nullptr;
     m_RawInputDevice.dwFlags = 0;
@@ -50,6 +42,11 @@ tabi::InputHandler::InputHandler()
 
 void tabi::InputHandler::Update()
 {
+    GetWindowRect(m_WindowHandle, &m_WindowRect);
+    m_WindowWidth = m_WindowRect.right - m_WindowRect.left;
+    m_WindowHeight = m_WindowRect.bottom - m_WindowRect.top;
+    m_GaInputManager.SetDisplaySize(m_WindowWidth, m_WindowHeight);
+
     m_MouseDeltaX = 0;
     m_MouseDeltaY = 0;
 
@@ -65,11 +62,8 @@ void tabi::InputHandler::BindButton(unsigned int a_Button)
 {
     if (!IsBound(a_Button))
     {
-        EInputDevice deviceType = DetermineDeviceType(a_Button);
-        auto device = ConvertDeviceType(deviceType);
-        unsigned int convertedButton = ConvertButton(a_Button);
-
-        m_InputMap.MapBool(a_Button, device, convertedButton);
+        const EInputDevice deviceType = DetermineDeviceType(a_Button);
+        m_InputMap.MapBool(a_Button, ConvertDeviceType(deviceType), ConvertButton(a_Button));
     }
 }
 
@@ -85,11 +79,8 @@ void tabi::InputHandler::BindAxis(unsigned int a_Axis)
 {
     if (!IsBound(a_Axis))
     {
-        EInputDevice deviceType = DetermineDeviceType(a_Axis);
-        auto device = ConvertDeviceType(deviceType);
-        unsigned int convertedButton = ConvertButton(a_Axis);
-
-        m_InputMap.MapFloat(a_Axis, device, convertedButton);
+        const EInputDevice deviceType = DetermineDeviceType(a_Axis);
+        m_InputMap.MapFloat(a_Axis, ConvertDeviceType(deviceType), ConvertButton(a_Axis));
     }
 }
 
@@ -129,16 +120,16 @@ float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
 {
     if (IsBound(a_Axis))
     {
-        float pos = m_InputMap.GetFloat(a_Axis);
+        const float pos = m_InputMap.GetFloat(a_Axis);
         if (a_Delta)
         {
             if (a_Axis == static_cast<unsigned>(EMouse::MouseX))
             {
-                *a_Delta = static_cast<float>(m_MouseDeltaX) / float(m_WindowWidth);
+                *a_Delta = static_cast<float>(m_MouseDeltaX) / static_cast<float>(m_WindowWidth);
             }
             else if (a_Axis == static_cast<unsigned>(EMouse::MouseY))
             {
-                *a_Delta = static_cast<float>(m_MouseDeltaY) / float(m_WindowHeight);
+                *a_Delta = static_cast<float>(m_MouseDeltaY) / static_cast<float>(m_WindowHeight);
             }
             else
             {
@@ -200,7 +191,7 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
 
 unsigned int tabi::InputHandler::ConvertButton(unsigned int a_Button)
 {
-    EInputDevice deviceType = DetermineDeviceType(a_Button);
+    const EInputDevice deviceType = DetermineDeviceType(a_Button);
     unsigned int convertedButton;
     switch (deviceType)
     {
@@ -290,7 +281,7 @@ EInputDevice tabi::InputHandler::DetermineDeviceType(unsigned int a_Button)
     return EInputDevice();
 }
 
-bool tabi::InputHandler::IsBound(unsigned int a_Button)
+bool tabi::InputHandler::IsBound(unsigned int a_Button) const
 {
     return m_InputMap.IsMapped(a_Button);
 }
@@ -316,13 +307,9 @@ void tabi::InputHandler::SetCursorVisible(bool a_Visible)
 
 void tabi::InputHandler::CaptureCursor()
 {
-    auto& renderer = graphics::IRenderer::GetInstance();
-
-    //HWND window = FindWindow(graphics::Window::GetWindowClassName(), renderer.GetWindow().GetWindowName());
-    HWND window = renderer.GetWindow().GetHandle();
-    if (window)
+    if (m_WindowHandle)
     {
-        if (GetFocus() != window)
+        if (GetFocus() != m_WindowHandle)
         {
             // Don't capture if the window doesn't have focus
             m_MouseDeltaX = 0;
@@ -331,16 +318,13 @@ void tabi::InputHandler::CaptureCursor()
             SetCursorVisible(true);
             return;
         }
+
         SetCursorVisible(!m_HideCursor);
 
         POINT beforePos = { 0 };
         GetCursorPos(&beforePos);
 
-        RECT rect = { 0 };
-        GetWindowRect(window, &rect);
-        SetCursorPos(rect.right - (m_WindowWidth / 2), rect.bottom - (m_WindowHeight / 2));
-        m_WindowWidth = rect.right - rect.left;
-        m_WindowHeight = rect.bottom - rect.top;
+        SetCursorPos(m_WindowRect.right - (m_WindowWidth / 2), m_WindowRect.bottom - (m_WindowHeight / 2));
 
         POINT afterPos = { 0 };
         GetCursorPos(&afterPos);
@@ -352,7 +336,6 @@ void tabi::InputHandler::CaptureCursor()
 
 unsigned int tabi::InputHandler::ConvertDeviceType(EInputDevice a_Device)
 {
-
     const auto& iter = m_InputDeviceTable.find(a_Device);
     if (iter != m_InputDeviceTable.end())
     {

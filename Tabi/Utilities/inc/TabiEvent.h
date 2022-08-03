@@ -29,7 +29,7 @@ namespace tabi
         * @params a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
-        typename typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type 
+        typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type 
             Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo));
         /**
         * @brief Subscribe a callback to an event
@@ -43,7 +43,7 @@ namespace tabi
         * @params a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
-        typename typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type 
+        typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type 
             Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)());
         /**
         * @brief Subscribe a static function to an event
@@ -76,7 +76,7 @@ namespace tabi
         * @brief Broadcasts an event to all subscribers. Only available when using tabi::Event
         */
         template<typename T = EventInfo>
-        typename typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast();
+        typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast();
 
         /**
         * @brief Checks if this event has any subscribers

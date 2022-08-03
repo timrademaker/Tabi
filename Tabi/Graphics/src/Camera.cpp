@@ -1,10 +1,6 @@
 #include "Camera.h"
 
-#include "IRenderer.h"
-
 #include <Logging.h>
-#include <Math/TabiMath.h>
-
 
 void tabi::Camera::MoveBy(tabi::vec3 a_Translation)
 {
@@ -52,6 +48,12 @@ void tabi::Camera::SetFar(const float a_Far)
     m_ProjectionDirty = true;
 }
 
+void tabi::Camera::SetAspectRatio(float a_AspectRatio)
+{
+    m_AspectRatio = a_AspectRatio;
+    m_ProjectionDirty = true;
+}
+
 void tabi::Camera::SetFoV(const float a_FoV)
 {
     m_FoV = a_FoV;
@@ -96,15 +98,11 @@ void tabi::Camera::GenerateProjection()
     {
         if (m_CameraType == ECameraType::Perspective)
         {
-            unsigned int width;
-            unsigned int height;
-            graphics::IRenderer::GetInstance().GetWindowDimensions(width, height);
-            const float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-            m_Projection = mat4::CreatePerspectiveProjectionMatrix(m_FoV, aspectRatio, m_Near, m_Far);
+            m_Projection = mat4::CreatePerspectiveProjectionMatrix(m_FoV, m_AspectRatio, m_Near, m_Far);
         }
         else if(m_CameraType == ECameraType::Orthographic)
         {
-            tabi::logger::TabiLog(tabi::logger::ELogLevel::Error, "Ortographic camera projection not implemented!");
+            tabi::logger::TabiLog(tabi::logger::ELogLevel::Error, "Orthographic camera projection not implemented!");
         }
 
         m_ProjectionDirty = false;

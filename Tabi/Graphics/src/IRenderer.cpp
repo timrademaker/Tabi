@@ -34,7 +34,8 @@ void tabi::graphics::IRenderer::UpdateWindowDimensions(unsigned int a_Width, uns
 {
     if (m_Window)
     {
-        m_Window->GetContext()->Resize(a_Width, a_Height);
+        //m_Window->GetContext()->Resize(a_Width, a_Height);
+        TABI_ASSERT(false, "Deprecated");
     }
 }
 
@@ -42,7 +43,7 @@ void tabi::graphics::IRenderer::GetWindowDimensions(unsigned int& a_Width, unsig
 {
     if (m_Window)
     {
-        m_Window->GetContext()->GetContextDimensions(a_Width, a_Height);
+        IWindow::GetInstance().GetWindowDimensions(a_Width, a_Height);
     }
 }
 

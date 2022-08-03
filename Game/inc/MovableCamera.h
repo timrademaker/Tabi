@@ -8,7 +8,7 @@
 class MovableCamera
 {
 public:
-    MovableCamera();
+    MovableCamera(float a_AspectRatio);
 
     void MoveUp         (tabi::ButtonEvent);
     void MoveDown       (tabi::ButtonEvent);

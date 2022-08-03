@@ -4,10 +4,8 @@
 #include <Enums/EKeyboard.h>
 #include <Enums/EController.h>
 
-#include <Math/TabiMath.h>
-
-MovableCamera::MovableCamera()
-    : m_Camera(tabi::make_shared<tabi::Camera>())
+MovableCamera::MovableCamera(float a_AspectRatio)
+    : m_Camera(tabi::make_shared<tabi::Camera>(a_AspectRatio))
     , m_DeltaTime(0.0f)
 {
     // Keyboard and mouse

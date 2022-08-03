@@ -21,7 +21,7 @@ using namespace tabi::graphics;
 
 const char* Window::ms_WindowClassName = "TabiWindowClass";
 
-tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height)
+tabi::graphics::Window::Window(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height)
 {
     WindowHandle handle;
     {
@@ -48,7 +48,6 @@ tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, u
     }
     m_WindowName = a_WindowName;
     m_WindowHandle = handle;
-    m_Context = tabi::make_shared<Context>(handle, a_Width, a_Height);
 }
 
 const char* tabi::graphics::Window::GetWindowClassName()
@@ -67,9 +66,10 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
     }
     case WM_SIZE:
     {
-        unsigned int width = LOWORD(lParam);
-        unsigned int height = HIWORD(lParam);
-        IRenderer::GetInstance().UpdateWindowDimensions(width, height);
+        const unsigned int width = LOWORD(lParam);
+        const unsigned int height = HIWORD(lParam);
+
+        IWindow::GetInstance().Resize(width, height);
 
         break;
     }

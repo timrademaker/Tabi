@@ -39,6 +39,8 @@ namespace tabi
 
             virtual ~IWindow() = default;
 
+            virtual bool InitializeWindow(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height) = 0;
+
         protected:
             const char* m_WindowName;
             WindowHandle m_WindowHandle;

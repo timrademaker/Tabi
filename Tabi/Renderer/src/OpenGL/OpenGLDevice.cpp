@@ -14,6 +14,8 @@
 #include "Helpers/RendererLogger.h"
 #include "Helpers/FormatInfo.h"
 
+#pragma comment (lib, "opengl32.lib")
+
 namespace tabi
 {
 	struct GLDeviceContext

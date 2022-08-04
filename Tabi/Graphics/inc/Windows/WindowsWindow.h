@@ -6,13 +6,16 @@ namespace tabi
 {
     namespace graphics
     {
-        class Window : public IWindow
+        class Window final : public IWindow
         {
         public:
-            Window(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height);
+            Window() = default;
             virtual ~Window() = default;
 
             static const char* GetWindowClassName();
+
+        private:
+            virtual bool InitializeWindow(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height) override;
 
         private:
             static const char* ms_WindowClassName;

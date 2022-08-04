@@ -6,22 +6,19 @@
 
 #include <Application.h>
 
-#include <glad/glad.h>
-
 #include <Windows.h>
 #include <GL/GL.h>
-
-#if defined(OPENGL)
-#include "Windows/OpenGL/OpenGLContext.h"
-#endif
-
-#pragma comment (lib, "opengl32.lib")
 
 using namespace tabi::graphics;
 
 const char* Window::ms_WindowClassName = "TabiWindowClass";
 
-tabi::graphics::Window::Window(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height)
+const char* tabi::graphics::Window::GetWindowClassName()
+{
+    return ms_WindowClassName;
+}
+
+bool Window::InitializeWindow(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height)
 {
     WindowHandle handle;
     {
@@ -35,8 +32,9 @@ tabi::graphics::Window::Window(const char* a_WindowName, uint32_t a_Width, uint3
 
         if (!RegisterClass(&wc))
         {
-            logger::TabiLog(logger::ELogLevel::Critical, "Unable to register class for window creation!");
-            assert(false);
+            TABI_CRITICAL("Unable to register class for window creation!");
+            TABI_ASSERT(false);
+            return false;
         }
 
         handle = CreateWindowEx(0, wc.lpszClassName,
@@ -46,13 +44,11 @@ tabi::graphics::Window::Window(const char* a_WindowName, uint32_t a_Width, uint3
             nullptr, nullptr, nullptr, nullptr
         );
     }
+
     m_WindowName = a_WindowName;
     m_WindowHandle = handle;
-}
 
-const char* tabi::graphics::Window::GetWindowClassName()
-{
-    return ms_WindowClassName;
+    return true;
 }
 
 LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -70,7 +66,6 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
         const unsigned int height = HIWORD(lParam);
 
         IWindow::GetInstance().Resize(width, height);
-
         break;
     }
     default:

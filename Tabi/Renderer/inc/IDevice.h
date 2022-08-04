@@ -26,6 +26,15 @@ namespace tabi
 		virtual void Finalize() = 0;
 
 		/**
+		 * @brief Resize the rendering context
+		 * @param a_Width The new width of the context
+		 * @param a_Height The new height of the context
+		 *
+		 * @note This does not need a proper implementation on platforms where the window is unable to resize
+		 */
+		virtual void ResizeRenderingContext(uint32_t a_Width, uint32_t a_Height) = 0;
+
+		/**
 		 * @brief Create a new texture
 		 * @param a_TextureDescription A struct describing the texture to create
 		 * @param a_DebugName The debug name to assign to the created object (if supported)

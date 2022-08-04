@@ -143,6 +143,15 @@ void tabi::OpenGLDevice::Finalize()
 	EndFrame();
 }
 
+void tabi::OpenGLDevice::ResizeRenderingContext(uint32_t a_Width, uint32_t a_Height)
+{
+	m_CommandQueue.Add([a_Width, a_Height]
+		{
+			glViewport(0, 0, a_Width, a_Height);
+		}
+	);
+}
+
 tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName)
 {
 	TABI_ASSERT(a_TextureDescription.m_Dimension != ETextureDimension::Unknown);

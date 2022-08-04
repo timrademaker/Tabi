@@ -30,7 +30,7 @@ namespace tabi
                 a_Height = m_Height;
             }
 
-            WindowResizeEvent& OnWindowResize() { return m_OnWindowResizeEvent; }
+            const WindowResizeEvent& OnWindowResize() const { return m_OnWindowResizeEvent; }
 
         protected:
             IWindow()

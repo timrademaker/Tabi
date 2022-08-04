@@ -99,6 +99,11 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
         s_Device = tabi::IDevice::GetInstance();
         s_Device->Initialize(graphics::IWindow::GetInstance().GetHandle(), a_Width, a_Height);
 
+        window.OnWindowResize().Subscribe(s_Device, [device = s_Device](tabi::WindowResizeEventData a_Data)
+        {
+                device->ResizeRenderingContext(a_Data.m_NewWidth, a_Data.m_NewHeight);
+        });
+
         m_Initialized = true;
     }
 }
@@ -106,5 +111,6 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
 
 void Application::Destroy()
 {
+    graphics::IWindow::GetInstance().OnWindowResize().Unsubscribe(s_Device);
     s_Device->Finalize();
 }

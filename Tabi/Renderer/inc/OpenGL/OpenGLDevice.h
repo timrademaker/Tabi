@@ -15,6 +15,8 @@ namespace tabi
 		virtual void Initialize(void* a_Window, uint32_t a_Width, uint32_t a_Height) override;
 		virtual void Finalize() override;
 
+		virtual void ResizeRenderingContext(uint32_t a_Width, uint32_t a_Height) override;
+
 		virtual Texture* CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName = nullptr) override;
 		virtual Buffer* CreateBuffer(const BufferDescription& a_BufferDescription, const char* a_DebugName = nullptr) override;
 		virtual Shader* CreateShader(const ShaderDescription& a_ShaderDescription, const char* a_DebugName = nullptr) override;

@@ -288,11 +288,11 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				GLint shaderLogLength = 0;
 				glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &shaderLogLength);
 
-				std::vector<GLchar> shaderLog(shaderLogLength);
+				std::vector<GLchar> shaderLog(shaderLogLength + 1);
 				glGetShaderInfoLog(shaderId, shaderLogLength, &shaderLogLength, &shaderLog[0]);
 				glDeleteShader(shaderId);
 
-				LOG_ERROR("Failed to compile shader. Error: %s", shaderLog.data());
+				LOG_ERROR("Failed to compile shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(shaderLog.data()));
 				TABI_ASSERT(isCompiled == GL_TRUE, "Shader failed to compile!");
 				return;
 			}
@@ -317,7 +317,7 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				glDeleteProgram(programId);
 				glDeleteShader(shaderId);
 
-				LOG_ERROR("Failed to link shader program. Error: %s", programLog.data());
+				LOG_ERROR("Failed to link program for shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(programLog.data()));
 				TABI_ASSERT(isLinked == GL_TRUE, "Shader program failed to link!");
 
 				glDeleteProgram(programId);

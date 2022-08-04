@@ -118,18 +118,21 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 	TABI_ASSERT(pixelFormat != 0, "Failed to choose pixel format");
 	SetPixelFormat(context, pixelFormat, &pfd);
 
-	const auto renderingContext = wglCreateContext(context);
-	wglMakeCurrent(context, renderingContext);
+	m_CommandQueue.Add([context, a_Width, a_Height]
+		{
+			const auto renderingContext = wglCreateContext(context);
+			wglMakeCurrent(context, renderingContext);
 
-	TABI_ASSERT(gladLoadGL(), "Failed to initialize OpenGL context");
-	
+			TABI_ASSERT(gladLoadGL(), "Failed to initialize OpenGL context");
 
 #if defined(GL_DEBUG_OUTPUT)
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback(GLMessageCallback, 0);
+			glEnable(GL_DEBUG_OUTPUT);
+			glDebugMessageCallback(GLMessageCallback, 0);
 #endif
 
-	glViewport(0, 0, a_Width, a_Height);
+			glViewport(0, 0, a_Width, a_Height);
+		}
+	);
 }
 
 void tabi::OpenGLDevice::Finalize()

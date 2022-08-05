@@ -163,7 +163,7 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
     m_GaInputManager.HandleMessage(a_Msg);
 
     // Handle raw mouse input
-    if (a_Msg.message == WM_INPUT && !m_CaptureMouse)
+    if (a_Msg.message == WM_INPUT)
     {
         UINT size;
         if (GetRawInputData(reinterpret_cast<HRAWINPUT>(a_Msg.lParam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1)
@@ -320,17 +320,7 @@ void tabi::InputHandler::CaptureCursor()
         }
 
         SetCursorVisible(!m_HideCursor);
-
-        POINT beforePos = { 0 };
-        GetCursorPos(&beforePos);
-
         SetCursorPos(m_WindowRect.right - (m_WindowWidth / 2), m_WindowRect.bottom - (m_WindowHeight / 2));
-
-        POINT afterPos = { 0 };
-        GetCursorPos(&afterPos);
-
-        m_MouseDeltaX = beforePos.x - afterPos.x;
-        m_MouseDeltaY = beforePos.y - afterPos.y;
     }
 }
 

@@ -2,13 +2,15 @@
 
 #include "Enums/ShaderEnums.h"
 
+#include <TabiMacros.h>
+
 namespace tabi
 {
 	struct ShaderDescription
 	{
 		EShaderType m_ShaderType = EShaderType::Invalid;
 		const char* m_Data = nullptr;
-		uint32_t m_DataLength = 0;
+		size_t m_DataLength = 0;
 	};
 
 	class Shader

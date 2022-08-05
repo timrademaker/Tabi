@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace tabi
 {
 	enum class EShaderType : int8_t

@@ -4,6 +4,7 @@ cmake_minimum_required (VERSION 3.8)
 # Set headers for Graphics
 set(HEADERS
     inc/Camera.h
+    inc/Graphics.h
     inc/Light.h
     inc/IWindow.h
 )
@@ -11,6 +12,7 @@ set(HEADERS
 # Set sources for Graphics
 set(SOURCES
     src/Camera.cpp
+    src/Graphics.cpp
     src/IWindow.cpp
 )
 
@@ -30,4 +32,4 @@ add_library(Graphics EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 target_include_directories(Graphics PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(Graphics PUBLIC TabiCommon Logger Core GLAD FileSystem ResourceManager)
+target_link_libraries(Graphics PUBLIC TabiCommon Logger Core FileSystem ResourceManager Renderer)

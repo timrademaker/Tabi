@@ -1,17 +1,11 @@
 #include "Resources/Mesh.h"
 
-#include <Resources/Material.h>
-
-#include <IRenderer.h>
-
-#include <Math/vec3.h>
+#include "Resources/Material.h"
 #include "ModelLoaderUtils.h"
 
+#include <Math/vec3.h>
+
 #include <tinygltf/tiny_gltf.h>
-
-#include <glad/glad.h>
-
-#include <cassert>
 
 
 #if defined(DIRECTX)
@@ -22,7 +16,7 @@ constexpr bool swapZPositionSign = false;
 
 using namespace tabi;
 
-tabi::Mesh::Mesh(const char* a_Path, const bool a_ShouldBufferMesh, const bool a_CleanUpMeshDataAfterBuffering)
+tabi::Mesh::Mesh(const char* a_Path)
 {
     auto path = tabi::string(a_Path);
     auto dotInd = path.find_last_of(".");
@@ -40,12 +34,6 @@ tabi::Mesh::Mesh(const char* a_Path, const bool a_ShouldBufferMesh, const bool a
     }
 
     *this = LoadMeshRaw(model);
-
-    if (a_ShouldBufferMesh)
-    {
-        tabi::graphics::IRenderer& renderer = tabi::graphics::IRenderer::GetInstance();
-        renderer.BufferMesh(*this, a_CleanUpMeshDataAfterBuffering);
-    }
 }
 
 tabi::shared_ptr<Mesh> Mesh::LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex)
@@ -69,8 +57,8 @@ Mesh tabi::Mesh::LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a
         auto attribIter = attribs.find("NORMAL");
         if (attribIter != attribs.end())
         {
-            assert(a_Model.accessors[attribIter->second].componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
-            assert(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC3);
+            TABI_ASSERT(a_Model.accessors[attribIter->second].componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+            TABI_ASSERT(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC3);
 
             const auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
             const auto count = a_Model.accessors[attribIter->second].count;
@@ -107,8 +95,8 @@ Mesh tabi::Mesh::LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a
         attribIter = attribs.find("POSITION");
         if (attribIter != attribs.end())
         {
-            assert(a_Model.accessors[attribIter->second].componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
-            assert(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC3);
+            TABI_ASSERT(a_Model.accessors[attribIter->second].componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+            TABI_ASSERT(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC3);
 
             const auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
             const auto count = a_Model.accessors[attribIter->second].count;
@@ -149,7 +137,7 @@ Mesh tabi::Mesh::LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a
         attribIter = attribs.find("TEXCOORD_0");
         if (attribIter != attribs.end())
         {
-            assert(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC2);
+            TABI_ASSERT(a_Model.accessors[attribIter->second].type == TINYGLTF_TYPE_VEC2);
 
             const auto& bufferView = a_Model.bufferViews[a_Model.accessors[attribIter->second].bufferView];
             const auto count = a_Model.accessors[attribIter->second].count;
@@ -213,7 +201,7 @@ Mesh tabi::Mesh::LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a
             int accessorIndex = gltfMesh.primitives[j].indices;
             if (accessorIndex != -1)
             {
-                assert(a_Model.accessors[accessorIndex].type == TINYGLTF_TYPE_SCALAR);
+                TABI_ASSERT(a_Model.accessors[accessorIndex].type == TINYGLTF_TYPE_SCALAR);
 
                 auto& bufferView = a_Model.bufferViews[a_Model.accessors[accessorIndex].bufferView];
                 auto count = a_Model.accessors[accessorIndex].count;

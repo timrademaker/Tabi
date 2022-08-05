@@ -6,20 +6,12 @@ set(HEADERS
     inc/Camera.h
     inc/Light.h
     inc/IWindow.h
-    inc/IRenderer.h
-    inc/IContext.h
-    inc/ISampler.h
-    inc/IShader.h
 )
 
 # Set sources for Graphics
 set(SOURCES
     src/Camera.cpp
-    src/IRenderer.cpp
-    src/IContext.cpp
     src/IWindow.cpp
-    src/ISampler.cpp
-    src/IShader.cpp
 )
 
 if(WINDOWS)
@@ -30,24 +22,6 @@ if(WINDOWS)
     list(APPEND SOURCES
         src/Windows/WindowsWindow.cpp
     )
-
-    if(USE_OPENGL)
-        list(APPEND HEADERS 
-            inc/Windows/OpenGL/OpenGLContext.h
-            inc/Windows/OpenGL/OpenGLRenderer.h
-            inc/Windows/OpenGL/OpenGLSampler.h
-            inc/Windows/OpenGL/OpenGLShader.h
-            inc/Windows/OpenGL/OpenGLHelpers.h
-        )
-    
-        list(APPEND SOURCES
-            src/Windows/OpenGL/OpenGLContext.cpp
-            src/Windows/OpenGL/OpenGLRenderer.cpp
-            src/Windows/OpenGL/OpenGLSampler.cpp
-            src/Windows/OpenGL/OpenGLShader.cpp
-            src/Windows/OpenGL/OpenGLHelpers.cpp
-        )
-    endif()
 endif()
 
 # Add source to this project's executable.

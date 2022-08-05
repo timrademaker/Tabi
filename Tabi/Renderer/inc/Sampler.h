@@ -3,6 +3,8 @@
 #include "Enums/ComparisonFunction.h"
 #include "Enums/SamplerEnums.h"
 
+#include <TabiMacros.h>
+
 namespace tabi
 {
     struct SamplerDescription

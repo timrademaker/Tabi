@@ -8,11 +8,8 @@ set(HEADERS
     inc/Resources/Material.h
     inc/Resources/Mesh.h
     inc/Resources/Model.h
-    inc/Resources/Texture.h
+    inc/Resources/TextureResource.h
     inc/ModelLoaderUtils.h
-
-    inc/Components/StaticMeshComponent.h
-    inc/Systems/StaticMeshRendererSystem.h
 )
 
 # Set sources for ResourceManager
@@ -21,11 +18,8 @@ set(SOURCES
     src/Resources/Material.cpp
     src/Resources/Mesh.cpp
     src/Resources/Model.cpp
-    src/Resources/Texture.cpp
+    src/Resources/TextureResource.cpp
     src/ModelLoaderUtils.cpp
-    
-    src/Components/StaticMeshComponent.cpp
-    src/Systems/StaticMeshRendererSystem.cpp
 )
 
 # Add source to this project's executable.

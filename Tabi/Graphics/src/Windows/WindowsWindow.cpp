@@ -1,7 +1,5 @@
 #include "Windows/WindowsWindow.h"
 
-#include "IRenderer.h"
-
 #include <Logging.h>
 
 #include <Application.h>

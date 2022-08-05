@@ -4,7 +4,7 @@
 #include <InputManager.h>
 #include <IInputHandler.h>
 
-#include <IRenderer.h>
+#include <IDevice.h>
 
 #include <Logging.h>
 
@@ -15,8 +15,6 @@
 #include "Windows/WindowsInputHandler.h"
 #endif
 
-
-#include "IDevice.h"
 
 tabi::IDevice* s_Device = nullptr;
 

@@ -7,8 +7,6 @@
 #include <Math/vec2.h>
 #include <Math/vec3.h>
 
-#include <glad/glad.h>
-
 namespace tinygltf
 {
     class Model;
@@ -32,10 +30,8 @@ namespace tabi
         Mesh() = default;
         /**
          * @params a_Path The path to the mesh to load
-         * @params a_ShouldBufferMesh If true, the mesh is uploaded to the GPU after being loaded
-         * @params a_CleanUpMeshDataAfterBuffering If true, removes mesh data from memory after uploading the GPU. Has no effect if a_ShouldBufferMesh is false.
          */
-        Mesh(const char* a_Path, const bool a_ShouldBufferMesh = true, const bool a_CleanUpMeshDataAfterBuffering = true);
+        Mesh(const char* a_Path);
 
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
 
@@ -46,11 +42,7 @@ namespace tabi
         tabi::vector<Vertex> m_Vertices;
         tabi::vector<unsigned> m_Indices;
 
-        GLuint m_VAO = 0;
-        GLuint m_VBO = 0;
-        GLuint m_EBO = 0;
-
-        unsigned int m_VertexCount;
+        unsigned int m_VertexCount = 0;
 
         tabi::shared_ptr<Material> m_Material = nullptr;
 

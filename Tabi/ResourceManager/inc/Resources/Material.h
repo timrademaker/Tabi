@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Texture.h"
+#include "TextureResource.h"
 
 #include <TabiTypes.h>
 
@@ -17,7 +17,7 @@ namespace tabi
     struct MetalicRoughness
     {
         vec4 m_BaseColorFactor;
-        tabi::shared_ptr<Texture> m_BaseColorTexture;
+        tabi::shared_ptr<TextureResource> m_BaseColorTexture;
 
         float m_MetalicFactor;
         float m_RoughnessFactor;
@@ -31,7 +31,7 @@ namespace tabi
     public:
         bool m_DoubleSided = false;
         tabi::unique_ptr<MetalicRoughness> m_MetalicRoughness;
-        tabi::shared_ptr<Texture> m_NormalTexture;
+        tabi::shared_ptr<TextureResource> m_NormalTexture;
 
         tabi::string m_Name;
     };

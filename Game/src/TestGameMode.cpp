@@ -106,3 +106,20 @@ void TestGameMode::OnRender()
     tabi::IDevice::GetInstance()->ExecuteCommandList(m_CommandList);
     m_CommandList->Reset();
 }
+
+void TestGameMode::OnDestroy()
+{
+    auto* device = tabi::IDevice::GetInstance();
+
+    for (size_t i = 0; i < m_VertexBuffers.size(); ++i)
+    {
+        device->DestroyBuffer(m_VertexBuffers[i]);
+        device->DestroyBuffer(m_IndexBuffers[i]);
+    }
+    m_VertexBuffers.clear();
+    m_IndexBuffers.clear();
+
+    device->DestroyBuffer(m_ConstBuffer);
+	device->DestroyGraphicsPipeline(m_MeshPipeline);
+    device->DestroyCommandList(m_CommandList);
+}

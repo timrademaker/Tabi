@@ -33,19 +33,19 @@ namespace tabi
 		virtual IFence* CreateFence() override;
 		virtual void InsertFence(IFence* a_Fence, uint64_t a_Value) override;
 
-		virtual void DestroyTexture(Texture* a_Texture) override;
-		virtual void DestroyBuffer(Buffer* a_Buffer) override;
-		virtual void DestroyShader(Shader* a_Shader) override;
-		virtual void DestroySampler(Sampler* a_Sampler) override;
+		virtual void DestroyTexture(Texture*& a_Texture) override;
+		virtual void DestroyBuffer(Buffer*& a_Buffer) override;
+		virtual void DestroyShader(Shader*& a_Shader) override;
+		virtual void DestroySampler(Sampler*& a_Sampler) override;
 
-		virtual void DestroyGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline) override;
-		virtual void DestroyComputePipeline(ComputePipeline* a_ComputePipeline) override;
+		virtual void DestroyGraphicsPipeline(GraphicsPipeline*& a_GraphicsPipeline) override;
+		virtual void DestroyComputePipeline(ComputePipeline*& a_ComputePipeline) override;
 
-		virtual void DestroyRenderTarget(RenderTarget* a_RenderTarget) override;
+		virtual void DestroyRenderTarget(RenderTarget*& a_RenderTarget) override;
 
-		virtual void DestroyCommandList(ICommandList* a_CommandList) override;
+		virtual void DestroyCommandList(ICommandList*& a_CommandList) override;
 
-		virtual void DestroyFence(IFence* a_Fence) override;
+		virtual void DestroyFence(IFence*& a_Fence) override;
 
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;

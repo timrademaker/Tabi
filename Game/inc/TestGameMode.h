@@ -22,6 +22,7 @@ public:
     virtual bool OnInitialize() override;
     virtual void OnUpdate(float a_DeltaTime) override;
     virtual void OnRender() override;
+    virtual void OnDestroy() override;
 
 private:
     tabi::vector<tabi::Buffer*> m_VertexBuffers;

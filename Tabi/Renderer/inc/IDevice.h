@@ -108,15 +108,15 @@ namespace tabi
 		 */
 		virtual void InsertFence(class IFence* a_Fence, uint64_t a_Value) = 0;
 
-		virtual void DestroyTexture(class Texture* a_Texture) = 0;
-		virtual void DestroyBuffer(class Buffer* a_Buffer) = 0;
-		virtual void DestroyShader(class Shader* a_Shader) = 0;
-		virtual void DestroySampler(class Sampler* a_Sampler) = 0;
-		virtual void DestroyGraphicsPipeline(class GraphicsPipeline* a_GraphicsPipeline) = 0;
-		virtual void DestroyComputePipeline(class ComputePipeline* a_ComputePipeline) = 0;
-		virtual void DestroyRenderTarget(class RenderTarget* a_RenderTarget) = 0;
-		virtual void DestroyCommandList(class ICommandList* a_CommandList) = 0;
-		virtual void DestroyFence(class IFence* a_Fence) = 0;
+		virtual void DestroyTexture(class Texture*& a_Texture) = 0;
+		virtual void DestroyBuffer(class Buffer*& a_Buffer) = 0;
+		virtual void DestroyShader(class Shader*& a_Shader) = 0;
+		virtual void DestroySampler(class Sampler*& a_Sampler) = 0;
+		virtual void DestroyGraphicsPipeline(class GraphicsPipeline*& a_GraphicsPipeline) = 0;
+		virtual void DestroyComputePipeline(class ComputePipeline*& a_ComputePipeline) = 0;
+		virtual void DestroyRenderTarget(class RenderTarget*& a_RenderTarget) = 0;
+		virtual void DestroyCommandList(class ICommandList*& a_CommandList) = 0;
+		virtual void DestroyFence(class IFence*& a_Fence) = 0;
 
 		/**
 		 * @brief Start a new frame

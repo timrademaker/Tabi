@@ -139,7 +139,8 @@ void tabi::OpenGLDevice::Finalize()
 {
 	while(!m_PendingFences.empty())
 	{
-		DestroyFence(m_PendingFences.front());
+		IFence* fence = m_PendingFences.front();
+		DestroyFence(fence);
 		m_PendingFences.pop();
 	}
 
@@ -514,60 +515,62 @@ void tabi::OpenGLDevice::ExecuteCommandList(const ICommandList* a_CommandList)
 	m_CommandQueue.CopyQueue(commandList->GetPendingCommands());
 }
 
-#define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.Add([ptr = static_cast<T*>(resource)] { \
+#define DESTROY_RESOURCE(T, resource) m_ResourceDeletionQueue.Add([ptr = static_cast<T*>(resource)]() mutable { \
 	ptr->Destroy(); \
 	delete ptr;\
+	ptr = nullptr;\
 })
 
-void tabi::OpenGLDevice::DestroyTexture(Texture* a_Texture)
+void tabi::OpenGLDevice::DestroyTexture(Texture*& a_Texture)
 {
 	TABI_ASSERT(a_Texture != nullptr);
 	DESTROY_RESOURCE(OpenGLTexture, a_Texture);
 }
 
-void tabi::OpenGLDevice::DestroyBuffer(Buffer* a_Buffer)
+void tabi::OpenGLDevice::DestroyBuffer(Buffer*& a_Buffer)
 {
 	TABI_ASSERT(a_Buffer != nullptr);
 	DESTROY_RESOURCE(OpenGLBuffer, a_Buffer);
 }
 
-void tabi::OpenGLDevice::DestroyShader(Shader* a_Shader)
+void tabi::OpenGLDevice::DestroyShader(Shader*& a_Shader)
 {
 	TABI_ASSERT(a_Shader != nullptr);
 	DESTROY_RESOURCE(OpenGLShader, a_Shader);
 }
 
-void tabi::OpenGLDevice::DestroySampler(Sampler* a_Sampler)
+void tabi::OpenGLDevice::DestroySampler(Sampler*& a_Sampler)
 {
 	TABI_ASSERT(a_Sampler != nullptr);
 	DESTROY_RESOURCE(OpenGLSampler, a_Sampler);
 }
 
-void tabi::OpenGLDevice::DestroyGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline)
+void tabi::OpenGLDevice::DestroyGraphicsPipeline(GraphicsPipeline*& a_GraphicsPipeline)
 {
 	TABI_ASSERT(a_GraphicsPipeline != nullptr);
 	DESTROY_RESOURCE(OpenGLGraphicsPipeline, a_GraphicsPipeline);
 }
 
-void tabi::OpenGLDevice::DestroyComputePipeline(ComputePipeline* a_ComputePipeline)
+void tabi::OpenGLDevice::DestroyComputePipeline(ComputePipeline*& a_ComputePipeline)
 {
 	TABI_ASSERT(a_ComputePipeline != nullptr);
 	DESTROY_RESOURCE(OpenGLComputePipeline, a_ComputePipeline);
 }
 
-void tabi::OpenGLDevice::DestroyRenderTarget(RenderTarget* a_RenderTarget)
+void tabi::OpenGLDevice::DestroyRenderTarget(RenderTarget*& a_RenderTarget)
 {
 	TABI_ASSERT(a_RenderTarget != nullptr);
 	DESTROY_RESOURCE(OpenGLRenderTarget, a_RenderTarget);
 }
 
-void tabi::OpenGLDevice::DestroyCommandList(ICommandList* a_CommandList)
+void tabi::OpenGLDevice::DestroyCommandList(ICommandList*& a_CommandList)
 {
 	TABI_ASSERT(a_CommandList != nullptr);
 	delete static_cast<OpenGLCommandList*>(a_CommandList);
+	a_CommandList = nullptr;
 }
 
-void tabi::OpenGLDevice::DestroyFence(IFence* a_Fence)
+void tabi::OpenGLDevice::DestroyFence(IFence*& a_Fence)
 {
 	TABI_ASSERT(a_Fence != nullptr);
 	DESTROY_RESOURCE(OpenGLFence, a_Fence);

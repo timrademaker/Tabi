@@ -52,6 +52,6 @@ namespace tabi
 
 	private:
 		tabi::vector<std::function<void()>> m_FunctionQueue;
-		std::mutex m_QueueMutex;
+		mutable std::mutex m_QueueMutex;
 	};
 }

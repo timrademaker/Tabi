@@ -30,25 +30,25 @@ namespace tabi
 		virtual void EndRecording() override;
 		virtual void Reset() override;
 
-		virtual void BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_VertexBuffers, size_t a_NumBuffers) override;
-		virtual void BindIndexBuffer(Buffer* a_IndexBuffer) override;
-		virtual void BindConstantBuffer(Buffer* a_Buffer, int32_t a_Slot) override;
-		virtual void BindReadWriteBuffer(Buffer* a_Buffer, int32_t a_Slot) override;
+		virtual void BindVertexBuffers(int32_t a_FirstSlot, const Buffer* const* a_VertexBuffers, size_t a_NumBuffers) override;
+		virtual void BindIndexBuffer(const Buffer* a_IndexBuffer) override;
+		virtual void BindConstantBuffer(const Buffer* a_Buffer, int32_t a_Slot) override;
+		virtual void BindReadWriteBuffer(const Buffer* a_Buffer, int32_t a_Slot) override;
 
-		virtual void BindTexture(Texture* a_Texture, int32_t a_Slot) override;
-		virtual void BindWritableTexture(Texture* a_Texture, int32_t a_Slot) override;
+		virtual void BindTexture(const Texture* a_Texture, int32_t a_Slot) override;
+		virtual void BindWritableTexture(const Texture* a_Texture, int32_t a_Slot) override;
 
-		virtual void BindSampler(Sampler* a_Sampler, int32_t a_Slot) override;
+		virtual void BindSampler(const Sampler* a_Sampler, int32_t a_Slot) override;
 
-		virtual void InsertBarrier(Texture* a_Texture) override;
-		virtual void InsertBarrier(Buffer* a_Buffer) override;
+		virtual void InsertBarrier(const Texture* a_Texture) override;
+		virtual void InsertBarrier(const Buffer* a_Buffer) override;
 
-		virtual void SetRenderTarget(RenderTarget* a_RenderTarget) override;
+		virtual void SetRenderTarget(const RenderTarget* a_RenderTarget) override;
 		virtual void ClearRenderTarget(RenderTarget* a_RenderTarget, const float a_ClearColor[4]) override;
 		virtual void ClearDepthStencil(RenderTarget* a_RenderTarget, float a_DepthValue, uint8_t a_StencilValue) override;
 
-		virtual void UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline) override;
-		virtual void UseComputePipeline(ComputePipeline* a_ComputePipeline) override;
+		virtual void UseGraphicsPipeline(const GraphicsPipeline* a_GraphicsPipeline) override;
+		virtual void UseComputePipeline(const ComputePipeline* a_ComputePipeline) override;
 		
 		virtual void CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription) override;
 		virtual void CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset) override;
@@ -68,11 +68,11 @@ namespace tabi
 	private:
 		bool m_IsRecording = false;
 
-		class OpenGLGraphicsPipeline* m_GraphicsPipeline = nullptr;
-		class OpenGLComputePipeline* m_ComputePipeline = nullptr;
+		const class OpenGLGraphicsPipeline* m_GraphicsPipeline = nullptr;
+		const class OpenGLComputePipeline* m_ComputePipeline = nullptr;
 
-		class OpenGLRenderTarget* m_CurrentRenderTarget = nullptr;
-		Buffer* m_IndexBuffer = nullptr;
+		const class OpenGLRenderTarget* m_CurrentRenderTarget = nullptr;
+		const Buffer* m_IndexBuffer = nullptr;
 
 		tabi::ExecutionQueue m_PendingCommands{ 128 };
 

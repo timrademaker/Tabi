@@ -508,9 +508,9 @@ tabi::ICommandList* tabi::OpenGLDevice::CreateCommandList(const char* a_DebugNam
 	return new OpenGLCommandList(a_DebugName);
 }
 
-void tabi::OpenGLDevice::ExecuteCommandList(ICommandList* a_CommandList)
+void tabi::OpenGLDevice::ExecuteCommandList(const ICommandList* a_CommandList)
 {
-	const auto* commandList = static_cast<OpenGLCommandList*>(a_CommandList);
+	const auto* commandList = static_cast<const OpenGLCommandList*>(a_CommandList);
 	m_CommandQueue.CopyQueue(commandList->GetPendingCommands());
 }
 

@@ -28,7 +28,7 @@ namespace tabi
 		virtual RenderTarget* CreateRenderTarget(const RenderTargetDescription& a_RenderTargetDescription, const char* a_DebugName = nullptr) override;
 
 		virtual ICommandList* CreateCommandList(const char* a_DebugName = nullptr) override;
-		virtual void ExecuteCommandList(ICommandList* a_CommandList) override;
+		virtual void ExecuteCommandList(const ICommandList* a_CommandList) override;
 
 		virtual IFence* CreateFence() override;
 		virtual void InsertFence(IFence* a_Fence, uint64_t a_Value) override;

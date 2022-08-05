@@ -95,7 +95,7 @@ namespace tabi
 		 * @brief Execute a command list
 		 * @param a_CommandList The command list to execute
 		 */
-		virtual void ExecuteCommandList(class ICommandList* a_CommandList) = 0;
+		virtual void ExecuteCommandList(const class ICommandList* a_CommandList) = 0;
 		/**
 		 * @brief Create a new fence object
 		 * @returns A handle to the created fence

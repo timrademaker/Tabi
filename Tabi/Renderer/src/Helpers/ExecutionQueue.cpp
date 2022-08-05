@@ -37,6 +37,7 @@ void tabi::ExecutionQueue::Reset()
 void tabi::ExecutionQueue::CopyQueue(const ExecutionQueue& a_Queue)
 {
 	std::lock_guard<std::mutex> guard(m_QueueMutex);
+	std::lock_guard<std::mutex> otherGuard(a_Queue.m_QueueMutex);
 
 	const auto elementsToCopy = a_Queue.m_FunctionQueue.size();
 	if(elementsToCopy > m_FunctionQueue.capacity() - m_FunctionQueue.size())

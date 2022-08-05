@@ -33,12 +33,12 @@ void tabi::OpenGLCommandList::Reset()
 	m_IsRecording = false;
 }
 
-void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_VertexBuffers, size_t a_NumBuffers)
+void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, const Buffer* const* a_VertexBuffers, size_t a_NumBuffers)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	// Copy the buffers to a vector so we don't have to rely on a_VertexBuffers remaining valid until the command list is executed
-	tabi::vector<Buffer*> buffers(a_NumBuffers);
+	tabi::vector<const Buffer*> buffers(a_NumBuffers);
 	std::copy_n(a_VertexBuffers, a_NumBuffers, buffers.data());
 
 	m_PendingCommands.Add([a_FirstSlot, a_NumBuffers, buffers = std::move(buffers)]
@@ -48,7 +48,7 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 
 			for (size_t i = 0; i < a_NumBuffers; ++i)
 			{
-				const OpenGLBuffer* oglBuffer = static_cast<OpenGLBuffer*>(buffers[i]);
+				const OpenGLBuffer* oglBuffer = static_cast<const OpenGLBuffer*>(buffers[i]);
 
 				vertexBuffers[i] = oglBuffer->GetID();
 				strides[i] = buffers[i]->GetBufferDescription().m_Stride;
@@ -61,14 +61,14 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, Buffer** a_
 	);
 }
 
-void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
+void tabi::OpenGLCommandList::BindIndexBuffer(const Buffer* a_IndexBuffer)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_IndexBuffer != nullptr);
 
 	m_IndexBuffer = a_IndexBuffer;
 
-	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_IndexBuffer)]
+	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_IndexBuffer)]
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf->GetID());
 		}
@@ -76,36 +76,36 @@ void tabi::OpenGLCommandList::BindIndexBuffer(Buffer* a_IndexBuffer)
 
 }
 
-void tabi::OpenGLCommandList::BindConstantBuffer(Buffer* a_Buffer, int32_t a_Slot)
+void tabi::OpenGLCommandList::BindConstantBuffer(const Buffer* a_Buffer, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Buffer != nullptr);
 
-	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
+	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
 			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, buf->GetID());
 		}
 	);
 }
 
-void tabi::OpenGLCommandList::BindReadWriteBuffer(Buffer* a_Buffer, int32_t a_Slot)
+void tabi::OpenGLCommandList::BindReadWriteBuffer(const Buffer* a_Buffer, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Buffer != nullptr);
 
-	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_Buffer), a_Slot]
+	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, buf->GetID());
 		}
 	);
 }
 
-void tabi::OpenGLCommandList::BindTexture(Texture* a_Texture, int32_t a_Slot)
+void tabi::OpenGLCommandList::BindTexture(const Texture* a_Texture, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Texture != nullptr);
 
-	m_PendingCommands.Add([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
+	m_PendingCommands.Add([tex = static_cast<const OpenGLTexture*>(a_Texture), a_Slot]
 		{
 			glActiveTexture(GL_TEXTURE0 + a_Slot);
 			glBindTexture(GLTextureDimension(tex->GetTextureDescription().m_Dimension), tex->GetID());
@@ -113,12 +113,12 @@ void tabi::OpenGLCommandList::BindTexture(Texture* a_Texture, int32_t a_Slot)
 	);
 }
 
-void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_Slot)
+void tabi::OpenGLCommandList::BindWritableTexture(const Texture* a_Texture, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Texture != nullptr);
 
-	m_PendingCommands.Add([tex = static_cast<OpenGLTexture*>(a_Texture), a_Slot]
+	m_PendingCommands.Add([tex = static_cast<const OpenGLTexture*>(a_Texture), a_Slot]
 		{
 			bool textureIsLayered = GL_FALSE;
 
@@ -146,19 +146,19 @@ void tabi::OpenGLCommandList::BindWritableTexture(Texture* a_Texture, int32_t a_
 	);
 }
 
-void tabi::OpenGLCommandList::BindSampler(Sampler* a_Sampler, int32_t a_Slot)
+void tabi::OpenGLCommandList::BindSampler(const Sampler* a_Sampler, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Sampler != nullptr);
 
-	m_PendingCommands.Add([samp = static_cast<OpenGLSampler*>(a_Sampler), a_Slot]
+	m_PendingCommands.Add([samp = static_cast<const OpenGLSampler*>(a_Sampler), a_Slot]
 		{
 			glBindSampler(a_Slot, samp->GetID());
 		}
 	);
 }
 
-void tabi::OpenGLCommandList::InsertBarrier(Texture* a_Texture)
+void tabi::OpenGLCommandList::InsertBarrier(const Texture* a_Texture)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_UNUSED(a_Texture);
@@ -170,7 +170,7 @@ void tabi::OpenGLCommandList::InsertBarrier(Texture* a_Texture)
 	);
 }
 
-void tabi::OpenGLCommandList::InsertBarrier(Buffer* a_Buffer)
+void tabi::OpenGLCommandList::InsertBarrier(const Buffer* a_Buffer)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_UNUSED(a_Buffer);
@@ -182,7 +182,7 @@ void tabi::OpenGLCommandList::InsertBarrier(Buffer* a_Buffer)
 	);
 }
 
-void tabi::OpenGLCommandList::SetRenderTarget(RenderTarget* a_RenderTarget)
+void tabi::OpenGLCommandList::SetRenderTarget(const RenderTarget* a_RenderTarget)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
@@ -191,7 +191,7 @@ void tabi::OpenGLCommandList::SetRenderTarget(RenderTarget* a_RenderTarget)
 		return;
 	}
 
-	m_CurrentRenderTarget = static_cast<OpenGLRenderTarget*>(a_RenderTarget);
+	m_CurrentRenderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget);
 
 	m_PendingCommands.Add([renderTarget = m_CurrentRenderTarget]
 		{
@@ -297,7 +297,7 @@ namespace tabi
 	}
 }
 
-void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPipeline)
+void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_GraphicsPipeline)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_GraphicsPipeline != nullptr);
@@ -307,7 +307,7 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPi
 		return;
 	}
 	
-	m_GraphicsPipeline = static_cast<OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
+	m_GraphicsPipeline = static_cast<const OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
 
 	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
 		{
@@ -400,7 +400,7 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(GraphicsPipeline* a_GraphicsPi
 	);
 }
 
-void tabi::OpenGLCommandList::UseComputePipeline(ComputePipeline* a_ComputePipeline)
+void tabi::OpenGLCommandList::UseComputePipeline(const ComputePipeline* a_ComputePipeline)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_ComputePipeline != nullptr);
@@ -410,7 +410,7 @@ void tabi::OpenGLCommandList::UseComputePipeline(ComputePipeline* a_ComputePipel
 		return;
 	}
 
-	m_ComputePipeline = static_cast<OpenGLComputePipeline*>(a_ComputePipeline);
+	m_ComputePipeline = static_cast<const OpenGLComputePipeline*>(a_ComputePipeline);
 
 	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
 		{
@@ -435,7 +435,7 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 	tabi::vector<char> stagedTextureData(texDataBytes);
 	std::copy_n(a_TextureUpdateDescription.m_Data, texDataBytes, stagedTextureData.begin());
 
-	m_PendingCommands.Add([tex = static_cast<OpenGLTexture*>(a_Texture), a_TextureUpdateDescription, data = std::move(stagedTextureData)]
+	m_PendingCommands.Add([tex = static_cast<const OpenGLTexture*>(a_Texture), a_TextureUpdateDescription, data = std::move(stagedTextureData)]
 		{
 			auto offsetY = a_TextureUpdateDescription.m_OffsetY;
 			auto dataHeight = a_TextureUpdateDescription.m_DataHeight;
@@ -477,7 +477,7 @@ void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_D
 	tabi::vector<char> stagedBufferData(a_DataSize);
 	std::copy_n(a_Data, a_DataSize, stagedBufferData.begin());
 
-	m_PendingCommands.Add([buf = static_cast<OpenGLBuffer*>(a_Buffer), data = std::move(stagedBufferData), a_DataSize, a_Offset]
+	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), data = std::move(stagedBufferData), a_DataSize, a_Offset]
 		{
 			glNamedBufferSubData(buf->GetID(), a_Offset, a_DataSize, data.data());
 		}

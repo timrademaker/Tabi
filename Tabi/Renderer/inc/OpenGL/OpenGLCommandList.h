@@ -71,7 +71,6 @@ namespace tabi
 		const class OpenGLGraphicsPipeline* m_GraphicsPipeline = nullptr;
 		const class OpenGLComputePipeline* m_ComputePipeline = nullptr;
 
-		const class OpenGLRenderTarget* m_CurrentRenderTarget = nullptr;
 		const Buffer* m_IndexBuffer = nullptr;
 
 		tabi::ExecutionQueue m_PendingCommands{ 128 };

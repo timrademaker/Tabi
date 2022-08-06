@@ -189,14 +189,7 @@ void tabi::OpenGLCommandList::SetRenderTarget(const RenderTarget* a_RenderTarget
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	if(a_RenderTarget == m_CurrentRenderTarget)
-	{
-		return;
-	}
-
-	m_CurrentRenderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget);
-
-	m_PendingCommands.Add([renderTarget = m_CurrentRenderTarget]
+	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget)]
 		{
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderTarget ? renderTarget->GetID() : 0);
 		}
@@ -207,21 +200,15 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, co
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	auto* originalRenderTarget = m_CurrentRenderTarget;
-	SetRenderTarget(a_RenderTarget);
-
 	tabi::array<float, 4> clearColor;
 	std::copy_n(a_ClearColor, 4, clearColor.begin());
 
-	m_PendingCommands.Add([clearColor = std::move(clearColor)]
+	m_PendingCommands.Add([id = a_RenderTarget != nullptr ? static_cast<OpenGLRenderTarget*>(a_RenderTarget)->GetID() : 0, clearColor = std::move(clearColor)]
 		{
-			glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-			glClear(GL_COLOR_BUFFER_BIT);
+		    glClearNamedFramebufferfv(id, GL_COLOR, 0, &clearColor[0]);
 		}
 	);
 
-	// Rebind the target that was originally bound to prevent unexpectedly rendering to a different render target
-	SetRenderTarget(originalRenderTarget);
 }
 
 void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, float a_DepthValue,
@@ -229,19 +216,11 @@ void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, fl
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	auto* originalRenderTarget = m_CurrentRenderTarget;
-	SetRenderTarget(a_RenderTarget);
-
-	m_PendingCommands.Add([a_DepthValue, a_StencilValue]
+	m_PendingCommands.Add([id = a_RenderTarget != nullptr ? static_cast<OpenGLRenderTarget*>(a_RenderTarget)->GetID() : 0, a_DepthValue, a_StencilValue]
 		{
-			glClearDepthf(a_DepthValue);
-			glClearStencil(a_StencilValue);
-			glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			glClearNamedFramebufferfi(id, GL_DEPTH_STENCIL, 0, a_DepthValue, a_StencilValue);
 		}
 	);
-
-	// Rebind the target that was originally bound to prevent unexpectedly rendering to a different render target
-	SetRenderTarget(originalRenderTarget);
 }
 
 namespace tabi

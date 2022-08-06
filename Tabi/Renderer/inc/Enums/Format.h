@@ -73,7 +73,7 @@ namespace tabi
 		R8_sint,
 
 		/* Depth */
-		Depth16,
+		Depth16_unorm,
 		Depth32_float,
 
 		Depth24Stencil8,

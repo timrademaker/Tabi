@@ -92,7 +92,7 @@ namespace tabi
 			case EFormat::R8_sint:
 				return GL_RED;
 
-			case EFormat::Depth16:
+			case EFormat::Depth16_unorm:
 			case EFormat::Depth32_float:
 				return  GL_DEPTH_COMPONENT;
 
@@ -206,7 +206,7 @@ namespace tabi
 				return GL_R8UI;
 			case EFormat::R8_sint:
 				return GL_R8I;
-			case EFormat::Depth16:
+			case EFormat::Depth16_unorm:
 				return GL_DEPTH_COMPONENT16;
 			case EFormat::Depth32_float:
 				return GL_DEPTH_COMPONENT32F;

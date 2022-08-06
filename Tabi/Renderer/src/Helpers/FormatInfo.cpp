@@ -58,7 +58,7 @@ namespace tabi
             Add(EFormat::R8_snorm,			{ true,		 1,		1,	EDataType::Byte		});
             Add(EFormat::R8_uint,			{ false,	 1,		1,	EDataType::Ubyte	});
             Add(EFormat::R8_sint,			{ false,	 1,		1,	EDataType::Byte		});
-            Add(EFormat::Depth16,			{ false,	 2,		1,	EDataType::Ushort	});
+            Add(EFormat::Depth16_unorm,		{ true,	     2,		1,	EDataType::Ushort	});
             Add(EFormat::Depth32_float,		{ false,	 4,		1,	EDataType::Float	});
             Add(EFormat::Depth24Stencil8,   { false,	 4,		2,	EDataType::Int24_8	});
         }

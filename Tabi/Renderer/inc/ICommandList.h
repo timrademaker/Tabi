@@ -107,7 +107,7 @@ namespace tabi
 		 * @param a_DepthValue The value to clear the depth buffer with. Should be between 0.0 and 1.0
 		 * @param a_StencilValue The value to clear the stencil buffer with
 		 */
-		virtual void ClearDepthStencil(class RenderTarget* a_RenderTarget, float a_DepthValue = 0.0f, uint8_t a_StencilValue = 0) = 0;
+		virtual void ClearDepthStencil(class RenderTarget* a_RenderTarget, float a_DepthValue = 1.0f, uint8_t a_StencilValue = 0) = 0;
 
 		/*
 		 * @brief Start using a certain graphics pipeline

@@ -352,11 +352,20 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 
 			if (pipelineDesc.m_DepthStencilState.m_EnableDepthTest)
 			{
-				const auto& back = pipelineDesc.m_DepthStencilState.m_BackStencilState;
-				const auto& front = pipelineDesc.m_DepthStencilState.m_FrontStencilState;
-
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GLComparisonFunction(pipelineDesc.m_DepthStencilState.m_ComparisonFunction));
+			}
+			else
+			{
+				glDisable(GL_DEPTH_TEST);
+			}
+
+			if(pipelineDesc.m_DepthStencilState.m_FrontStencilState.m_StencilFunc != EComparisonFunction::Never || pipelineDesc.m_DepthStencilState.m_BackStencilState.m_StencilFunc != EComparisonFunction::Never )
+			{
+				glEnable(GL_STENCIL_TEST);
+
+				const auto& back = pipelineDesc.m_DepthStencilState.m_BackStencilState;
+				const auto& front = pipelineDesc.m_DepthStencilState.m_FrontStencilState;
 
 				if (front.m_StencilFunc == back.m_StencilFunc
 					&& front.m_ReferenceValue == back.m_ReferenceValue
@@ -384,7 +393,7 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 			}
 			else
 			{
-				glDisable(GL_DEPTH_TEST);
+				glDisable(GL_STENCIL_TEST);
 			}
 
 			if (pipelineDesc.m_RasterizerState.m_CullMode == ECullMode::None)

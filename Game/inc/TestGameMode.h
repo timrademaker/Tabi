@@ -11,6 +11,15 @@ namespace tabi
     class GraphicsPipeline;
 }
 
+struct Model
+{
+    tabi::Buffer* m_VertexBuffer;
+    tabi::Buffer* m_IndexBuffer;
+
+    size_t m_VertexCount = 0;
+    size_t m_IndexCount = 0;
+};
+
 class TestGameMode : public tabi::GameBase
 {
 public:
@@ -25,8 +34,7 @@ public:
     virtual void OnDestroy() override;
 
 private:
-    tabi::vector<tabi::Buffer*> m_VertexBuffers;
-    tabi::vector<tabi::Buffer*> m_IndexBuffers;
+    tabi::vector<Model> m_Models;
     tabi::Buffer* m_ConstBuffer = nullptr;
     
     tabi::GraphicsPipeline* m_MeshPipeline = nullptr;

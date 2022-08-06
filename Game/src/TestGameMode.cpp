@@ -32,16 +32,16 @@ bool TestGameMode::OnInitialize()
         0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
         -0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 1.0f
     };
-    auto* vertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
-    m_VertexBuffers.push_back(vertexBuffer);
-    m_CommandList->CopyDataToBuffer(vertexBuffer, reinterpret_cast<const char*>(&vertices[0]), sizeof(vertices), 0);
+    m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
+    m.m_VertexCount = sizeof(vertices) / sizeof(float) / 6;
+    m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(&vertices[0]), sizeof(vertices), 0);
 
     const uint32_t indices[] = {
         0, 1, 3, 1, 2, 3
     };
-    auto* indexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 });
-    m_CommandList->CopyDataToBuffer(indexBuffer, reinterpret_cast<const char*>(&indices[0]), sizeof(indices), 0);
-    m_IndexBuffers.push_back(indexBuffer);
+    m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 });
+    m.m_IndexCount = sizeof(indices) / sizeof(uint32_t);
+    m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&indices[0]), sizeof(indices), 0);
     
     m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
 
@@ -93,12 +93,11 @@ void TestGameMode::OnRender()
     m_CommandList->BindConstantBuffer(m_ConstBuffer, 0);
     m_CommandList->UseGraphicsPipeline(m_MeshPipeline);
 
-    TABI_ASSERT(m_VertexBuffers.size() == m_IndexBuffers.size());
-    for(size_t i = 0; i < m_VertexBuffers.size(); ++i)
+    for(size_t i = 0; i < m_Models.size(); ++i)
     {
-        m_CommandList->BindVertexBuffers(0, &m_VertexBuffers[i], 1);
-        m_CommandList->BindIndexBuffer(m_IndexBuffers[i]);
-        m_CommandList->DrawIndexed(6);
+        m_CommandList->BindVertexBuffers(0, &m_Models[i].m_VertexBuffer, 1);
+        m_CommandList->BindIndexBuffer(m_Models[i].m_IndexBuffer);
+        m_CommandList->DrawIndexed(m_Models[i].m_IndexCount);
     }
 
     m_CommandList->EndRecording();
@@ -111,13 +110,12 @@ void TestGameMode::OnDestroy()
 {
     auto* device = tabi::IDevice::GetInstance();
 
-    for (size_t i = 0; i < m_VertexBuffers.size(); ++i)
+    for (size_t i = 0; i < m_Models.size(); ++i)
     {
-        device->DestroyBuffer(m_VertexBuffers[i]);
-        device->DestroyBuffer(m_IndexBuffers[i]);
+        device->DestroyBuffer(m_Models[i].m_VertexBuffer);
+        device->DestroyBuffer(m_Models[i].m_IndexBuffer);
     }
-    m_VertexBuffers.clear();
-    m_IndexBuffers.clear();
+    m_Models.clear();
 
     device->DestroyBuffer(m_ConstBuffer);
     device->DestroyGraphicsPipeline(m_MeshPipeline);

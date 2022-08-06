@@ -49,6 +49,7 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, const Buffe
 			for (size_t i = 0; i < a_NumBuffers; ++i)
 			{
 				const OpenGLBuffer* oglBuffer = static_cast<const OpenGLBuffer*>(buffers[i]);
+				TABI_ASSERT(oglBuffer->GetBufferDescription().m_Role == EBufferRole::Vertex);
 
 				vertexBuffers[i] = oglBuffer->GetID();
 				strides[i] = buffers[i]->GetBufferDescription().m_Stride;
@@ -65,6 +66,7 @@ void tabi::OpenGLCommandList::BindIndexBuffer(const Buffer* a_IndexBuffer)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_IndexBuffer != nullptr);
+	TABI_ASSERT(a_IndexBuffer->GetBufferDescription().m_Role == EBufferRole::Index);
 
 	m_IndexBuffer = a_IndexBuffer;
 
@@ -80,6 +82,7 @@ void tabi::OpenGLCommandList::BindConstantBuffer(const Buffer* a_Buffer, int32_t
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Buffer != nullptr);
+	TABI_ASSERT(a_Buffer->GetBufferDescription().m_Role == EBufferRole::Constant);
 
 	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), a_Slot]
 		{

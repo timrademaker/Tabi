@@ -32,6 +32,5 @@ namespace tabi
 
 	private:
 		EShaderType m_ShaderType = EShaderType::Invalid;
-		
 	};
 }

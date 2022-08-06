@@ -4,8 +4,8 @@
 
 namespace tabi
 {
-	namespace renderer
-	{
-		tabi::logger::LoggerPtr s_GraphicsLogger = tabi::logger::CreateTabiLogger<tabi::logger::ConsoleSink>("Renderer");
-	}
+    namespace renderer
+    {
+        tabi::logger::LoggerPtr s_GraphicsLogger = tabi::logger::CreateTabiLogger<tabi::logger::ConsoleSink>("Renderer");
+    }
 }

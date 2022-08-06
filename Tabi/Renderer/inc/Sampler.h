@@ -29,8 +29,8 @@ namespace tabi
         float m_BorderColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
     };
 
-	class Sampler
-	{
+    class Sampler
+    {
     public:
         TABI_NO_COPY(Sampler);
         TABI_NO_MOVE(Sampler);
@@ -46,7 +46,7 @@ namespace tabi
         {}
         ~Sampler() = default;
 
-	private:
+    private:
         SamplerDescription m_SamplerDescription;
-	};
+    };
 }

@@ -29,8 +29,8 @@ bool TestGameMode::OnInitialize()
         // X, Y, Z,             R, G, B
         -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
         0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f,
-		0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
-		-0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 1.0f
+        0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 1.0f
     };
     auto* vertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
     m_VertexBuffers.push_back(vertexBuffer);
@@ -120,6 +120,6 @@ void TestGameMode::OnDestroy()
     m_IndexBuffers.clear();
 
     device->DestroyBuffer(m_ConstBuffer);
-	device->DestroyGraphicsPipeline(m_MeshPipeline);
+    device->DestroyGraphicsPipeline(m_MeshPipeline);
     device->DestroyCommandList(m_CommandList);
 }

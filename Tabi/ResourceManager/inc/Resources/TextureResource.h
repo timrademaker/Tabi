@@ -1,5 +1,5 @@
 #pragma once
-#include "../IResource.h"
+#include "IResource.h"
 
 #include <TabiTypes.h>
 

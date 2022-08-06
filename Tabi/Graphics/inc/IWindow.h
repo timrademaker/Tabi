@@ -18,7 +18,7 @@ namespace tabi
         class IWindow
         {
         public:
-        	static void Initialize(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height);
+            static void Initialize(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height);
             static IWindow& GetInstance();
 
             const char* GetWindowName() const;

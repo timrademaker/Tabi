@@ -27,8 +27,7 @@ public:
 private:
     tabi::vector<tabi::Buffer*> m_VertexBuffers;
     tabi::vector<tabi::Buffer*> m_IndexBuffers;
-
-	tabi::Buffer* m_ConstBuffer = nullptr;
+    tabi::Buffer* m_ConstBuffer = nullptr;
     
     tabi::GraphicsPipeline* m_MeshPipeline = nullptr;
     tabi::ICommandList* m_CommandList = nullptr;

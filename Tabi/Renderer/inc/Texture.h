@@ -22,8 +22,6 @@ namespace tabi
 		uint16_t m_MipLevels = 1;
 	};
 
-	// TODO: ResourceManager's Resources/Texture.h is also a thing. Should that become Texture2D or Image or something?
-	// Or is there a better way to avoid confusion? Renderer namespace?
 	class Texture
 	{
 	public:

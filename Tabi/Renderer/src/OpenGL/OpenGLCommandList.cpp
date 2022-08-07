@@ -11,7 +11,7 @@
 #include "Helpers/FormatInfo.h"
 #include "TextureUpdateDescription.h"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #define ENSURE_COMMAND_LIST_IS_RECORDING() TABI_ASSERT(m_IsRecording, "Command list function called while recording is not active!")
 

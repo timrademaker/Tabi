@@ -4,6 +4,7 @@
 #include <TabiTypes.h>
 
 #include <Sampler.h>
+#include <Enums/Format.h>
 
 namespace tinygltf
 {
@@ -21,10 +22,12 @@ namespace tabi
     private:
         static EWrapMode ConvertWrapMode(unsigned int a_WrapMode);
         static EFilterMode ConvertFilter(unsigned int a_MinFilter);
+        static EFormat ConvertFormat(uint8_t a_NumComponents, uint8_t a_BitsPerComponent, int a_PixelType);
 
     public:
         int m_Width;
         int m_Height;
+        EFormat m_Format = EFormat::Unknown;
 
         tabi::vector<unsigned char> m_TextureData;
         SamplerDescription m_SamplerDescription;

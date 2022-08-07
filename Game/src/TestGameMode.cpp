@@ -57,7 +57,7 @@ bool TestGameMode::OnInitialize()
         auto tex = mesh->m_Material->m_MetalicRoughness->m_BaseColorTexture;
         if (tex)
         {
-            tabi::TextureDescription td{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::Texture, tabi::EFormat::RGBA8_unorm };
+            tabi::TextureDescription td{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::Texture, tex->m_Format };
 
             td.m_Width = tex->m_Width;
             td.m_Height = tex->m_Height;

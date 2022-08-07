@@ -21,6 +21,7 @@ tabi::shared_ptr<tabi::TextureResource> tabi::TextureResource::LoadTextureFromMo
     
     tex->m_Width = a_Model.images[imageIndex].width;
     tex->m_Height = a_Model.images[imageIndex].height;
+    tex->m_Format = ConvertFormat(a_Model.images[imageIndex].component, a_Model.images[imageIndex].bits, a_Model.images[imageIndex].pixel_type);
 
     tex->m_TextureData = a_Model.images[imageIndex].image;
 
@@ -70,4 +71,226 @@ tabi::EFilterMode tabi::TextureResource::ConvertFilter(unsigned a_MinFilter)
         TABI_ASSERT(false, "Unknown filter mode");
         return EFilterMode::Nearest;
     }
+}
+
+tabi::EFormat tabi::TextureResource::ConvertFormat(uint8_t a_NumComponents, uint8_t a_BitsPerComponent, int a_PixelType)
+{
+    switch(a_NumComponents)
+    {
+    case 1:
+    {
+        switch (a_BitsPerComponent)
+        {
+        case 8:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_BYTE)
+            {
+                return EFormat::R8_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
+            {
+                return EFormat::R8_unorm;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 16:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_SHORT)
+            {
+                return EFormat::R16_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+            {
+                return EFormat::R16_unorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::R16_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 32:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_INT)
+            {
+                return EFormat::R32_sint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
+            {
+                return EFormat::R32_uint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::R32_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        }
+    }
+    case 2:
+    {
+        switch (a_BitsPerComponent)
+        {
+        case 8:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_BYTE)
+            {
+                return EFormat::RG8_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
+            {
+                return EFormat::RG8_unorm;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 16:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_SHORT)
+            {
+                return EFormat::RG16_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+            {
+                return EFormat::RG16_unorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::RG16_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 32:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_INT)
+            {
+                return EFormat::RG32_sint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
+            {
+                return EFormat::RG32_uint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::RG32_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        }
+    }
+    case 3:
+    {
+        switch (a_BitsPerComponent)
+        {
+        case 8:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_BYTE)
+            {
+                return EFormat::RGB8_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
+            {
+                return EFormat::RGB8_unorm;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 16:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_SHORT)
+            {
+                return EFormat::RGB16_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+            {
+                return EFormat::RGB16_unorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::RGB16_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 32:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_INT)
+            {
+                return EFormat::RGB32_sint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
+            {
+                return EFormat::RGB32_uint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::RGB32_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        }
+    }
+    case 4:
+    {
+        switch (a_BitsPerComponent)
+        {
+        case 8:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_BYTE)
+            {
+                return EFormat::RGBA8_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
+            {
+                return EFormat::RGBA8_unorm;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 16:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_SHORT)
+            {
+                return EFormat::RGBA16_snorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+            {
+                return EFormat::RGBA16_unorm;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::RGBA16_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        case 32:
+        {
+            if (a_PixelType == TINYGLTF_COMPONENT_TYPE_INT)
+            {
+                return EFormat::RGBA32_sint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
+            {
+                return EFormat::RGBA32_uint;
+            }
+            else if (a_PixelType == TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                return EFormat::RGBA32_float;
+            }
+            TABI_ASSERT(false, "Unable to convert format");
+            return EFormat::Unknown;
+        }
+        }
+    }
+    }
+
+    TABI_ASSERT(false, "Unable to convert format");
+    return EFormat::Unknown;
 }

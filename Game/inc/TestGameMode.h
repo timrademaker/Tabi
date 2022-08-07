@@ -9,6 +9,9 @@ namespace tabi
     class ICommandList;
     class Buffer;
     class GraphicsPipeline;
+
+    class Texture;
+    class RenderTarget;
 }
 
 struct Model
@@ -46,4 +49,10 @@ private:
     tabi::ICommandList* m_CommandList = nullptr;
 
     tabi::shared_ptr<MovableCamera> m_Camera;
+
+    tabi::GraphicsPipeline* m_UIPipeline = nullptr;
+    Model m_UIQuad;
+    tabi::Texture* m_DrawTex = nullptr;
+    tabi::Texture* m_DepthTex = nullptr;
+    tabi::RenderTarget* m_RenderTarget = nullptr;
 };

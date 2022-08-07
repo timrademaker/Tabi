@@ -13,6 +13,9 @@
 #include <GraphicsPipeline.h>
 #include <Enums/GraphicsPipelineEnums.h>
 
+#include "RenderTarget.h"
+#include "Texture.h"
+
 bool TestGameMode::OnInitialize()
 {
     tabi::InputManager::SetCursorCapture(true);
@@ -69,12 +72,61 @@ bool TestGameMode::OnInitialize()
     blendState.m_BlendEnabled = false;
     tabi::RasterizerState rasterizerState;
     rasterizerState.m_TriangleFrontIsCounterClockwise = true;
-    rasterizerState.m_CullMode = tabi::ECullMode::None;
+    rasterizerState.m_CullMode = tabi::ECullMode::Back;
     tabi::DepthStencilState depthStencilState;
-    depthStencilState.m_EnableDepthTest = false;
+    depthStencilState.m_EnableDepthTest = true;
 
     const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
     m_MeshPipeline = device->CreateGraphicsPipeline(pipelineDesc, "Test pipeline");
+
+    // Render target test
+    {
+        const float quadVertices[] = {
+            // X, Y,             U, V
+            -0.8f, -0.8f, 0.0f, 0.0f,
+            0.8f, -0.8f, 1.0f, 0.0f,
+            0.8f, 0.8f, 1.0f, 1.0f,
+            -0.8f, 0.8f, 0.0f, 1.0f
+        };
+        m_UIQuad.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RG32_float, tabi::EBufferRole::Vertex, sizeof(quadVertices), sizeof(quadVertices) / 4 });
+        m_UIQuad.m_VertexCount = sizeof(quadVertices) / sizeof(float) / 4;
+        m_CommandList->CopyDataToBuffer(m_UIQuad.m_VertexBuffer, reinterpret_cast<const char*>(&quadVertices[0]), sizeof(quadVertices), 0);
+
+        const uint32_t quadIndices[] = {
+        0, 1, 2, 0, 2, 3
+        };
+        m_UIQuad.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(quadIndices), 0 });
+        m_UIQuad.m_IndexCount = std::size(quadIndices);
+        m_CommandList->CopyDataToBuffer(m_UIQuad.m_IndexBuffer, reinterpret_cast<const char*>(&quadIndices[0]), sizeof(quadIndices), 0);
+
+        // Create vertex pipeline
+        const auto* uiVertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.vert", tabi::EShaderType::Vertex, "UI vertex shader");
+        const auto* uiPixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.frag", tabi::EShaderType::Pixel, "UI pixel shader");
+
+        tabi::VertexInputLayout uiVertexInput;
+        uiVertexInput.m_NumInputElements = 2;
+
+        uiVertexInput.m_InputElements[0] = { 0, 0, "POSITION", tabi::EFormat::RG32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
+        uiVertexInput.m_InputElements[1] = { 0, 0, "TEXCOORD", tabi::EFormat::RG32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
+
+        tabi::BlendState blendState;
+        blendState.m_BlendEnabled = false;
+        tabi::RasterizerState rasterizerState;
+        rasterizerState.m_TriangleFrontIsCounterClockwise = true;
+        rasterizerState.m_CullMode = tabi::ECullMode::Back;
+        tabi::DepthStencilState depthStencilState;
+        depthStencilState.m_EnableDepthTest = false;
+
+        m_UIPipeline = device->CreateGraphicsPipeline(tabi::GraphicsPipelineDescription{ uiVertShader, uiPixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, uiVertexInput }, "UI pipeline");
+
+        m_DrawTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::RenderTexture, tabi::EFormat::RGBA32_uint, 1280, 720, 1, 1 });
+        m_DepthTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::DepthStencil, tabi::EFormat::Depth24Stencil8, 1280, 720, 1, 1 });
+
+        tabi::RenderTargetDescription rtd;
+        rtd.m_RenderTextures[0] = { m_DrawTex };
+        rtd.m_DepthStencil = { m_DepthTex };
+        m_RenderTarget = device->CreateRenderTarget(rtd);
+    }
 
     m_CommandList->EndRecording();
 
@@ -90,9 +142,16 @@ void TestGameMode::OnRender()
 {
     m_CommandList->BeginRecording();
 
-    static constexpr float clearCol[] = { 0.25f, 0.3f, 1.0f, 1.0f };
-    m_CommandList->ClearRenderTarget(nullptr, clearCol);
+    
+    static constexpr float mainClearCol[] = { 0.25f, 0.3f, 1.0f, 1.0f };
+    m_CommandList->ClearRenderTarget(nullptr, mainClearCol);
     m_CommandList->ClearDepthStencil(nullptr);
+
+    static constexpr float renderTargetClearCol[] = { 0.6f, 0.1f, 0.5f, 1.0f };
+    m_CommandList->ClearRenderTarget(m_RenderTarget, renderTargetClearCol);
+    m_CommandList->ClearDepthStencil(m_RenderTarget);
+
+    m_CommandList->SetRenderTarget(m_RenderTarget);
 
     const tabi::mat4 eye = m_Camera->GetView();
     const tabi::mat4 projection = m_Camera->GetProjection();
@@ -121,6 +180,13 @@ void TestGameMode::OnRender()
         m_CommandList->DrawIndexed(m_Models[i].m_IndexCount);
     }
 
+    m_CommandList->SetRenderTarget(nullptr);
+    m_CommandList->BindTexture(m_DrawTex, 0);
+    m_CommandList->UseGraphicsPipeline(m_UIPipeline);
+    m_CommandList->BindVertexBuffers(0, &m_UIQuad.m_VertexBuffer, 1);
+    m_CommandList->BindIndexBuffer(m_UIQuad.m_IndexBuffer);
+    m_CommandList->DrawIndexed(m_UIQuad.m_IndexCount);
+
     m_CommandList->EndRecording();
 
     tabi::IDevice::GetInstance()->ExecuteCommandList(m_CommandList);
@@ -141,4 +207,10 @@ void TestGameMode::OnDestroy()
     device->DestroyBuffer(m_ConstBuffer);
     device->DestroyGraphicsPipeline(m_MeshPipeline);
     device->DestroyCommandList(m_CommandList);
+
+    device->DestroyGraphicsPipeline(m_UIPipeline);
+    device->DestroyBuffer(m_UIQuad.m_VertexBuffer);
+    device->DestroyBuffer(m_UIQuad.m_IndexBuffer);
+    device->DestroyTexture(m_DrawTex);
+    device->DestroyTexture(m_DepthTex);
 }

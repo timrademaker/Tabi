@@ -42,16 +42,6 @@ if(DEBUG_GRAPHICS)
     add_compile_definitions(DEBUG_GRAPHICS=1)
 endif()
 
-if(WINDOWS)
-    list(APPEND HEADERS 
-        
-    )
-    
-    list(APPEND SOURCES
-        
-    )
-endif()
-
 if(USE_OPENGL)
     list(APPEND HEADERS 
         inc/OpenGL/OpenGLBuffer.h

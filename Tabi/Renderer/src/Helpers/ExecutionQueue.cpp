@@ -19,7 +19,7 @@ void tabi::ExecutionQueue::Add(std::function<void()>&& a_Function)
 	m_FunctionQueue.push_back(std::move(a_Function));
 }
 
-void tabi::ExecutionQueue::Execute()
+void tabi::ExecutionQueue::Execute() const
 {
 	std::lock_guard<std::mutex> guard(m_QueueMutex);
 	for (auto& func : m_FunctionQueue)

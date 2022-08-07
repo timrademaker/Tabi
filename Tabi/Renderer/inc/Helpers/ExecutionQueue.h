@@ -33,7 +33,7 @@ namespace tabi
 		 * @brief Execute all functions in the queue
 		 * @note Does not empty the queue
 		 */
-		void Execute();
+		void Execute() const;
 
 		/**
 		 * @brief Clear the execution queue

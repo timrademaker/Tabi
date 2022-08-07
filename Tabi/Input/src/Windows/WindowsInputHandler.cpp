@@ -26,7 +26,7 @@ using tabi::EInputDevice;
 
 tabi::InputHandler::InputHandler()
     : m_InputMap(m_GaInputManager)
-	, m_WindowHandle(tabi::graphics::IWindow::GetInstance().GetHandle())
+    , m_WindowHandle(tabi::graphics::IWindow::GetInstance().GetHandle())
 {
     m_InputDeviceTable[EInputDevice::Controller] = m_GaInputManager.CreateDevice<gainput::InputDevicePad>();
     m_InputDeviceTable[EInputDevice::Keyboard] = m_GaInputManager.CreateDevice<gainput::InputDeviceKeyboard>();

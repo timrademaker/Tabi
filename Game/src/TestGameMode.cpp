@@ -11,10 +11,12 @@
 
 #include <Buffer.h>
 #include <GraphicsPipeline.h>
+#include <RenderTarget.h>
+#include <Texture.h>
 #include <Enums/GraphicsPipelineEnums.h>
 
-#include "RenderTarget.h"
-#include "Texture.h"
+#include <Resources/Mesh.h>
+#include <Resources/Model.h>
 
 bool TestGameMode::OnInitialize()
 {
@@ -32,61 +34,64 @@ bool TestGameMode::OnInitialize()
 
     m_ModelData = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
 
-    Model m;
+    // Model rendering test
+    {
+        Model m;
 
-    const float vertices[] = {
-        // X, Y, Z,             R, G, B
-        -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f,
-        0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
-        -0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 1.0f
-    };
-    m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
-    m.m_VertexCount = std::size(vertices) / 6;
-    m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(&vertices[0]), sizeof(vertices), 0);
+        const float vertices[] = {
+            // X, Y, Z,             R, G, B
+            -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
+            -0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 1.0f
+        };
+        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
+        m.m_VertexCount = std::size(vertices) / 6;
+        m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(&vertices[0]), sizeof(vertices), 0);
 
-    const uint32_t indices[] = {
-        0, 1, 3, 1, 2, 3
-    };
-    m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 });
-    m.m_IndexCount = std::size(indices);
-    m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&indices[0]), sizeof(indices), 0);
+        const uint32_t indices[] = {
+            0, 1, 3, 1, 2, 3
+        };
+        m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 });
+        m.m_IndexCount = std::size(indices);
+        m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&indices[0]), sizeof(indices), 0);
 
-    m_Models.emplace_back(m);
-    
-    m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
+        m_Models.emplace_back(m);
 
-    // Create vertex pipeline
-    const auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
-    const auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/FragmentShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
+        m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
 
-    tabi::VertexInputLayout vertexInput;
-    vertexInput.m_NumInputElements = 2;
+        // Create vertex pipeline
+        const auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
+        const auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/FragmentShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
 
-    const tabi::VertexInputElement posElement{ 0, 0, "POSITION", tabi::EFormat::RGB32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
-    const tabi::VertexInputElement colElement{ 0, 0, "COLOR", tabi::EFormat::RGB32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
-    vertexInput.m_InputElements[0] = posElement;
-    vertexInput.m_InputElements[1] = colElement;
+        tabi::VertexInputLayout vertexInput;
+        vertexInput.m_NumInputElements = 2;
 
-    tabi::BlendState blendState;
-    blendState.m_BlendEnabled = false;
-    tabi::RasterizerState rasterizerState;
-    rasterizerState.m_TriangleFrontIsCounterClockwise = true;
-    rasterizerState.m_CullMode = tabi::ECullMode::Back;
-    tabi::DepthStencilState depthStencilState;
-    depthStencilState.m_EnableDepthTest = true;
+        const tabi::VertexInputElement posElement{ 0, 0, "POSITION", tabi::EFormat::RGB32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
+        const tabi::VertexInputElement colElement{ 0, 0, "COLOR", tabi::EFormat::RGB32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
+        vertexInput.m_InputElements[0] = posElement;
+        vertexInput.m_InputElements[1] = colElement;
 
-    const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
-    m_MeshPipeline = device->CreateGraphicsPipeline(pipelineDesc, "Test pipeline");
+        tabi::BlendState blendState;
+        blendState.m_BlendEnabled = false;
+        tabi::RasterizerState rasterizerState;
+        rasterizerState.m_TriangleFrontIsCounterClockwise = true;
+        rasterizerState.m_CullMode = tabi::ECullMode::Back;
+        tabi::DepthStencilState depthStencilState;
+        depthStencilState.m_EnableDepthTest = true;
+
+        const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
+        m_MeshPipeline = device->CreateGraphicsPipeline(pipelineDesc, "Test pipeline");
+    }
 
     // Render target test
     {
         const float quadVertices[] = {
             // X, Y,             U, V
-            -0.8f, -0.8f, 0.0f, 0.0f,
-            0.8f, -0.8f, 1.0f, 0.0f,
-            0.8f, 0.8f, 1.0f, 1.0f,
-            -0.8f, 0.8f, 0.0f, 1.0f
+            -0.8f, -0.8f,       0.0f, 0.0f,
+            0.8f, -0.8f,        1.0f, 0.0f,
+            0.8f, 0.8f,         1.0f, 1.0f,
+            -0.8f, 0.8f,        0.0f, 1.0f
         };
         m_UIQuad.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RG32_float, tabi::EBufferRole::Vertex, sizeof(quadVertices), sizeof(quadVertices) / 4 });
         m_UIQuad.m_VertexCount = sizeof(quadVertices) / sizeof(float) / 4;

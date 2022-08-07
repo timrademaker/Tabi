@@ -19,7 +19,7 @@ namespace tabi
 		// The cube map face if the texture is a cube map
 		ECubeMapFace m_CubeFace = ECubeMapFace::XPositive;	// TODO: Unsure if D3D12 supports this - RTV has no cube map dimension
 
-		// TODO: D3D12 has plane slice here as well
+		// TODO: D3D12 has plane slice here as well. Do we need this?
 	};
 
 	struct DepthStencilView

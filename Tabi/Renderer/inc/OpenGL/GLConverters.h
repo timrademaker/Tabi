@@ -8,6 +8,8 @@
 #include "Enums/SamplerEnums.h"
 #include "Enums/TextureEnums.h"
 
+#include <TabiTypes.h>
+
 #include <glad/glad.h>
 
 namespace tabi
@@ -38,4 +40,7 @@ namespace tabi
 	GLenum GLBlendFactor(EBlendFactor a_BlendFactor);
 
 	GLenum GLTopology(EToplolgy a_Topology);
+
+	tabi::string GLDebugMessageSource(GLenum a_Source);
+	tabi::string GLDebugMessageType(GLenum a_Type);
 }

@@ -81,7 +81,7 @@ namespace tabi
 		}
 		}
 
-		tabi::renderer::s_GraphicsLogger->Log(severity, "OpenGL message (type %d): %s", a_Type, a_Message);
+		tabi::renderer::s_GraphicsLogger->Log(severity, "OpenGL debug message (source: %s, type %s): %s", GLDebugMessageSource(a_Source).c_str(), GLDebugMessageType(a_Type).c_str(), a_Message);
 	}
 #endif
 }

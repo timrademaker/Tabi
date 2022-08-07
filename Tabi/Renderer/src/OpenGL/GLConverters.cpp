@@ -569,4 +569,43 @@ namespace tabi
 				return GL_INVALID_ENUM;
 			}
 		}
+
+		tabi::string GLDebugMessageSource(GLenum a_Source)
+		{
+#define ENUM_CASE(EnumValue) case EnumValue: return #EnumValue
+			switch (a_Source)
+			{
+				ENUM_CASE(GL_DEBUG_SOURCE_API);
+				ENUM_CASE(GL_DEBUG_SOURCE_WINDOW_SYSTEM);
+				ENUM_CASE(GL_DEBUG_SOURCE_SHADER_COMPILER);
+				ENUM_CASE(GL_DEBUG_SOURCE_THIRD_PARTY);
+				ENUM_CASE(GL_DEBUG_SOURCE_APPLICATION);
+				ENUM_CASE(GL_DEBUG_SOURCE_OTHER);
+			default:
+				TABI_ASSERT(false, "Unknown debug message source");
+				return tabi::to_string(a_Source);
+			}
+#undef ENUM_CASE
+		}
+
+        tabi::string GLDebugMessageType(GLenum a_Type)
+        {
+#define ENUM_CASE(EnumValue) case EnumValue: return #EnumValue
+			switch (a_Type)
+			{
+				ENUM_CASE(GL_DEBUG_TYPE_ERROR);
+				ENUM_CASE(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR);
+				ENUM_CASE(GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR);
+				ENUM_CASE(GL_DEBUG_TYPE_PORTABILITY);
+				ENUM_CASE(GL_DEBUG_TYPE_PERFORMANCE);
+				ENUM_CASE(GL_DEBUG_TYPE_MARKER);
+				ENUM_CASE(GL_DEBUG_TYPE_PUSH_GROUP);
+				ENUM_CASE(GL_DEBUG_TYPE_POP_GROUP);
+				ENUM_CASE(GL_DEBUG_TYPE_OTHER);
+			default:
+				TABI_ASSERT(false, "Unknown debug message type");
+				return tabi::to_string(a_Type);
+			}
+#undef ENUM_CASE
+        }
 }

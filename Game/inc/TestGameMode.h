@@ -29,6 +29,8 @@ struct Model
     tabi::vec3 m_Position{};
     tabi::vec3 m_Rotation{};
     tabi::vec3 m_Scale{ 1, 1, 1 };
+
+    tabi::vec4 m_BaseColorFactor{ 1.0f, 1.0f, 1.0f, 1.0f };
 };
 
 struct ModelData

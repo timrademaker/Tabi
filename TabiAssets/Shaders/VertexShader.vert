@@ -10,12 +10,12 @@ layout(location = 1) out vec4 BaseColorFactor;
 layout(binding = 0) uniform InData
 {
 	mat4 cameraTransform;
-	vec4 baseColorFactor;
 };
 
 layout(binding = 1) uniform ModelData
 {
 	mat4 modelMatrix;
+	vec4 baseColorFactor;
 };
 
 out gl_PerVertex

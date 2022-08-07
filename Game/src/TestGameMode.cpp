@@ -5,6 +5,7 @@
 #include <TabiLogger.h>
 
 #include <Graphics.h>
+#include <IWindow.h>
 
 #include <IDevice.h>
 #include <ICommandList.h>
@@ -15,11 +16,14 @@
 #include <Texture.h>
 #include <Enums/GraphicsPipelineEnums.h>
 
+#include <ResourceManager.h>
 #include <Resources/Mesh.h>
 #include <Resources/Model.h>
 
 #include "TextureUpdateDescription.h"
 #include "Resources/Material.h"
+
+static constexpr bool s_RenderToRenderTarget = false;
 
 bool TestGameMode::OnInitialize()
 {
@@ -31,13 +35,19 @@ bool TestGameMode::OnInitialize()
     m_Camera->SetNear(1.0f);
     m_Camera->SetFar(1000.0f);
 
+    tabi::graphics::IWindow::GetInstance().OnWindowResize().Subscribe(m_Camera.get(), [cam = m_Camera](tabi::WindowResizeEventData a_Data)
+        {
+            cam->SetAspectRatio(static_cast<float>(a_Data.m_NewWidth) / static_cast<float>(a_Data.m_NewHeight));
+        }
+    );
+
     auto* device = tabi::IDevice::GetInstance();
     m_CommandList = device->CreateCommandList();
     m_CommandList->BeginRecording();
 
     // GLB model test
     {
-        const auto model = tabi::Model::LoadBinaryModelFromPath("Assets/Duck.glb");
+        const auto model = tabi::ResourceManager::GetInstance().LoadResource<tabi::Model>("Assets/Duck.glb");
         const auto mesh = model->m_Meshes[0];
 
         Model m;
@@ -192,16 +202,18 @@ void TestGameMode::OnRender()
 {
     m_CommandList->BeginRecording();
 
-    
     static constexpr float mainClearCol[] = { 0.25f, 0.3f, 1.0f, 1.0f };
     m_CommandList->ClearRenderTarget(nullptr, mainClearCol);
     m_CommandList->ClearDepthStencil(nullptr);
 
-    static constexpr float renderTargetClearCol[] = { 0.6f, 0.1f, 0.5f, 1.0f };
-    m_CommandList->ClearRenderTarget(m_RenderTarget, renderTargetClearCol);
-    m_CommandList->ClearDepthStencil(m_RenderTarget);
+    if (s_RenderToRenderTarget)
+    {
+        static constexpr float renderTargetClearCol[] = { 0.6f, 0.1f, 0.5f, 1.0f };
+        m_CommandList->ClearRenderTarget(m_RenderTarget, renderTargetClearCol);
+        m_CommandList->ClearDepthStencil(m_RenderTarget);
 
-    m_CommandList->SetRenderTarget(m_RenderTarget);
+        m_CommandList->SetRenderTarget(m_RenderTarget);
+    }
 
     const tabi::mat4 eye = m_Camera->GetView();
     const tabi::mat4 projection = m_Camera->GetProjection();
@@ -232,12 +244,15 @@ void TestGameMode::OnRender()
         m_CommandList->DrawIndexed(m_Models[i].m_IndexCount);
     }
 
-    m_CommandList->SetRenderTarget(nullptr);
-    m_CommandList->BindTexture(m_DrawTex, 0);
-    m_CommandList->UseGraphicsPipeline(m_UIPipeline);
-    m_CommandList->BindVertexBuffers(0, &m_UIQuad.m_VertexBuffer, 1);
-    m_CommandList->BindIndexBuffer(m_UIQuad.m_IndexBuffer);
-    m_CommandList->DrawIndexed(m_UIQuad.m_IndexCount);
+    if (s_RenderToRenderTarget)
+    {
+        m_CommandList->SetRenderTarget(nullptr);
+        m_CommandList->BindTexture(m_DrawTex, 0);
+        m_CommandList->UseGraphicsPipeline(m_UIPipeline);
+        m_CommandList->BindVertexBuffers(0, &m_UIQuad.m_VertexBuffer, 1);
+        m_CommandList->BindIndexBuffer(m_UIQuad.m_IndexBuffer);
+        m_CommandList->DrawIndexed(m_UIQuad.m_IndexCount);
+    }
 
     m_CommandList->EndRecording();
 

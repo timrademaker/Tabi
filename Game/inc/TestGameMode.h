@@ -18,6 +18,10 @@ struct Model
 
     size_t m_VertexCount = 0;
     size_t m_IndexCount = 0;
+
+    tabi::vec3 m_Position{};
+    tabi::vec3 m_Rotation{};
+    tabi::vec3 m_Scale{ 1, 1, 1 };
 };
 
 class TestGameMode : public tabi::GameBase
@@ -36,6 +40,7 @@ public:
 private:
     tabi::vector<Model> m_Models;
     tabi::Buffer* m_ConstBuffer = nullptr;
+    tabi::Buffer* m_ModelData = nullptr;
     
     tabi::GraphicsPipeline* m_MeshPipeline = nullptr;
     tabi::ICommandList* m_CommandList = nullptr;

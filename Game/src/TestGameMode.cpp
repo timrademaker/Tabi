@@ -27,6 +27,10 @@ bool TestGameMode::OnInitialize()
     m_CommandList = device->CreateCommandList();
     m_CommandList->BeginRecording();
 
+    m_ModelData = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
+
+    Model m;
+
     const float vertices[] = {
         // X, Y, Z,             R, G, B
         -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
@@ -44,6 +48,8 @@ bool TestGameMode::OnInitialize()
     m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 });
     m.m_IndexCount = std::size(indices);
     m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&indices[0]), sizeof(indices), 0);
+
+    m_Models.emplace_back(m);
     
     m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
 
@@ -96,10 +102,22 @@ void TestGameMode::OnRender()
     m_CommandList->BindConstantBuffer(m_ConstBuffer, 0);
     m_CommandList->UseGraphicsPipeline(m_MeshPipeline);
 
+    m_CommandList->BindConstantBuffer(m_ModelData, 1);
+
     for(size_t i = 0; i < m_Models.size(); ++i)
     {
         m_CommandList->BindVertexBuffers(0, &m_Models[i].m_VertexBuffer, 1);
         m_CommandList->BindIndexBuffer(m_Models[i].m_IndexBuffer);
+
+        auto pos = tabi::mat4::Identity();
+        pos.Translate(m_Models[i].m_Position);
+        auto rot = tabi::mat4::Identity();
+        rot.SetRotation(m_Models[i].m_Rotation);
+        auto scale = tabi::mat4::Identity();
+        rot.SetScale(m_Models[i].m_Scale);
+        const auto modelMatrix = tabi::mat4::CreateTransformationMatrix(pos, scale, rot);
+        m_CommandList->CopyDataToBuffer(m_ModelData, reinterpret_cast<const char*>(&modelMatrix.v[0]), sizeof(modelMatrix), 0);
+
         m_CommandList->DrawIndexed(m_Models[i].m_IndexCount);
     }
 

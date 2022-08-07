@@ -5,8 +5,6 @@
 
 #include <TabiContainers.h>
 
-#include <functional>
-
 namespace tabi
 {
 	class OpenGLDevice : public IDevice

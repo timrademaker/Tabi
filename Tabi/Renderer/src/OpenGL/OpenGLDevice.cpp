@@ -472,10 +472,14 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 	const char* a_DebugName)
 {
 	{
-		const auto* tex = a_RenderTargetDescription.m_RenderTexture;
-		const auto* depth = a_RenderTargetDescription.m_DepthStencilBuffer;
-		TABI_ASSERT(tex && tex->GetTextureDescription().m_Role == ETextureRole::RenderTexture);
-		TABI_ASSERT(depth && depth->GetTextureDescription().m_Role == ETextureRole::DepthStencil);
+		for (const auto& texView : a_RenderTargetDescription.m_RenderTextures)
+		{
+			const auto* tex = texView.m_Texture;
+			TABI_ASSERT(tex == nullptr || tex->GetTextureDescription().m_Role == ETextureRole::RenderTexture);
+		}
+
+	    const auto* depth = a_RenderTargetDescription.m_DepthStencil.m_Texture;
+		TABI_ASSERT(depth == nullptr || depth->GetTextureDescription().m_Role == ETextureRole::DepthStencil);
 	}
 
 	auto* renderTarget = new OpenGLRenderTarget(a_RenderTargetDescription);
@@ -488,12 +492,68 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 			TABI_ASSERT(id != 0, "Failed to create render target");
 
 			const auto& desc = renderTarget->GetRenderTargetDescription();
-			const auto* colorBuffer = static_cast<OpenGLTexture*>(desc.m_RenderTexture);
-			const auto* depthStencil = static_cast<OpenGLTexture*>(desc.m_DepthStencilBuffer);
-			glNamedFramebufferTexture(id, GL_COLOR_ATTACHMENT0, colorBuffer->GetID(), desc.m_MipLevel);
-			glNamedFramebufferTexture(id, GL_DEPTH_STENCIL_ATTACHMENT, depthStencil->GetID(), desc.m_MipLevel);
 
-			// TODO: m_TextureLayer is ignored as glFramebufferTexture3D() is not used. Does this matter?
+			for(size_t i = 0; i < RenderTargetDescription::MaxRenderTextures; ++i)
+			{
+				const auto& texView = desc.m_RenderTextures[i];
+
+				if (texView.m_Texture)
+				{
+					const auto* colorBuffer = static_cast<const OpenGLTexture*>(texView.m_Texture);
+					
+				    const auto texDim = texView.m_Texture->GetTextureDescription().m_Dimension;
+					const bool isTextureArray = texDim == ETextureDimension::Tex1DArray || texDim == ETextureDimension::Tex2DArray || texDim == ETextureDimension::CubeMap || texDim == ETextureDimension::CubeMapArray;
+
+					if (isTextureArray)
+					{
+						auto layer = texView.m_TextureLayer;
+
+						if (texDim == ETextureDimension::CubeMap)
+						{
+							layer = static_cast<uint8_t>(texView.m_CubeFace);
+						}
+						else if (texDim == ETextureDimension::CubeMapArray)
+						{
+							layer = texView.m_TextureLayer * 6 + static_cast<uint8_t>(texView.m_CubeFace);
+						}
+
+						glNamedFramebufferTextureLayer(id, GL_COLOR_ATTACHMENT0 + i, colorBuffer->GetID(), texView.m_MipLevel, layer);
+					}
+					else
+					{
+						glNamedFramebufferTexture(id, GL_COLOR_ATTACHMENT0 + i, colorBuffer->GetID(), texView.m_MipLevel);
+					}
+				}
+			}
+
+			const auto& depthStencilDesc = desc.m_DepthStencil;
+			if (depthStencilDesc.m_Texture)
+			{
+				const auto texDim = depthStencilDesc.m_Texture->GetTextureDescription().m_Dimension;
+				const bool isTextureArray = texDim == ETextureDimension::Tex1DArray || texDim == ETextureDimension::Tex2DArray || texDim == ETextureDimension::CubeMap || texDim == ETextureDimension::CubeMapArray;
+
+				const auto texID = static_cast<const OpenGLTexture*>(depthStencilDesc.m_Texture)->GetID();
+
+				if (isTextureArray)
+				{
+					auto layer = depthStencilDesc.m_TextureLayer;
+
+					if (texDim == ETextureDimension::CubeMap)
+					{
+						layer = static_cast<uint8_t>(depthStencilDesc.m_CubeFace);
+					}
+					else if (texDim == ETextureDimension::CubeMapArray)
+					{
+						layer = depthStencilDesc.m_TextureLayer * 6 + static_cast<uint8_t>(depthStencilDesc.m_CubeFace);
+					}
+
+					glNamedFramebufferTextureLayer(id, GL_DEPTH_STENCIL_ATTACHMENT, texID, depthStencilDesc.m_MipLevel, layer);
+				}
+				else
+				{
+					glNamedFramebufferTexture(id, GL_DEPTH_STENCIL_ATTACHMENT, texID, depthStencilDesc.m_MipLevel);
+				}
+			}
 
 			TABI_ASSERT(glCheckNamedFramebufferStatus(id, GL_DRAW_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 

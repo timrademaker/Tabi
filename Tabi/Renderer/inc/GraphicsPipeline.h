@@ -82,12 +82,15 @@ namespace tabi
 
 	struct GraphicsPipelineDescription
 	{
+		static constexpr size_t MaxBlendTargets = 8;
+
 		const class Shader* m_VertexShader = nullptr;
 		const class Shader* m_PixelShader = nullptr;
 
 		EToplolgy m_Topology = EToplolgy::Triangle;
-		// TODO: Support multiple blend targets?
-		BlendState m_BlendState;
+		// If false, only the first blend state will be used for all blend targets
+		bool m_IndividualBlend = false;
+		tabi::array<BlendState, MaxBlendTargets> m_BlendState;
 		RasterizerState m_RasterizerState;
 		DepthStencilState m_DepthStencilState;
 		VertexInputLayout m_VertexInputLayout;

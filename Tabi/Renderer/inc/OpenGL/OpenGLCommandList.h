@@ -6,7 +6,6 @@
 
 #include <TabiContainers.h>
 
-#include <functional>
 
 namespace tabi
 {

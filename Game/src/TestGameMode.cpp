@@ -65,7 +65,7 @@ bool TestGameMode::OnInitialize()
     tabi::DepthStencilState depthStencilState;
     depthStencilState.m_EnableDepthTest = false;
 
-    const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, blendState, rasterizerState, depthStencilState, vertexInput };
+    const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
     m_MeshPipeline = device->CreateGraphicsPipeline(pipelineDesc, "Test pipeline");
 
     m_CommandList->EndRecording();
@@ -84,6 +84,7 @@ void TestGameMode::OnRender()
 
     static constexpr float clearCol[] = { 0.25f, 0.3f, 1.0f, 1.0f };
     m_CommandList->ClearRenderTarget(nullptr, clearCol);
+    m_CommandList->ClearDepthStencil(nullptr);
 
     const tabi::mat4 eye = m_Camera->m_Camera->GetView();
     const tabi::mat4 projection = m_Camera->m_Camera->GetProjection();

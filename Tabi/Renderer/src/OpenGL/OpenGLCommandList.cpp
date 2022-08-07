@@ -203,80 +203,22 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, co
 	tabi::array<float, 4> clearColor;
 	std::copy_n(a_ClearColor, 4, clearColor.begin());
 
-	m_PendingCommands.Add([id = a_RenderTarget != nullptr ? static_cast<OpenGLRenderTarget*>(a_RenderTarget)->GetID() : 0, clearColor = std::move(clearColor)]
+	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), clearColor = std::move(clearColor)]
 		{
-		    glClearNamedFramebufferfv(id, GL_COLOR, 0, &clearColor[0]);
+			glClearNamedFramebufferfv(renderTarget ? renderTarget->GetID() : 0, GL_COLOR, 0, &clearColor[0]);
 		}
 	);
-
 }
 
-void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, float a_DepthValue,
-	uint8_t a_StencilValue)
+void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, float a_DepthValue, uint8_t a_StencilValue)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	m_PendingCommands.Add([id = a_RenderTarget != nullptr ? static_cast<OpenGLRenderTarget*>(a_RenderTarget)->GetID() : 0, a_DepthValue, a_StencilValue]
+	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), a_DepthValue, a_StencilValue]
 		{
-			glClearNamedFramebufferfi(id, GL_DEPTH_STENCIL, 0, a_DepthValue, a_StencilValue);
+			glClearNamedFramebufferfi(renderTarget ? renderTarget->GetID() : 0, GL_DEPTH_STENCIL, 0, a_DepthValue, a_StencilValue);
 		}
 	);
-}
-
-namespace tabi
-{
-	void CopyDataToTexture1D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
-	{
-		glTextureSubImage1D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
-			a_UpdateDescription.m_OffsetX,
-			a_UpdateDescription.m_DataWidth,
-			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-			a_Data.data()
-		);
-	}
-
-	void CopyDataToTexture2D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, uint32_t a_DataHeight, uint32_t a_OffsetY, const tabi::vector<char>& a_Data)
-	{
-		glTextureSubImage2D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
-			a_UpdateDescription.m_OffsetX, a_OffsetY,
-			a_UpdateDescription.m_DataWidth, a_DataHeight,
-			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-			a_Data.data()
-		);
-	}
-
-	void CopyDataToTexture3D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
-	{
-		glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
-			a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ,
-			a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, a_UpdateDescription.m_DataDepth,
-			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-			a_Data.data()
-		);
-	}
-
-	void CopyDataToTextureCubemap(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
-	{
-		const auto faceIndex = static_cast<uint8_t>(a_UpdateDescription.m_CubeFace);
-		if(a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMap)
-		{
-			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
-				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, faceIndex,
-				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
-				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-				a_Data.data()
-			);
-		}
-		else if (a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMapArray)
-		{
-			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
-				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ * 6 + faceIndex,
-				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
-				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
-				a_Data.data()
-			);
-		}
-	}
 }
 
 void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_GraphicsPipeline)
@@ -298,36 +240,71 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 
 			const auto & pipelineDesc = pipeline->GetPipelineDescription();
 
-			if (pipelineDesc.m_BlendState.m_BlendEnabled)
-			{
-				const auto& blend = pipelineDesc.m_BlendState;
-
-				glEnable(GL_BLEND);
-
-				// TODO: glBlend*i() instead when supporting multiple blend targets
-
-				if (blend.m_BlendOperationRGB == blend.m_BlendOperationAlpha)
+		    if(pipelineDesc.m_IndividualBlend)
+		    {
+				for (size_t i = 0; i < (pipelineDesc.m_IndividualBlend ? GraphicsPipelineDescription::MaxBlendTargets : 1); ++i)
 				{
-					glBlendEquation(GLBlendEquation(blend.m_BlendOperationRGB));
-				}
-				else
-				{
-					glBlendEquationSeparate(GLBlendEquation(blend.m_BlendOperationRGB), GLBlendEquation(blend.m_BlendOperationAlpha));
-				}
+					if (pipelineDesc.m_BlendState[i].m_BlendEnabled)
+					{
+						const auto& blend = pipelineDesc.m_BlendState[i];
 
-				if (blend.m_SourceBlendFactorRGB == blend.m_SourceBlendFactorAlpha && blend.m_DestBlendFactorRGB == blend.m_DestBlendFactorAlpha)
-				{
-					glBlendFunc(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB));
+						glEnablei(GL_BLEND, i);
+
+						if (blend.m_BlendOperationRGB == blend.m_BlendOperationAlpha)
+						{
+							glBlendEquationi(i, GLBlendEquation(blend.m_BlendOperationRGB));
+						}
+						else
+						{
+							glBlendEquationSeparatei(i, GLBlendEquation(blend.m_BlendOperationRGB), GLBlendEquation(blend.m_BlendOperationAlpha));
+						}
+
+						if (blend.m_SourceBlendFactorRGB == blend.m_SourceBlendFactorAlpha && blend.m_DestBlendFactorRGB == blend.m_DestBlendFactorAlpha)
+						{
+							glBlendFunci(i, GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB));
+						}
+						else
+						{
+							glBlendFuncSeparatei(i, GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
+						}
+					}
+					else
+					{
+						glDisablei(GL_BLEND, i);
+					}
 				}
-				else
-				{
-					glBlendFuncSeparate(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
-				}
-			}
-			else
-			{
-				glDisable(GL_BLEND);
-			}
+		    }
+		    else
+		    {
+			    if (pipelineDesc.m_BlendState[0].m_BlendEnabled)
+			    {
+				    const auto& blend = pipelineDesc.m_BlendState[0];
+
+				    glEnable(GL_BLEND);
+
+				    if (blend.m_BlendOperationRGB == blend.m_BlendOperationAlpha)
+				    {
+					    glBlendEquation(GLBlendEquation(blend.m_BlendOperationRGB));
+				    }
+				    else
+				    {
+					    glBlendEquationSeparate(GLBlendEquation(blend.m_BlendOperationRGB), GLBlendEquation(blend.m_BlendOperationAlpha));
+				    }
+
+				    if (blend.m_SourceBlendFactorRGB == blend.m_SourceBlendFactorAlpha && blend.m_DestBlendFactorRGB == blend.m_DestBlendFactorAlpha)
+				    {
+					    glBlendFunc(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB));
+				    }
+				    else
+				    {
+					    glBlendFuncSeparate(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
+				    }
+			    }
+			    else
+			    {
+				    glDisable(GL_BLEND);
+			    }
+		    }
 
 			if (pipelineDesc.m_DepthStencilState.m_EnableDepthTest)
 			{
@@ -408,6 +385,62 @@ void tabi::OpenGLCommandList::UseComputePipeline(const ComputePipeline* a_Comput
 			glBindProgramPipeline(pipeline->GetID());
 		}
 	);
+}
+
+namespace tabi
+{
+	void CopyDataToTexture1D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
+	{
+		glTextureSubImage1D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+			a_UpdateDescription.m_OffsetX,
+			a_UpdateDescription.m_DataWidth,
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
+			a_Data.data()
+		);
+	}
+
+	void CopyDataToTexture2D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, uint32_t a_DataHeight, uint32_t a_OffsetY, const tabi::vector<char>& a_Data)
+	{
+		glTextureSubImage2D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+			a_UpdateDescription.m_OffsetX, a_OffsetY,
+			a_UpdateDescription.m_DataWidth, a_DataHeight,
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
+			a_Data.data()
+		);
+	}
+
+	void CopyDataToTexture3D(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
+	{
+		glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+			a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ,
+			a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, a_UpdateDescription.m_DataDepth,
+			GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
+			a_Data.data()
+		);
+	}
+
+	void CopyDataToTextureCubemap(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
+	{
+		const auto faceIndex = static_cast<uint8_t>(a_UpdateDescription.m_CubeFace);
+		if (a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMap)
+		{
+			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, faceIndex,
+				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
+				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
+				a_Data.data()
+			);
+		}
+		else if (a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMapArray)
+		{
+			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
+				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ * 6 + faceIndex,
+				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
+				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
+				a_Data.data()
+			);
+		}
+	}
 }
 
 void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription)

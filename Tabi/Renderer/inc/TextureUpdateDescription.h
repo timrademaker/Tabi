@@ -23,7 +23,7 @@ namespace tabi
 		// The offset in the Z direction within the texture at which to start replacing the existing data, or the index into a texture array
 		uint32_t m_OffsetZ = 0;
 
-		// The cubemap face to update if the texture is a cubemap
+		// The cubemap face to update if the texture is a cube map
 		ECubemapFace m_CubeFace = ECubemapFace::XPositive;
 
 		// The mipmap level to update

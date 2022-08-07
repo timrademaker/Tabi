@@ -1,11 +1,16 @@
 #version 460 core
 
-layout(location = 0) in vec3 aPos;
-layout(location = 1) in vec3 aCol;
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
+
+layout(location = 0) out vec2 TexCoords;
+layout(location = 1) out vec4 BaseColorFactor;
 
 layout(binding = 0) uniform InData
 {
 	mat4 cameraTransform;
+	vec4 baseColorFactor;
 };
 
 layout(binding = 1) uniform ModelData
@@ -20,10 +25,9 @@ out gl_PerVertex
 	float gl_ClipDistance[];
 };
 
-layout(location = 0) out vec4 vertexColor;
-
 void main()
 {
 	gl_Position = cameraTransform * modelMatrix * vec4(aPos, 1.0);
-	vertexColor = vec4(aCol, 1.0);
+	TexCoords = aTexCoords;
+	BaseColorFactor = baseColorFactor;
 }

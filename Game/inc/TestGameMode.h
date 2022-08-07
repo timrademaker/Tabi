@@ -2,6 +2,9 @@
 
 #include  <GameBase.h>
 
+#include <Math/vec4.h>
+#include <Math/mat4.h>
+
 #include "MovableCamera.h"
 
 namespace tabi
@@ -18,6 +21,7 @@ struct Model
 {
     tabi::Buffer* m_VertexBuffer;
     tabi::Buffer* m_IndexBuffer;
+    tabi::Texture* m_ColorTexture = nullptr;
 
     size_t m_VertexCount = 0;
     size_t m_IndexCount = 0;
@@ -25,6 +29,12 @@ struct Model
     tabi::vec3 m_Position{};
     tabi::vec3 m_Rotation{};
     tabi::vec3 m_Scale{ 1, 1, 1 };
+};
+
+struct ModelData
+{
+    tabi::mat4 m_ModelMatrix;
+    tabi::vec4 m_BaseColorFactor{ 1.0f, 1.0f, 1.0f, 1.0f };
 };
 
 class TestGameMode : public tabi::GameBase

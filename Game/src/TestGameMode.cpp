@@ -18,6 +18,9 @@
 #include <Resources/Mesh.h>
 #include <Resources/Model.h>
 
+#include "TextureUpdateDescription.h"
+#include "Resources/Material.h"
+
 bool TestGameMode::OnInitialize()
 {
     tabi::InputManager::SetCursorCapture(true);
@@ -32,18 +35,58 @@ bool TestGameMode::OnInitialize()
     m_CommandList = device->CreateCommandList();
     m_CommandList->BeginRecording();
 
-    m_ModelData = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
+    // GLB model test
+    {
+        const auto model = tabi::Model::LoadBinaryModelFromPath("Assets/Duck.glb");
+        const auto mesh = model->m_Meshes[0];
+
+        Model m;
+
+        m.m_Scale /= 15.0f;
+        m.m_Position = tabi::vec3{ -10.0f, -5.0f, -15.0f };
+        m.m_Rotation = tabi::vec3{ 0.0f, -1.57f, 0.0f };
+
+        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(tabi::Mesh::Vertex) * mesh->m_VertexCount, sizeof(tabi::Mesh::Vertex) });
+        m.m_VertexCount = mesh->m_VertexCount;
+        m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(mesh->m_Vertices.data()), sizeof(tabi::Mesh::Vertex) * mesh->m_VertexCount, 0);
+
+        m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(mesh->m_Indices[0]) * mesh->m_Indices.size(), 0 });
+        m.m_IndexCount = mesh->m_Indices.size();
+        m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&mesh->m_Indices[0]), sizeof(mesh->m_Indices[0]) * mesh->m_Indices.size(), 0);
+
+        auto tex = mesh->m_Material->m_MetalicRoughness->m_BaseColorTexture;
+        if (tex)
+        {
+            tabi::TextureDescription td{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::Texture, tabi::EFormat::RGBA8_unorm };
+
+            td.m_Width = tex->m_Width;
+            td.m_Height = tex->m_Height;
+
+            m.m_ColorTexture = device->CreateTexture(td, "GLB texture");
+
+            tabi::TextureUpdateDescription tud;
+            tud.m_Data = reinterpret_cast<const char*>(tex->m_TextureData.data());
+            tud.m_DataWidth = tex->m_Width;
+            tud.m_DataHeight = tex->m_Height;
+
+            m_CommandList->CopyDataToTexture(m.m_ColorTexture, tud);
+        }
+
+        m_Models.emplace_back(m);
+    }
+
+    m_ModelData = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(ModelData), 0 });
 
     // Model rendering test
     {
         Model m;
 
         const float vertices[] = {
-            // X, Y, Z,             R, G, B
-            -0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.0f,      0.0f, 1.0f, 0.0f,
-            0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
-            -0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 1.0f
+            // X, Y, Z,             Normal,                 U, V
+            -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 1.0f,       0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f,      0.0f, 0.0f, 1.0f,       0.0f, 0.0f,
+            0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,       0.0f, 0.0f,
+            -0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,       0.0f, 0.0f,
         };
         m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
         m.m_VertexCount = std::size(vertices) / 6;
@@ -62,15 +105,17 @@ bool TestGameMode::OnInitialize()
 
         // Create vertex pipeline
         const auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
-        const auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/FragmentShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
+        const auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
 
         tabi::VertexInputLayout vertexInput;
-        vertexInput.m_NumInputElements = 2;
+        vertexInput.m_NumInputElements = 3;
 
         const tabi::VertexInputElement posElement{ 0, 0, "POSITION", tabi::EFormat::RGB32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
-        const tabi::VertexInputElement colElement{ 0, 0, "COLOR", tabi::EFormat::RGB32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
+        const tabi::VertexInputElement normalElement{ 0, 0, "NORMAL", tabi::EFormat::RGB32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
+        const tabi::VertexInputElement texCoordElement{ 0, 0, "TEXCOORD", tabi::EFormat::RG32_float, tabi::EInstanceDataStepClassification::PerVertex, 0 };
         vertexInput.m_InputElements[0] = posElement;
-        vertexInput.m_InputElements[1] = colElement;
+        vertexInput.m_InputElements[1] = normalElement;
+        vertexInput.m_InputElements[2] = texCoordElement;
 
         tabi::BlendState blendState;
         blendState.m_BlendEnabled = false;
@@ -172,15 +217,17 @@ void TestGameMode::OnRender()
     {
         m_CommandList->BindVertexBuffers(0, &m_Models[i].m_VertexBuffer, 1);
         m_CommandList->BindIndexBuffer(m_Models[i].m_IndexBuffer);
+        m_CommandList->BindTexture(m_Models[i].m_ColorTexture, 0);
 
+        ModelData md;
         auto pos = tabi::mat4::Identity();
         pos.Translate(m_Models[i].m_Position);
         auto rot = tabi::mat4::Identity();
         rot.SetRotation(m_Models[i].m_Rotation);
         auto scale = tabi::mat4::Identity();
-        rot.SetScale(m_Models[i].m_Scale);
-        const auto modelMatrix = tabi::mat4::CreateTransformationMatrix(pos, scale, rot);
-        m_CommandList->CopyDataToBuffer(m_ModelData, reinterpret_cast<const char*>(&modelMatrix.v[0]), sizeof(modelMatrix), 0);
+        scale.SetScale(m_Models[i].m_Scale);
+        md.m_ModelMatrix = tabi::mat4::CreateTransformationMatrix(pos, scale, rot);
+        m_CommandList->CopyDataToBuffer(m_ModelData, reinterpret_cast<const char*>(&md), sizeof(md), 0);
 
         m_CommandList->DrawIndexed(m_Models[i].m_IndexCount);
     }

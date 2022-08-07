@@ -65,14 +65,13 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, const Buffe
 void tabi::OpenGLCommandList::BindIndexBuffer(const Buffer* a_IndexBuffer)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
-	TABI_ASSERT(a_IndexBuffer != nullptr);
-	TABI_ASSERT(a_IndexBuffer->GetBufferDescription().m_Role == EBufferRole::Index);
+	TABI_ASSERT(a_IndexBuffer == nullptr || a_IndexBuffer->GetBufferDescription().m_Role == EBufferRole::Index);
 
 	m_IndexBuffer = a_IndexBuffer;
 
 	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_IndexBuffer)]
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf->GetID());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf ? buf->GetID() : 0);
 		}
 	);
 
@@ -81,12 +80,11 @@ void tabi::OpenGLCommandList::BindIndexBuffer(const Buffer* a_IndexBuffer)
 void tabi::OpenGLCommandList::BindConstantBuffer(const Buffer* a_Buffer, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
-	TABI_ASSERT(a_Buffer != nullptr);
-	TABI_ASSERT(a_Buffer->GetBufferDescription().m_Role == EBufferRole::Constant);
+	TABI_ASSERT(a_Buffer == nullptr || a_Buffer->GetBufferDescription().m_Role == EBufferRole::Constant);
 
 	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
-			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, buf->GetID());
+			glBindBufferBase(GL_UNIFORM_BUFFER, a_Slot, buf ? buf->GetID() : 0);
 		}
 	);
 }
@@ -94,11 +92,10 @@ void tabi::OpenGLCommandList::BindConstantBuffer(const Buffer* a_Buffer, int32_t
 void tabi::OpenGLCommandList::BindReadWriteBuffer(const Buffer* a_Buffer, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
-	TABI_ASSERT(a_Buffer != nullptr);
 
 	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), a_Slot]
 		{
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, buf->GetID());
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, a_Slot, buf ? buf->GetID() : 0);
 		}
 	);
 }
@@ -106,12 +103,11 @@ void tabi::OpenGLCommandList::BindReadWriteBuffer(const Buffer* a_Buffer, int32_
 void tabi::OpenGLCommandList::BindTexture(const Texture* a_Texture, int32_t a_Slot)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
-	TABI_ASSERT(a_Texture != nullptr);
 
 	m_PendingCommands.Add([tex = static_cast<const OpenGLTexture*>(a_Texture), a_Slot]
 		{
 			glActiveTexture(GL_TEXTURE0 + a_Slot);
-			glBindTexture(GLTextureDimension(tex->GetTextureDescription().m_Dimension), tex->GetID());
+			glBindTexture(tex ? GLTextureDimension(tex->GetTextureDescription().m_Dimension) : GL_TEXTURE_2D, tex ? tex->GetID() : 0);
 		}
 	);
 }
@@ -446,16 +442,16 @@ namespace tabi
 void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_Texture != nullptr);
 
 	// Copy texture data to a staging buffer
 	const size_t width = std::max<size_t>(a_TextureUpdateDescription.m_DataWidth, 1);
 	const size_t height = std::max<size_t>(a_TextureUpdateDescription.m_DataHeight, 1);
 	const size_t depth = std::max<size_t>(a_TextureUpdateDescription.m_DataDepth, 1);
-	const size_t bitsPerTexel = GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_FormatSizeInBytes;
+	const size_t bytesPerTexel = GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_FormatSizeInBytes;
 	const size_t dataSizeDivisor = pow(2, a_TextureUpdateDescription.m_MipLevel);	// Each mip level takes up half the memory of the previous mip level
 
-	// TODO: Is this correct?
-	const size_t texDataBytes = (width * height * depth * bitsPerTexel) / dataSizeDivisor;
+	const size_t texDataBytes = (width * height * depth * bytesPerTexel) / dataSizeDivisor;
 	tabi::vector<char> stagedTextureData(texDataBytes);
 	std::copy_n(a_TextureUpdateDescription.m_Data, texDataBytes, stagedTextureData.begin());
 

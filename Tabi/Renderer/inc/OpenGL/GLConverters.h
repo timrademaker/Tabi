@@ -21,7 +21,7 @@ namespace tabi
 	GLenum GLType(EDataType a_DataType);
 
 	GLenum GLShaderType(EShaderType a_ShaderType);
-	GLenum GLCubeMapFace(ECubemapFace a_Face);
+	GLenum GLCubeMapFace(ECubeMapFace a_Face);
 
 	GLenum GLTarget(ETextureDimension a_TextureDimension);
 	GLenum GLTarget(EBufferRole a_BufferRole);
@@ -40,6 +40,8 @@ namespace tabi
 	GLenum GLBlendFactor(EBlendFactor a_BlendFactor);
 
 	GLenum GLTopology(EToplolgy a_Topology);
+
+	GLint GLCubeFaceToLayer(ETextureDimension a_TextureDimension, uint8_t a_Layer, ECubeMapFace a_Face);
 
 	tabi::string GLDebugMessageSource(GLenum a_Source);
 	tabi::string GLDebugMessageType(GLenum a_Type);

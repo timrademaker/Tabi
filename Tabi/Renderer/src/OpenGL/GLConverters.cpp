@@ -272,21 +272,21 @@ namespace tabi
 			}
 		}
 
-		GLenum GLCubeMapFace(ECubemapFace a_Face)
+		GLenum GLCubeMapFace(ECubeMapFace a_Face)
 		{
 			switch(a_Face)
 			{
-			case ECubemapFace::XPositive:
+			case ECubeMapFace::XPositive:
 				return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-			case ECubemapFace::XNegative:
+			case ECubeMapFace::XNegative:
 				return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-			case ECubemapFace::YPositive:
+			case ECubeMapFace::YPositive:
 				return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-			case ECubemapFace::YNegative:
+			case ECubeMapFace::YNegative:
 				return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-			case ECubemapFace::ZPositive:
+			case ECubeMapFace::ZPositive:
 				return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-			case ECubemapFace::ZNegative:
+			case ECubeMapFace::ZNegative:
 				return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
 
 			default:
@@ -570,7 +570,22 @@ namespace tabi
 			}
 		}
 
-		tabi::string GLDebugMessageSource(GLenum a_Source)
+        GLint GLCubeFaceToLayer(ETextureDimension a_TextureDimension, uint8_t a_Layer, ECubeMapFace a_Face)
+        {
+			if (a_TextureDimension == ETextureDimension::CubeMap)
+			{
+				return static_cast<uint8_t>(a_Face);
+			}
+			else if (a_TextureDimension == ETextureDimension::CubeMapArray)
+			{
+				return a_Layer * 6 + static_cast<uint8_t>(a_Face);
+			}
+
+			TABI_ASSERT(false, "Texture is not a cube map");
+			return a_Layer;
+        }
+
+        tabi::string GLDebugMessageSource(GLenum a_Source)
 		{
 #define ENUM_CASE(EnumValue) case EnumValue: return #EnumValue
 			switch (a_Source)

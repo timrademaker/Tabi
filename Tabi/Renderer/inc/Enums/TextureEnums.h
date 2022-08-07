@@ -26,7 +26,7 @@ namespace tabi
 		RenderTexture
 	};
 
-	enum class ECubemapFace : uint8_t
+	enum class ECubeMapFace : uint8_t
 	{
 		XPositive,
 		XNegative,

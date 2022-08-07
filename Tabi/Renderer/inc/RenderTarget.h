@@ -12,12 +12,12 @@ namespace tabi
 		class Texture* m_Texture = nullptr;
 
 		// The index of the mimpap level to use
-		uint8_t m_MipLevel = 0;
+		int8_t m_MipLevel = 0;
 		// If the render texture is an array-like texture (e.g. 2DArray, 3D, cube map array), this specifies the layer of the texture to attach
-		uint8_t m_TextureLayer = 0;
+		int8_t m_TextureLayer = 0;
 
 		// The cube map face if the texture is a cube map
-		ECubemapFace m_CubeFace = ECubemapFace::XPositive;	// TODO: Unsure if D3D12 supports this - RTV has no cube map dimension
+		ECubeMapFace m_CubeFace = ECubeMapFace::XPositive;	// TODO: Unsure if D3D12 supports this - RTV has no cube map dimension
 
 		// TODO: D3D12 has plane slice here as well
 	};
@@ -27,12 +27,12 @@ namespace tabi
 		class Texture* m_Texture = nullptr;
 
 		// The index of the mimpap level to use
-		uint8_t m_MipLevel = 0;
+		int8_t m_MipLevel = 0;
 		// If the render texture is an array-like texture (e.g. 2DArray, cube map array), this specifies the layer of the texture to attach
-		uint8_t m_TextureLayer = 0;
+		int8_t m_TextureLayer = 0;
 
 		// The cube map face if the texture is a cube map
-		ECubemapFace m_CubeFace = ECubemapFace::XPositive;	// TODO: Unsure if D3D12 supports this - DSV has no cube map dimension
+		ECubeMapFace m_CubeFace = ECubeMapFace::XPositive;	// TODO: Unsure if D3D12 supports this - DSV has no cube map dimension
 	};
 
 	struct RenderTargetDescription

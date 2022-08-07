@@ -419,13 +419,13 @@ namespace tabi
 		);
 	}
 
-	void CopyDataToTextureCubemap(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
+	void CopyDataToTextureCubeMap(const tabi::OpenGLTexture* a_Texture, const tabi::TextureUpdateDescription& a_UpdateDescription, const tabi::vector<char>& a_Data)
 	{
-		const auto faceIndex = static_cast<uint8_t>(a_UpdateDescription.m_CubeFace);
+		const auto layer = GLCubeFaceToLayer(a_Texture->GetTextureDescription().m_Dimension, a_UpdateDescription.m_OffsetZ, a_UpdateDescription.m_CubeFace);
 		if (a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMap)
 		{
 			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
-				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, faceIndex,
+				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, layer,
 				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
 				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
 				a_Data.data()
@@ -434,7 +434,7 @@ namespace tabi
 		else if (a_Texture->GetTextureDescription().m_Dimension == ETextureDimension::CubeMapArray)
 		{
 			glTextureSubImage3D(a_Texture->GetID(), a_UpdateDescription.m_MipLevel,
-				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, a_UpdateDescription.m_OffsetZ * 6 + faceIndex,
+				a_UpdateDescription.m_OffsetX, a_UpdateDescription.m_OffsetY, layer,
 				a_UpdateDescription.m_DataWidth, a_UpdateDescription.m_DataHeight, 1,
 				GLFormat(a_Texture->GetTextureDescription().m_Format), GLType(GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_DataType),
 				a_Data.data()
@@ -481,7 +481,7 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 				break;
 			case ETextureDimension::CubeMap:
 			case ETextureDimension::CubeMapArray:
-				CopyDataToTextureCubemap(tex, a_TextureUpdateDescription, data);
+				CopyDataToTextureCubeMap(tex, a_TextureUpdateDescription, data);
 				break;
 			default: 
 				TABI_ASSERT(false, "Attempting to copy data to a texture with unexpected dimensions");

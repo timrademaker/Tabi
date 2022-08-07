@@ -508,13 +508,9 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 					{
 						auto layer = texView.m_TextureLayer;
 
-						if (texDim == ETextureDimension::CubeMap)
+						if (texDim == ETextureDimension::CubeMap || texDim == ETextureDimension::CubeMapArray)
 						{
-							layer = static_cast<uint8_t>(texView.m_CubeFace);
-						}
-						else if (texDim == ETextureDimension::CubeMapArray)
-						{
-							layer = texView.m_TextureLayer * 6 + static_cast<uint8_t>(texView.m_CubeFace);
+							layer = GLCubeFaceToLayer(texDim, layer, texView.m_CubeFace);
 						}
 
 						glNamedFramebufferTextureLayer(id, GL_COLOR_ATTACHMENT0 + i, colorBuffer->GetID(), texView.m_MipLevel, layer);
@@ -538,13 +534,9 @@ tabi::RenderTarget* tabi::OpenGLDevice::CreateRenderTarget(const RenderTargetDes
 				{
 					auto layer = depthStencilDesc.m_TextureLayer;
 
-					if (texDim == ETextureDimension::CubeMap)
+					if (texDim == ETextureDimension::CubeMap || texDim == ETextureDimension::CubeMapArray)
 					{
-						layer = static_cast<uint8_t>(depthStencilDesc.m_CubeFace);
-					}
-					else if (texDim == ETextureDimension::CubeMapArray)
-					{
-						layer = depthStencilDesc.m_TextureLayer * 6 + static_cast<uint8_t>(depthStencilDesc.m_CubeFace);
+						layer = GLCubeFaceToLayer(texDim, layer, depthStencilDesc.m_CubeFace);
 					}
 
 					glNamedFramebufferTextureLayer(id, GL_DEPTH_STENCIL_ATTACHMENT, texID, depthStencilDesc.m_MipLevel, layer);

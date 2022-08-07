@@ -24,7 +24,7 @@ namespace tabi
 		uint32_t m_OffsetZ = 0;
 
 		// The cubemap face to update if the texture is a cube map
-		ECubemapFace m_CubeFace = ECubemapFace::XPositive;
+		ECubeMapFace m_CubeFace = ECubeMapFace::XPositive;
 
 		// The mipmap level to update
 		uint16_t m_MipLevel = 0;

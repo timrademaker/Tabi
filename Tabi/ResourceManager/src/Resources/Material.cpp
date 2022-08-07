@@ -27,12 +27,12 @@ tabi::shared_ptr<Material> Material::LoadMaterial(const tinygltf::Model& a_Model
 
     if (mat.pbrMetallicRoughness.baseColorTexture.index != -1)
     {
-        metalicRoughness->m_BaseColorTexture = Texture::LoadTextureFromModel(a_Model, mat.pbrMetallicRoughness.baseColorTexture.index);
+        metalicRoughness->m_BaseColorTexture = TextureResource::LoadTextureFromModel(a_Model, mat.pbrMetallicRoughness.baseColorTexture.index);
     }
 
     if (mat.normalTexture.index != -1)
     {
-        loadedMaterial->m_NormalTexture = Texture::LoadTextureFromModel(a_Model, mat.normalTexture.index);
+        loadedMaterial->m_NormalTexture = TextureResource::LoadTextureFromModel(a_Model, mat.normalTexture.index);
     }
 
     loadedMaterial->m_MetalicRoughness = std::move(metalicRoughness);

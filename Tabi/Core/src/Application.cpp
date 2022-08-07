@@ -4,7 +4,7 @@
 #include <InputManager.h>
 #include <IInputHandler.h>
 
-#include <IRenderer.h>
+#include <IDevice.h>
 
 #include <Logging.h>
 
@@ -12,10 +12,11 @@
 #include <chrono>
 
 #if defined(_WINDOWS)
-#include "Windows/WindowsWindow.h"
 #include "Windows/WindowsInputHandler.h"
 #endif
 
+
+tabi::IDevice* s_Device = nullptr;
 
 using tabi::Application;
 using tabi::GameBase;
@@ -41,6 +42,8 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 
     m_Running = true;
 
+    const auto windowHandle = graphics::IWindow::GetInstance().GetHandle();
+
     float deltaTime = 0.0f;
     while (m_Running)
     {
@@ -51,21 +54,22 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         // TODO: Update active scene?
         // TODO: Update subsystems
 
-        // TODO: Render
+        s_Device->BeginFrame();
 
         a_Game->OnRender();
 
-        m_Window->SwapBuffer();
+        s_Device->EndFrame();
+        s_Device->Present();
 
         InputManager::Update();
 
         auto frameEnd = std::chrono::high_resolution_clock::now();
         deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(frameEnd - frameStart).count();
-        //TabiLog(ELogLevel::Trace, "DeltaTime: " + std::to_string(deltaTime));
+        //TabiLog(ELogLevel::Trace, "DeltaTime: %f", deltaTime);
 
 #if defined(_WINDOWS)
         MSG msg = MSG();
-        while(PeekMessage(&msg, m_Window->GetHandle(), NULL, NULL, PM_REMOVE))
+        while(PeekMessage(&msg, windowHandle, NULL, NULL, PM_REMOVE))
         {
             reinterpret_cast<InputHandler*>(&IInputHandler::GetInstance())->HandleMsg(msg);
             TranslateMessage(&msg);
@@ -87,8 +91,16 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
     if (!m_Initialized)
     {
         // Create window
-        m_Window = graphics::IWindow::OpenWindow(a_WindowTitle, a_Width, a_Height);
-        graphics::IRenderer::GetInstance().Initialize(m_Window);
+        graphics::IWindow::Initialize(a_WindowTitle, a_Width, a_Height);
+        const auto& window = graphics::IWindow::GetInstance();
+
+        s_Device = tabi::IDevice::GetInstance();
+        s_Device->Initialize(graphics::IWindow::GetInstance().GetHandle(), a_Width, a_Height);
+
+        window.OnWindowResize().Subscribe(s_Device, [device = s_Device](tabi::WindowResizeEventData a_Data)
+        {
+                device->ResizeRenderingContext(a_Data.m_NewWidth, a_Data.m_NewHeight);
+        });
 
         m_Initialized = true;
     }
@@ -97,5 +109,6 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
 
 void Application::Destroy()
 {
-
+    graphics::IWindow::GetInstance().OnWindowResize().Unsubscribe(s_Device);
+    s_Device->Finalize();
 }

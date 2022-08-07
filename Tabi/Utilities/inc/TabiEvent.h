@@ -19,6 +19,7 @@ namespace tabi
     {
         using CallbackType = std::function<void(EventInfo)>;
         using CallbackMap = tabi::unordered_map<void*, tabi::vector<CallbackType>>;
+
     public:
         EventBase() = default;
         ~EventBase() = default;
@@ -29,33 +30,33 @@ namespace tabi
         * @params a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
-        typename typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type 
-            Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo));
+        typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type 
+            Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo)) const;
         /**
         * @brief Subscribe a callback to an event
         * @params a_Object The object subscribing to the event
         * @params a_Callback The callback function to send events to
         */
-        void Subscribe(void* a_Object, CallbackType a_Callback);
+        void Subscribe(void* a_Object, CallbackType a_Callback) const;
         /**
         * @brief Subscribe an object's callback to an event
         * @params a_Object The object subscribing to the event
         * @params a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
-        typename typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type 
-            Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)());
+        typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type 
+            Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)()) const;
         /**
         * @brief Subscribe a static function to an event
         * @params a_Callback The callback function to send events to
         */
-        void SubscribeStatic(CallbackType a_Callback);
+        void SubscribeStatic(CallbackType a_Callback) const;
         /**
         * @brief Unsubscribes an object from events
         * @params a_Object The object to unsubscribe
         * @returns True if any callback was removed, false if none were found
         */
-        bool Unsubscribe(void* a_Object);
+        bool Unsubscribe(void* a_Object) const;
         /**
         * @brief Removes all static subscribers
         * @returns True if any callback was removed, false if none were found
@@ -76,7 +77,7 @@ namespace tabi
         * @brief Broadcasts an event to all subscribers. Only available when using tabi::Event
         */
         template<typename T = EventInfo>
-        typename typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast();
+        typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast();
 
         /**
         * @brief Checks if this event has any subscribers
@@ -90,16 +91,15 @@ namespace tabi
         * @params a_Object The object subscribing to the event
         * @params a_Callback The callback function to send events to
         */
-        void Subscribe_Internal(void* a_Object, CallbackType a_Callback);
+        void Subscribe_Internal(void* a_Object, CallbackType a_Callback) const;
 
     private:
-        CallbackMap m_Callbacks;
-
+        mutable CallbackMap m_Callbacks;
     };
 
     template<typename EventInfo>
     template<typename UserClass, typename T>
-    inline typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo))
+    inline typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo)) const
     {
         assert(a_Object);
         assert(a_Callback);
@@ -109,14 +109,14 @@ namespace tabi
     }
 
     template<typename EventInfo>
-    inline void EventBase<EventInfo>::Subscribe(void* a_Object, CallbackType a_Callback)
+    inline void EventBase<EventInfo>::Subscribe(void* a_Object, CallbackType a_Callback) const
     {
         Subscribe_Internal(a_Object, a_Callback);
     }
 
     template<typename EventInfo>
     template<typename UserClass, typename T>
-    inline typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)())
+    inline typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)()) const
     {
         assert(a_Object);
         assert(a_Callback);
@@ -126,14 +126,14 @@ namespace tabi
     }
 
     template<typename EventInfo>
-    inline void EventBase<EventInfo>::SubscribeStatic(CallbackType a_Callback)
+    inline void EventBase<EventInfo>::SubscribeStatic(CallbackType a_Callback) const
     {
         return Subscribe_Internal(nullptr, a_Callback);
     }
 
 
     template<typename EventInfo>
-    inline bool EventBase<EventInfo>::Unsubscribe(void* a_Object)
+    inline bool EventBase<EventInfo>::Unsubscribe(void* a_Object) const
     {
         auto iter = m_Callbacks.find(a_Object);
         if (iter != m_Callbacks.end())
@@ -198,7 +198,7 @@ namespace tabi
     }
 
     template<typename EventInfo>
-    inline void EventBase<EventInfo>::Subscribe_Internal(void* a_Object, CallbackType a_Callback)
+    inline void EventBase<EventInfo>::Subscribe_Internal(void* a_Object, CallbackType a_Callback) const
     {
         if (a_Callback)
         {

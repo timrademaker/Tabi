@@ -12,7 +12,7 @@ int main()
 {   
     tabi::logger::Log(tabi::logger::ELogLevel::Info, "Running game!");
 
-    auto game = tabi::make_shared<TestGameMode>("Game", 640, 480, false);
+    auto game = tabi::make_shared<TestGameMode>("Game", 1280, 720, false);
 
     return tabi::Application::Get().Run(game);
 }

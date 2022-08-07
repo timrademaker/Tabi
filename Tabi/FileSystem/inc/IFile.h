@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TabiTypes.h>
+#include <TabiMacros.h>
 
 namespace tabi
 {
@@ -18,10 +19,7 @@ namespace tabi
         Overwrite = (1U << 4),
         Binary = (1U << 5)
     };
-
-    inline EFileOpenFlags operator|(const EFileOpenFlags& a_Lhs, const EFileOpenFlags& a_Rhs) { return static_cast<EFileOpenFlags>(static_cast<int>(a_Lhs) | static_cast<int>(a_Rhs)); }
-    inline EFileOpenFlags operator|=(EFileOpenFlags& a_Lhs, const EFileOpenFlags& a_Rhs) { a_Lhs = static_cast<EFileOpenFlags>(a_Lhs | a_Rhs);  return a_Lhs; }
-    inline EFileOpenFlags operator&(const EFileOpenFlags& a_Lhs, const EFileOpenFlags& a_Rhs) { return static_cast<EFileOpenFlags>(static_cast<int>(a_Lhs)& static_cast<int>(a_Rhs)); }
+    TABI_ENUM_FLAG(EFileOpenFlags);
 
     enum class EFileResult
     {
@@ -32,10 +30,7 @@ namespace tabi
         EndOfFileReached = 1 << 5,
         FileNotFound = 1 << 6,
     };
-
-    inline EFileResult operator|(const EFileResult& a_Lhs, const EFileResult& a_Rhs) { return static_cast<EFileResult>(static_cast<int>(a_Lhs) | static_cast<int>(a_Rhs)); }
-    inline EFileResult operator|=(EFileResult& a_Lhs, const EFileResult& a_Rhs) { a_Lhs = static_cast<EFileResult>(a_Lhs | a_Rhs);  return a_Lhs; }
-    inline EFileResult operator&(const EFileResult& a_Lhs, const EFileResult& a_Rhs) { return static_cast<EFileResult>(static_cast<int>(a_Lhs)& static_cast<int>(a_Rhs)); }
+    TABI_ENUM_FLAG(EFileResult);
 
     enum class EFileSeekOrigin
     {

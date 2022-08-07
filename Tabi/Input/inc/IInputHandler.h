@@ -27,7 +27,7 @@ namespace tabi
         virtual void BindAxis(unsigned int a_Axis) = 0;
         /**
         * @brief Unbinds an axis in the input handler (i.e. could make sure the axis state is no longer checked on update)
-        * @params a_Button The axis identifier of the axis to unbind
+        * @params a_Axis The axis identifier of the axis to unbind
         */
         virtual void UnbindAxis(unsigned int a_Axis) = 0;
 

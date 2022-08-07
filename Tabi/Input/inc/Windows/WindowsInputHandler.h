@@ -60,12 +60,14 @@ namespace tabi
 
         static EInputDevice DetermineDeviceType(unsigned int a_Button);
 
-        bool IsBound(unsigned int a_Button);
+        bool IsBound(unsigned int a_Button) const;
 
         void SetCursorVisible(bool a_Visible);
         void CaptureCursor();
 
     private:
+        const HWND m_WindowHandle;
+        RECT m_WindowRect{ 0 };
 
         static tabi::unordered_map<EMouse, unsigned int> ms_MouseTable;
         static tabi::unordered_map<EKeyboard, unsigned int> ms_KeyboardTable;
@@ -73,12 +75,12 @@ namespace tabi
 
         tabi::unordered_map<EInputDevice, unsigned int> m_InputDeviceTable;
 
-        unsigned int m_WindowWidth;
-        unsigned int m_WindowHeight;
+        unsigned int m_WindowWidth = 0;
+        unsigned int m_WindowHeight = 0;
 
         // Mouse delta in whatever units Windows uses for this (probably pixels)
-        int m_MouseDeltaX;
-        int m_MouseDeltaY;
+        int m_MouseDeltaX = 0;
+        int m_MouseDeltaY = 0;
         // Raw input device
         RAWINPUTDEVICE m_RawInputDevice;
         tabi::vector<char> m_RawBuffer;

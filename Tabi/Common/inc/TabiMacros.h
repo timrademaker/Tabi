@@ -8,13 +8,10 @@
 #define TABI_INLINE inline
 #define TABI_NODISCARD
 
-// if constexpr (condition) is c++17 and up
-#define TABI_CONSTEXPR_IF
-
 #define TABI_UNUSED(var) (var)
 
 #if defined(_DEBUG)
-#define TABI_ASSERT(expression) assert(expression)
+#define TABI_ASSERT(expression, ...) assert(expression)
 #else
 #define TABI_ASSERT(expression) if(!(expression)) __debugbreak()
 #endif
@@ -36,3 +33,14 @@
 #define DISABLE_WARNING(warningName)   DO_PRAGMA(GCC diagnostic ignored #warningName)
 
 #endif
+
+#define TABI_ENUM_FLAG(EnumName) inline EnumName operator|(const EnumName& a_Lhs, const EnumName& a_Rhs) { return static_cast<EnumName>(static_cast<int64_t>(a_Lhs) | static_cast<int64_t>(a_Rhs)); } \
+inline EnumName operator|=(EnumName& a_Lhs, const EnumName& a_Rhs) { a_Lhs = static_cast<EnumName>(a_Lhs | a_Rhs);  return a_Lhs; } \
+inline EnumName operator&(const EnumName& a_Lhs, const EnumName& a_Rhs) { return static_cast<EnumName>(static_cast<int64_t>(a_Lhs) & static_cast<int64_t>(a_Rhs)); }
+
+#define TABI_NO_COPY(ClassName) ClassName(ClassName&) = delete; \
+ClassName(const ClassName&) = delete; \
+ClassName& operator=(const ClassName&) = delete;
+
+#define TABI_NO_MOVE(ClassName) ClassName(ClassName&&) = delete; \
+ClassName& operator=(ClassName&&) = delete;

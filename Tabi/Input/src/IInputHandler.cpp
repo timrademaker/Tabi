@@ -9,11 +9,7 @@ using tabi::InputHandler;
 
 IInputHandler& tabi::IInputHandler::GetInstance()
 {
-    static IInputHandler* instance;
-    if (!instance)
-    {
-        instance = new InputHandler;
-    }
+    static IInputHandler* instance = new InputHandler();
 
     return *instance;
 }

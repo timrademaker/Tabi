@@ -122,9 +122,9 @@ tabi::vector<tabi::shared_ptr<tabi::Camera>> tabi::gltf::GetCameras(const tinygl
 
         if (node.camera != -1)
         {
-            auto cam = tabi::make_shared<Camera>();
             auto camera = a_Model.cameras.at(node.camera);
 
+            auto cam = tabi::make_shared<Camera>(camera.perspective.aspectRatio);
             cam->SetNear(static_cast<float>(camera.perspective.znear));
             cam->SetFar(static_cast<float>(camera.perspective.zfar));
             //cam->m_FoV = static_cast<float>(glm::degrees(camera.perspective.yfov));

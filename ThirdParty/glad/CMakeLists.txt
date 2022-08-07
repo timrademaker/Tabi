@@ -5,13 +5,15 @@ project(GLAD_P)
 
 # Set headers for GLAD
 set(HEADERS
-    include/glad/glad.h
+    include/glad/gl.h
+    include/glad/wgl.h
     include/KHR/khrplatform.h
 )
 
 # Set sources for GLAD
 set(SOURCES
-    src/glad.c
+    src/gl.c
+    src/wgl.c
 )
 
 # Add source to this project's library.

@@ -1,27 +1,22 @@
 #include "Windows/WindowsWindow.h"
 
-#include "IRenderer.h"
-
 #include <Logging.h>
 
 #include <Application.h>
 
-#include <glad/glad.h>
-
 #include <Windows.h>
 #include <GL/GL.h>
-
-#if defined(OPENGL)
-#include "Windows/OpenGL/OpenGLContext.h"
-#endif
-
-#pragma comment (lib, "opengl32.lib")
 
 using namespace tabi::graphics;
 
 const char* Window::ms_WindowClassName = "TabiWindowClass";
 
-tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height)
+const char* tabi::graphics::Window::GetWindowClassName()
+{
+    return ms_WindowClassName;
+}
+
+bool Window::InitializeWindow(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height)
 {
     WindowHandle handle;
     {
@@ -35,8 +30,9 @@ tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, u
 
         if (!RegisterClass(&wc))
         {
-            logger::TabiLog(logger::ELogLevel::Critical, "Unable to register class for window creation!");
-            assert(false);
+            TABI_CRITICAL("Unable to register class for window creation!");
+            TABI_ASSERT(false);
+            return false;
         }
 
         handle = CreateWindowEx(0, wc.lpszClassName,
@@ -46,14 +42,11 @@ tabi::graphics::Window::Window(const char* a_WindowName, unsigned int a_Width, u
             nullptr, nullptr, nullptr, nullptr
         );
     }
+
     m_WindowName = a_WindowName;
     m_WindowHandle = handle;
-    m_Context = tabi::make_shared<Context>(handle, a_Width, a_Height);
-}
 
-const char* tabi::graphics::Window::GetWindowClassName()
-{
-    return ms_WindowClassName;
+    return true;
 }
 
 LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -67,10 +60,10 @@ LRESULT tabi::graphics::ProcessMessages(HWND hWnd, UINT message, WPARAM wParam, 
     }
     case WM_SIZE:
     {
-        unsigned int width = LOWORD(lParam);
-        unsigned int height = HIWORD(lParam);
-        IRenderer::GetInstance().UpdateWindowDimensions(width, height);
+        const unsigned int width = LOWORD(lParam);
+        const unsigned int height = HIWORD(lParam);
 
+        IWindow::GetInstance().Resize(width, height);
         break;
     }
     default:

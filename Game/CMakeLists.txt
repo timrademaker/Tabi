@@ -20,6 +20,7 @@ add_executable (Game ${SOURCES} ${HEADERS})
 target_include_directories(Game PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 target_link_libraries(Game PRIVATE Core Logger Input)
+target_link_libraries(Game PRIVATE ResourceManager)
 
 
 add_custom_command(

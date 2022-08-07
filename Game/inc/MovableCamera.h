@@ -5,10 +5,10 @@
 
 #include <InputManager.h>
 
-class MovableCamera
+class MovableCamera : public tabi::Camera
 {
 public:
-    MovableCamera();
+    MovableCamera(float a_AspectRatio);
 
     void MoveUp         (tabi::ButtonEvent);
     void MoveDown       (tabi::ButtonEvent);
@@ -28,8 +28,6 @@ public:
     void Update(float a_DeltaTime);
 
 public:
-    tabi::shared_ptr<tabi::Camera> m_Camera;
-
     float m_DeltaTime;
     const float m_Speed = 10.0f;
     const float m_MouseSensitivity = 100.0f;

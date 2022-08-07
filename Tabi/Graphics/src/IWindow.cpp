@@ -4,17 +4,24 @@
 #include "Windows/WindowsWindow.h"
 #endif
 
-tabi::shared_ptr<tabi::graphics::IWindow> tabi::graphics::IWindow::OpenWindow(const char* a_WindowName, unsigned int a_Width, unsigned int a_Height)
+#include <TabiMacros.h>
+
+tabi::graphics::IWindow* s_Window = nullptr;
+
+void tabi::graphics::IWindow::Initialize(const char* a_WindowName, uint32_t a_Width, uint32_t a_Height)
 {
-    return tabi::make_shared<Window>(a_WindowName, a_Width, a_Height);
+    TABI_ASSERT(s_Window == nullptr, "Window has already been initialized");
+    s_Window = new Window();
+    if(!s_Window->InitializeWindow(a_WindowName, a_Width, a_Height))
+    {
+        TABI_ASSERT(false, "Failed to initialize window");
+    }
 }
 
-void tabi::graphics::IWindow::SwapBuffer() const
+tabi::graphics::IWindow& tabi::graphics::IWindow::GetInstance()
 {
-    if (m_Context)
-    {
-        m_Context->SwapBuffer();
-    }
+    TABI_ASSERT(s_Window != nullptr, "Window has not been initialized yet");
+    return *s_Window;
 }
 
 const char* tabi::graphics::IWindow::GetWindowName() const
@@ -27,7 +34,10 @@ tabi::graphics::WindowHandle tabi::graphics::IWindow::GetHandle() const
     return m_WindowHandle;
 }
 
-tabi::graphics::IContext* tabi::graphics::IWindow::GetContext() const
+void tabi::graphics::IWindow::Resize(uint32_t a_Width, uint32_t a_Height)
 {
-    return m_Context.get();
+    m_Width = a_Width;
+    m_Height = a_Height;
+
+    m_OnWindowResizeEvent.Broadcast({ a_Width, a_Height });
 }

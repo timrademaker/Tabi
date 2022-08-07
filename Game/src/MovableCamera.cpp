@@ -4,10 +4,8 @@
 #include <Enums/EKeyboard.h>
 #include <Enums/EController.h>
 
-#include <Math/TabiMath.h>
-
-MovableCamera::MovableCamera()
-    : m_Camera(tabi::make_shared<tabi::Camera>())
+MovableCamera::MovableCamera(float a_AspectRatio)
+    : Camera(a_AspectRatio)
     , m_DeltaTime(0.0f)
 {
     // Keyboard and mouse
@@ -33,39 +31,39 @@ MovableCamera::MovableCamera()
 
 void MovableCamera::MoveUp(tabi::ButtonEvent)
 {
-    m_Camera->MoveBy(m_Camera->GetUp() * m_Speed * m_DeltaTime);
+    MoveBy(GetUp() * m_Speed * m_DeltaTime);
 }
 
 void MovableCamera::MoveDown(tabi::ButtonEvent)
 {
-    m_Camera->MoveBy(-m_Camera->GetUp() * m_Speed * m_DeltaTime);
+    MoveBy(-GetUp() * m_Speed * m_DeltaTime);
 }
 
 void MovableCamera::MoveLeft(tabi::ButtonEvent)
 {
-    m_Camera->MoveBy(-m_Camera->GetRight() * m_Speed * m_DeltaTime);
+    MoveBy(-GetRight() * m_Speed * m_DeltaTime);
 }
 
 void MovableCamera::MoveRight(tabi::ButtonEvent)
 {
-    m_Camera->MoveBy(m_Camera->GetRight() * m_Speed * m_DeltaTime);
+    MoveBy(GetRight() * m_Speed * m_DeltaTime);
 }
 
 void MovableCamera::MoveForward(tabi::ButtonEvent)
 {
-    m_Camera->MoveBy(m_Camera->GetForward() * m_Speed * m_DeltaTime);
+    MoveBy(GetForward() * m_Speed * m_DeltaTime);
 }
 
 void MovableCamera::MoveBackwards(tabi::ButtonEvent)
 {
-    m_Camera->MoveBy(m_Camera->GetForward() * -m_Speed * m_DeltaTime);
+    MoveBy(GetForward() * -m_Speed * m_DeltaTime);
 }
 
 void MovableCamera::RotateHorizontal(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_Delta) > FLT_EPSILON)
     {
-        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetRight() * m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta));
+        LookAt(GetPosition() + GetForward() + (GetRight() * m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta));
     }
 }
 
@@ -73,7 +71,7 @@ void MovableCamera::RotateVertical(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_Delta) > FLT_EPSILON)
     {
-        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetUp() * m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta));
+        LookAt(GetPosition() + GetForward() + (GetUp() * m_MouseSensitivity * m_DeltaTime * a_Event.m_Delta));
     }
 }
 
@@ -81,7 +79,7 @@ void MovableCamera::MoveForwardController(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
-        m_Camera->MoveBy(m_Camera->GetForward() * m_Speed * a_Event.m_AxisValue * m_DeltaTime);
+        MoveBy(GetForward() * m_Speed * a_Event.m_AxisValue * m_DeltaTime);
     }
 }
 
@@ -89,7 +87,7 @@ void MovableCamera::MoveRightController(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
-        m_Camera->MoveBy(m_Camera->GetRight() * m_Speed * a_Event.m_AxisValue * m_DeltaTime);
+        MoveBy(GetRight() * m_Speed * a_Event.m_AxisValue * m_DeltaTime);
     }
 }
 
@@ -97,7 +95,7 @@ void MovableCamera::RotateHorizontalController(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
-        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetRight() * m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue));
+        LookAt(GetPosition() + GetForward() + (GetRight() * m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue));
     }
 }
 
@@ -105,7 +103,7 @@ void MovableCamera::RotateVerticalController(tabi::AxisEvent a_Event)
 {
     if (std::abs(a_Event.m_AxisValue) > FLT_EPSILON)
     {
-        m_Camera->LookAt(m_Camera->GetPosition() + m_Camera->GetForward() + (m_Camera->GetUp() * -m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue));
+        LookAt(GetPosition() + GetForward() + (GetUp() * -m_ControllerSensitivity * m_DeltaTime * a_Event.m_AxisValue));
     }
 }
 

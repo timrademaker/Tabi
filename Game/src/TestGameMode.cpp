@@ -19,7 +19,9 @@ bool TestGameMode::OnInitialize()
     tabi::InputManager::SetCursorVisible(false);
 
     m_Camera = tabi::make_shared<MovableCamera>(16.0f / 9.0f);
-    m_Camera->m_Camera->MoveBy(tabi::vec3(0, 0, 5));
+    m_Camera->MoveBy(tabi::vec3(0, 0, 5));
+    m_Camera->SetNear(1.0f);
+    m_Camera->SetFar(1000.0f);
 
     auto* device = tabi::IDevice::GetInstance();
     m_CommandList = device->CreateCommandList();
@@ -33,14 +35,14 @@ bool TestGameMode::OnInitialize()
         -0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 1.0f
     };
     m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
-    m.m_VertexCount = sizeof(vertices) / sizeof(float) / 6;
+    m.m_VertexCount = std::size(vertices) / 6;
     m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(&vertices[0]), sizeof(vertices), 0);
 
     const uint32_t indices[] = {
         0, 1, 3, 1, 2, 3
     };
     m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 });
-    m.m_IndexCount = sizeof(indices) / sizeof(uint32_t);
+    m.m_IndexCount = std::size(indices);
     m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&indices[0]), sizeof(indices), 0);
     
     m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
@@ -86,8 +88,8 @@ void TestGameMode::OnRender()
     m_CommandList->ClearRenderTarget(nullptr, clearCol);
     m_CommandList->ClearDepthStencil(nullptr);
 
-    const tabi::mat4 eye = m_Camera->m_Camera->GetView();
-    const tabi::mat4 projection = m_Camera->m_Camera->GetProjection();
+    const tabi::mat4 eye = m_Camera->GetView();
+    const tabi::mat4 projection = m_Camera->GetProjection();
     const tabi::mat4 res = eye * projection;
 
     m_CommandList->CopyDataToBuffer(m_ConstBuffer, reinterpret_cast<const char*>(res.v), sizeof(res), 0);

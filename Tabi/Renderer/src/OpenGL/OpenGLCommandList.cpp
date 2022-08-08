@@ -263,6 +263,12 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 						{
 							glBlendFuncSeparatei(i, GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
 						}
+
+						glColorMaski(i,
+							(blend.m_ColorWriteMask & EColorMask::Red) != EColorMask::None ? GL_TRUE : GL_FALSE,
+							(blend.m_ColorWriteMask & EColorMask::Green) != EColorMask::None ? GL_TRUE : GL_FALSE,
+							(blend.m_ColorWriteMask & EColorMask::Blue) != EColorMask::None ? GL_TRUE : GL_FALSE,
+							(blend.m_ColorWriteMask & EColorMask::Alpha) != EColorMask::None ? GL_TRUE : GL_FALSE);
 					}
 					else
 					{
@@ -295,6 +301,12 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 				    {
 					    glBlendFuncSeparate(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
 				    }
+
+					glColorMask(
+						(blend.m_ColorWriteMask & EColorMask::Red) != EColorMask::None ? GL_TRUE : GL_FALSE,
+						(blend.m_ColorWriteMask & EColorMask::Green) != EColorMask::None ? GL_TRUE : GL_FALSE,
+						(blend.m_ColorWriteMask & EColorMask::Blue) != EColorMask::None ? GL_TRUE : GL_FALSE,
+						(blend.m_ColorWriteMask & EColorMask::Alpha) != EColorMask::None ? GL_TRUE : GL_FALSE);
 			    }
 			    else
 			    {

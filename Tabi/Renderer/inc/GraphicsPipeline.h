@@ -20,6 +20,9 @@ namespace tabi
 		EBlendFactor m_SourceBlendFactorAlpha = EBlendFactor::One;
 		EBlendFactor m_DestBlendFactorAlpha = EBlendFactor::Zero;
 		EBlendOperation m_BlendOperationAlpha = EBlendOperation::Add;
+
+		// Describes which colors can be drawn to the blend target
+		EColorMask m_ColorWriteMask = EColorMask::All;
 	};
 
 	struct RasterizerState

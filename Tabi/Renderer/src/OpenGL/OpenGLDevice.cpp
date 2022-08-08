@@ -62,6 +62,8 @@ namespace tabi
 	void GLAPIENTRY GLMessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLenum a_Severity, GLsizei a_Length, const GLchar* a_Message, const void* a_UserParam)
 	{
 		TABI_UNUSED(a_UserParam);
+		TABI_UNUSED(a_Id);
+		TABI_UNUSED(a_Length);
 
 		auto severity = tabi::logger::ELogLevel::Debug;
 		switch (a_Severity)

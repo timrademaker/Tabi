@@ -221,11 +221,6 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_GraphicsPipeline != nullptr);
-
-	if (a_GraphicsPipeline == m_GraphicsPipeline)
-	{
-		return;
-	}
 	
 	m_GraphicsPipeline = static_cast<const OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
 

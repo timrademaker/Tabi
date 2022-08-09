@@ -134,7 +134,7 @@ namespace tabi
 		 * @param a_DataSize The amount of data to copy
 		 * @param a_Offset The offset in the buffer's memory at which to start replacing the existing data
 		 */
-		virtual void CopyDataToBuffer(class Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset) = 0;
+		virtual void CopyDataToBuffer(class Buffer* a_Buffer, const void* a_Data, size_t a_DataSize, size_t a_Offset = 0) = 0;
 
 		/**
 		 * @brief Draw vertices

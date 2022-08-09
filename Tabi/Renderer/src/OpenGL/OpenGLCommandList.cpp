@@ -460,7 +460,7 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 
 	const size_t texDataBytes = (width * height * depth * bytesPerTexel) / dataSizeDivisor;
 	tabi::vector<char> stagedTextureData(texDataBytes);
-	std::copy_n(a_TextureUpdateDescription.m_Data, texDataBytes, stagedTextureData.begin());
+	std::copy_n(static_cast<const char*>(a_TextureUpdateDescription.m_Data), texDataBytes, stagedTextureData.begin());
 
 	m_PendingCommands.Add([tex = static_cast<const OpenGLTexture*>(a_Texture), a_TextureUpdateDescription, data = std::move(stagedTextureData)]
 		{
@@ -494,7 +494,7 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 	);
 }
 
-void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset)
+void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const void* a_Data, size_t a_DataSize, size_t a_Offset)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Buffer != nullptr);
@@ -502,7 +502,7 @@ void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_D
 	TABI_ASSERT(a_Buffer->GetBufferDescription().m_SizeInBytes >= (a_DataSize + a_Offset), "Trying to copy more data into a buffer than would fit");
 
 	tabi::vector<char> stagedBufferData(a_DataSize);
-	std::copy_n(a_Data, a_DataSize, stagedBufferData.begin());
+	std::copy_n(static_cast<const char*>(a_Data), a_DataSize, stagedBufferData.begin());
 
 	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), data = std::move(stagedBufferData), a_DataSize, a_Offset]
 		{

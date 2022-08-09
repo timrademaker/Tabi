@@ -1,9 +1,9 @@
 #pragma once
 
+#include <TabiMacros.h>
 #include <TabiTypes.h>
 #include <Logging.h>
 
-#include <assert.h>
 #include <functional>
 
 #define DECLARE_EVENT(EventName, EventInfoClass) \
@@ -101,8 +101,8 @@ namespace tabi
     template<typename UserClass, typename T>
     inline typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo)) const
     {
-        assert(a_Object);
-        assert(a_Callback);
+        TABI_ASSERT(a_Object);
+        TABI_ASSERT(a_Callback);
     
         auto bound = std::bind(a_Callback, a_Object, std::placeholders::_1);
         Subscribe_Internal(a_Object, bound);
@@ -118,8 +118,8 @@ namespace tabi
     template<typename UserClass, typename T>
     inline typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)()) const
     {
-        assert(a_Object);
-        assert(a_Callback);
+        TABI_ASSERT(a_Object);
+        TABI_ASSERT(a_Callback);
 
         auto bound = std::bind(a_Callback, a_Object);
         Subscribe_Internal(a_Object, bound);

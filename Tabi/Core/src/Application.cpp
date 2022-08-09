@@ -6,9 +6,10 @@
 
 #include <IDevice.h>
 
+#include <TabiImGui.h>
+
 #include <Logging.h>
 
-#include <cassert>
 #include <chrono>
 
 #if defined(_WINDOWS)
@@ -56,7 +57,12 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 
         s_Device->BeginFrame();
 
+        tabi::imgui::NewFrame(deltaTime);
+
         a_Game->OnRender();
+
+
+        tabi::imgui::EndFrame();
 
         s_Device->EndFrame();
         s_Device->Present();
@@ -103,12 +109,17 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
         });
 
         m_Initialized = true;
+
+
+        tabi::imgui::Init();
     }
 }
 
 
 void Application::Destroy()
 {
+    tabi::imgui::Shutdown();
+
     graphics::IWindow::GetInstance().OnWindowResize().Unsubscribe(s_Device);
     s_Device->Finalize();
 }

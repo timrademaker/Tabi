@@ -2,8 +2,6 @@
 
 #include <TabiTypes.h>
 
-#include <cassert>
-
 namespace tabi
 {
     namespace utils

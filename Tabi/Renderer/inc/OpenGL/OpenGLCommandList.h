@@ -50,7 +50,7 @@ namespace tabi
 		virtual void UseComputePipeline(const ComputePipeline* a_ComputePipeline) override;
 		
 		virtual void CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription) override;
-		virtual void CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset) override;
+		virtual void CopyDataToBuffer(Buffer* a_Buffer, const void* a_Data, size_t a_DataSize, size_t a_Offset = 0) override;
 
 		virtual void DrawVertices(uint32_t a_VertexCount, uint32_t a_StartVertexLocation) override;
 		virtual void DrawInstanced(uint32_t a_VertexCountPerInstance, uint32_t a_InstanceCount, uint32_t a_StartVertexLocation = 0) override;

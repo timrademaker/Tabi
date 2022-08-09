@@ -56,11 +56,11 @@ bool TestGameMode::OnInitialize()
         m.m_Position = tabi::vec3{ -10.0f, -5.0f, -15.0f };
         m.m_Rotation = tabi::vec3{ 0.0f, -1.57f, 0.0f };
 
-        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(tabi::Mesh::Vertex) * mesh->m_VertexCount, sizeof(tabi::Mesh::Vertex) });
+        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(tabi::Mesh::Vertex) * mesh->m_VertexCount, sizeof(tabi::Mesh::Vertex) }, "GLB vertex buffer");
         m.m_VertexCount = mesh->m_VertexCount;
         m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(mesh->m_Vertices.data()), sizeof(tabi::Mesh::Vertex) * mesh->m_VertexCount, 0);
 
-        m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(mesh->m_Indices[0]) * mesh->m_Indices.size(), 0 });
+        m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(mesh->m_Indices[0]) * mesh->m_Indices.size(), 0 }, "GLB index buffer");
         m.m_IndexCount = mesh->m_Indices.size();
         m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&mesh->m_Indices[0]), sizeof(mesh->m_Indices[0]) * mesh->m_Indices.size(), 0);
 
@@ -85,7 +85,7 @@ bool TestGameMode::OnInitialize()
         m_Models.emplace_back(m);
     }
 
-    m_ModelData = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(ModelData), 0 });
+    m_ModelData = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(ModelData), 0 }, "Model data cbuffer");
 
     // Model rendering test
     {
@@ -98,20 +98,20 @@ bool TestGameMode::OnInitialize()
             0.0f,  0.5f, 0.0f,      0.0f, 0.0f, 1.0f,       0.0f, 0.0f,
             -0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,       0.0f, 0.0f,
         };
-        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 });
+        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(vertices), sizeof(vertices) / 4 }, "GLB vertex buffer");
         m.m_VertexCount = std::size(vertices) / 6;
         m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(&vertices[0]), sizeof(vertices), 0);
 
         const uint32_t indices[] = {
             0, 1, 3, 1, 2, 3
         };
-        m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 });
+        m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(indices), 0 }, "GLB index buffer");
         m.m_IndexCount = std::size(indices);
         m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&indices[0]), sizeof(indices), 0);
 
         m_Models.emplace_back(m);
 
-        m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 });
+        m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 }, "Test constant buffer");
 
         // Create vertex pipeline
         const auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
@@ -148,14 +148,14 @@ bool TestGameMode::OnInitialize()
             0.8f, 0.8f,         1.0f, 1.0f,
             -0.8f, 0.8f,        0.0f, 1.0f
         };
-        m_UIQuad.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RG32_float, tabi::EBufferRole::Vertex, sizeof(quadVertices), sizeof(quadVertices) / 4 });
+        m_UIQuad.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RG32_float, tabi::EBufferRole::Vertex, sizeof(quadVertices), sizeof(quadVertices) / 4 }, "Quad vertex buffer");
         m_UIQuad.m_VertexCount = sizeof(quadVertices) / sizeof(float) / 4;
         m_CommandList->CopyDataToBuffer(m_UIQuad.m_VertexBuffer, reinterpret_cast<const char*>(&quadVertices[0]), sizeof(quadVertices), 0);
 
         const uint32_t quadIndices[] = {
         0, 1, 2, 0, 2, 3
         };
-        m_UIQuad.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(quadIndices), 0 });
+        m_UIQuad.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(quadIndices), 0 }, "Quad index buffer");
         m_UIQuad.m_IndexCount = std::size(quadIndices);
         m_CommandList->CopyDataToBuffer(m_UIQuad.m_IndexBuffer, reinterpret_cast<const char*>(&quadIndices[0]), sizeof(quadIndices), 0);
 
@@ -179,8 +179,8 @@ bool TestGameMode::OnInitialize()
 
         m_UIPipeline = device->CreateGraphicsPipeline(tabi::GraphicsPipelineDescription{ uiVertShader, uiPixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, uiVertexInput }, "UI pipeline");
 
-        m_DrawTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::RenderTexture, tabi::EFormat::RGBA32_uint, 1280, 720, 1, 1 });
-        m_DepthTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::DepthStencil, tabi::EFormat::Depth24Stencil8, 1280, 720, 1, 1 });
+        m_DrawTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::RenderTexture, tabi::EFormat::RGBA32_uint, 1280, 720, 1, 1 }, "Render texture");
+        m_DepthTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::DepthStencil, tabi::EFormat::Depth24Stencil8, 1280, 720, 1, 1 }, "Depth texture");
 
         tabi::RenderTargetDescription rtd;
         rtd.m_RenderTextures[0] = { m_DrawTex };

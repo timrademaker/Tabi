@@ -7,7 +7,7 @@ namespace tabi
 	struct TextureUpdateDescription
 	{
 		// The data to copy to the texture
-		const char* m_Data = nullptr;
+		const void* m_Data = nullptr;
 
 		// The amount of data to copy in the X direction of the texture
 		uint32_t m_DataWidth = 0;

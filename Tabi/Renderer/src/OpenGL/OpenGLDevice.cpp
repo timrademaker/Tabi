@@ -130,7 +130,7 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 			TABI_ASSERT(gladLoaderLoadWGL(context), "Failed to initialize WGL");
 			int attributes[] = {
 			    WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-			    WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+			    WGL_CONTEXT_MINOR_VERSION_ARB, 5,
 				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 				0
 			};
@@ -138,11 +138,14 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 			const auto renderingContext = wglCreateContextAttribsARB(context, NULL, attributes);
 		    if(renderingContext == nullptr)
 		    {
-				TABI_ASSERT(false);
+				TABI_ASSERT(false, "Failed to initialize rendering context");
 		    }
-			wglMakeCurrent(nullptr, nullptr);
-			wglDeleteContext(tempContext);
-			wglMakeCurrent(context, renderingContext);
+			else
+			{
+				wglMakeCurrent(nullptr, nullptr);
+				wglDeleteContext(tempContext);
+				wglMakeCurrent(context, renderingContext);
+			}
 
 			TABI_ASSERT(gladLoaderLoadGL(), "Failed to initialize OpenGL context");
 

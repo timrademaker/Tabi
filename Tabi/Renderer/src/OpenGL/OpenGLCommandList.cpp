@@ -505,9 +505,8 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 	const size_t height = std::max<size_t>(a_TextureUpdateDescription.m_DataHeight, 1);
 	const size_t depth = std::max<size_t>(a_TextureUpdateDescription.m_DataDepth, 1);
 	const size_t bytesPerTexel = GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_FormatSizeInBytes;
-	const size_t dataSizeDivisor = pow(2, a_TextureUpdateDescription.m_MipLevel);	// Each mip level takes up half the memory of the previous mip level
 
-	const size_t texDataBytes = (width * height * depth * bytesPerTexel) / dataSizeDivisor;
+	const size_t texDataBytes = (width * height * depth * bytesPerTexel) >> a_TextureUpdateDescription.m_MipLevel;
 	tabi::vector<char> stagedTextureData(texDataBytes);
 	std::copy_n(static_cast<const char*>(a_TextureUpdateDescription.m_Data), texDataBytes, stagedTextureData.begin());
 

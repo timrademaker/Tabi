@@ -11,6 +11,8 @@
 #include "Helpers/FormatInfo.h"
 #include "TextureUpdateDescription.h"
 
+#include <IWindow.h>
+
 #include <glad/gl.h>
 
 #define ENSURE_COMMAND_LIST_IS_RECORDING() TABI_ASSERT(m_IsRecording, "Command list function called while recording is not active!")
@@ -190,11 +192,46 @@ void tabi::OpenGLCommandList::SetRenderTarget(const RenderTarget* a_RenderTarget
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget)]
+	const auto* renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget);
+
+	m_PendingCommands.Add([renderTarget]
 		{
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderTarget ? renderTarget->GetID() : 0);
 		}
 	);
+
+	// Resize viewport based on the render target
+    if (renderTarget)
+	{
+		const auto& rtDesc = renderTarget->GetRenderTargetDescription();
+
+		auto* tex = rtDesc.m_RenderTextures[0].m_Texture;
+		auto mip = rtDesc.m_RenderTextures[0].m_MipLevel;
+
+		if(tex == nullptr)
+		{
+			tex = rtDesc.m_DepthStencil.m_Texture;
+			mip = rtDesc.m_DepthStencil.m_MipLevel;
+		}
+
+		if(tex)
+		{
+			const auto& texDesc = tex->GetTextureDescription();
+			SetViewport(0, 0, texDesc.m_Width >> mip, texDesc.m_Height >> mip);
+		}
+		else
+		{
+			// Okay, not entirely true if someone decides to only bind textures to a non-zero index
+			TABI_ASSERT(false, "Trying to bind render target with no texture or depth stencil");
+		}
+	}
+	else
+	{
+        uint32_t windowWidth = 0;
+		uint32_t windowHeight = 0;
+        tabi::graphics::IWindow::GetInstance().GetWindowDimensions(windowWidth, windowHeight);
+		SetViewport(0, 0, windowWidth, windowHeight);
+	}
 }
 
 void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, const float a_ClearColor[4])

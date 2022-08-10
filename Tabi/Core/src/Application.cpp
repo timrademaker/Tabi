@@ -105,7 +105,9 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
         window.OnWindowResize().Subscribe(s_Device, [device = s_Device](tabi::WindowResizeEventData a_Data)
             {
                 auto* cmd = device->CreateCommandList("Window resize");
+                cmd->BeginRecording();
                 cmd->SetViewport(0, 0, a_Data.m_NewWidth, a_Data.m_NewHeight);
+                cmd->EndRecording();
                 device->DestroyCommandList(cmd);
             }
         );

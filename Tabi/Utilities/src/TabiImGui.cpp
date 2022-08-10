@@ -57,92 +57,99 @@ namespace tabi
                 m_WindowHeight = a_Data.m_NewHeight;
             }
         };
+
+        static WindowSize s_WindowSize;
+
+        ImplementationData* GetImplementationData()
+        {
+            return ImGui::GetCurrentContext() ? static_cast<ImplementationData*>(ImGui::GetIO().BackendRendererUserData) : nullptr;
+        }
+
+        void InitRenderContext()
+        {
+            auto* device = tabi::IDevice::GetInstance();
+            auto& io = ::ImGui::GetIO();
+            auto* impData = GetImplementationData();
+
+            impData->m_CommandList = device->CreateCommandList("ImGui Commands");
+            impData->m_CommandList->BeginRecording();
+
+            int fontTextureWidth = 0;
+            int fontTextureHeight = 0;
+            unsigned char* pixels = nullptr;
+            io.Fonts->GetTexDataAsRGBA32(&pixels, &fontTextureWidth, &fontTextureHeight);
+            impData->m_FontTexture = device->CreateTexture(tabi::TextureDescription{ ETextureDimension::Tex2D, ETextureRole::Texture, EFormat::RGBA8_unorm, static_cast<uint64_t>(fontTextureWidth), static_cast<uint64_t>(fontTextureHeight), 1, 1 }, "ImGui Font");
+            TextureUpdateDescription tud;
+            tud.m_Data = pixels;
+            tud.m_DataWidth = fontTextureWidth;
+            tud.m_DataHeight = fontTextureHeight;
+
+            impData->m_CommandList->CopyDataToTexture(impData->m_FontTexture, tud);
+            io.Fonts->SetTexID(impData->m_FontTexture);
+
+            impData->m_VertexShader = tabi::graphics::LoadShader("TabiAssets/Shaders/imgui.vert", EShaderType::Vertex, "ImGui vertex shader");
+            impData->m_PixelShader = tabi::graphics::LoadShader("TabiAssets/Shaders/imgui.frag", EShaderType::Pixel, "ImGui pixel shader");
+
+            GraphicsPipelineDescription gpd;
+            gpd.m_VertexShader = impData->m_VertexShader;
+            gpd.m_PixelShader = impData->m_PixelShader;
+            gpd.m_Topology = EToplolgy::Triangle;
+
+            gpd.m_IndividualBlend = false;
+            gpd.m_BlendState[0].m_BlendEnabled = true;
+            gpd.m_BlendState[0].m_BlendOperationRGB = EBlendOperation::Add;
+            gpd.m_BlendState[0].m_BlendOperationAlpha = EBlendOperation::Add;
+            gpd.m_BlendState[0].m_SourceBlendFactorRGB = EBlendFactor::SrcAlpha;
+            gpd.m_BlendState[0].m_DestBlendFactorRGB = EBlendFactor::InvSrcAlpha;
+            gpd.m_BlendState[0].m_SourceBlendFactorAlpha = EBlendFactor::One;
+            gpd.m_BlendState[0].m_DestBlendFactorAlpha = EBlendFactor::InvSrcAlpha;
+
+            gpd.m_RasterizerState.m_CullMode = ECullMode::None;
+            gpd.m_DepthStencilState.m_FrontStencilState.m_StencilFunc = EComparisonFunction::Never;
+            gpd.m_DepthStencilState.m_BackStencilState.m_StencilFunc = EComparisonFunction::Never;
+            gpd.m_DepthStencilState.m_EnableDepthTest = false;
+
+            // TODO: Setup render state: scissor enabled
+
+            gpd.m_VertexInputLayout.m_NumInputElements = 3;
+            gpd.m_VertexInputLayout.m_InputElements[0] = VertexInputElement{ 0, 0, "POSITION", EFormat::RG32_float, EInstanceDataStepClassification::PerVertex, 0 };
+            gpd.m_VertexInputLayout.m_InputElements[1] = VertexInputElement{ 0, 0, "TEXCOORD", EFormat::RG32_float, EInstanceDataStepClassification::PerVertex, 0 };
+            gpd.m_VertexInputLayout.m_InputElements[2] = VertexInputElement{ 0, 0, "COLOR", EFormat::RGBA8_unorm, EInstanceDataStepClassification::PerVertex, 0 };
+
+            impData->m_GraphicsPipeline = device->CreateGraphicsPipeline(gpd, "ImGui pipeline");
+
+            impData->m_Sampler = device->CreateSampler({ EFilterMode::Linear, EFilterMode::Linear, tabi::EMipMapMode::Linear, tabi::EWrapMode::Clamp });
+            // TODO: Size is placeholder, as we can create a new buffer while drawing if needed.
+            impData->m_VertexBuffer = device->CreateBuffer({ EFormat::RG32_float, EBufferRole::Vertex, 2048 * sizeof(ImDrawVert), sizeof(ImDrawVert) }, "ImGui vertices");
+            impData->m_VertexBufferSize = 2048 * sizeof(ImDrawVert);
+            impData->m_IndexBuffer = device->CreateBuffer({ sizeof(ImDrawIdx) == 2 ? EFormat::R16_uint : EFormat::R32_uint, EBufferRole::Index, 2048 * sizeof(ImDrawIdx), sizeof(ImDrawIdx) }, "ImGui indices");
+            impData->m_IndexBufferSize = 2048 * sizeof(ImDrawIdx);
+
+            impData->m_ConstantBuffer = device->CreateBuffer({ EFormat::RGBA32_float, EBufferRole::Constant, sizeof(imgui::ImGuiConstantBufferData), 0 }, "ImGui cbuffer");
+
+            impData->m_CommandList->EndRecording();
+            device->ExecuteCommandList(impData->m_CommandList);
+
+            const auto& window = tabi::graphics::IWindow::GetInstance();
+            window.GetWindowDimensions(s_WindowSize.m_WindowWidth, s_WindowSize.m_WindowHeight);
+            window.OnWindowResize().Subscribe(&s_WindowSize, &WindowSize::Resize);
+        }
     }
-}
-
-static tabi::imgui::WindowSize s_WindowSize;
-
-tabi::imgui::ImplementationData* GetImplementationData()
-{
-    return ImGui::GetCurrentContext() ? static_cast<tabi::imgui::ImplementationData*>(ImGui::GetIO().BackendRendererUserData) : nullptr;
 }
 
 void tabi::imgui::Init()
 {
     ImplementationData* impData = new ImplementationData;
 
-    auto* device = IDevice::GetInstance();
-
-    impData->m_CommandList = device->CreateCommandList("ImGui Commands");
-    impData->m_CommandList->BeginRecording();
-
     ::ImGui::CreateContext();
     auto& io = ::ImGui::GetIO();
-    io.BackendRendererUserData = (void*)impData;
+    io.BackendRendererUserData = static_cast<void*>(impData);
     io.BackendRendererName = "imgui_impl_tabi";
     io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
     // TODO: Set up io
 
-    int width;
-    int height;
-    unsigned char* pixels = nullptr;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-    impData->m_FontTexture = device->CreateTexture(tabi::TextureDescription{ ETextureDimension::Tex2D, ETextureRole::Texture, EFormat::RGBA8_unorm, static_cast<uint64_t>(width), static_cast<uint64_t>(height), 1, 1 }, "ImGui Font");
-    TextureUpdateDescription tud;
-    tud.m_Data = pixels;
-    tud.m_DataWidth = width;
-    tud.m_DataHeight = height;
-
-    impData->m_CommandList->CopyDataToTexture(impData->m_FontTexture, tud);
-    io.Fonts->SetTexID(impData->m_FontTexture);
-
-    impData->m_VertexShader = tabi::graphics::LoadShader("TabiAssets/Shaders/imgui.vert", EShaderType::Vertex, "ImGui vertex shader");
-    impData->m_PixelShader = tabi::graphics::LoadShader("TabiAssets/Shaders/imgui.frag", EShaderType::Pixel, "ImGui pixel shader");
-    
-    GraphicsPipelineDescription gpd;
-    gpd.m_VertexShader = impData->m_VertexShader;
-    gpd.m_PixelShader = impData->m_PixelShader;
-    gpd.m_Topology = EToplolgy::Triangle;
-
-    gpd.m_IndividualBlend = false;
-    gpd.m_BlendState[0].m_BlendEnabled = true;
-    gpd.m_BlendState[0].m_BlendOperationRGB = EBlendOperation::Add;
-    gpd.m_BlendState[0].m_BlendOperationAlpha = EBlendOperation::Add;
-    gpd.m_BlendState[0].m_SourceBlendFactorRGB = EBlendFactor::SrcAlpha;
-    gpd.m_BlendState[0].m_DestBlendFactorRGB = EBlendFactor::InvSrcAlpha;
-    gpd.m_BlendState[0].m_SourceBlendFactorAlpha = EBlendFactor::One;
-    gpd.m_BlendState[0].m_DestBlendFactorAlpha = EBlendFactor::InvSrcAlpha;
-
-    gpd.m_RasterizerState.m_CullMode = ECullMode::None;
-    gpd.m_DepthStencilState.m_FrontStencilState.m_StencilFunc = EComparisonFunction::Never;
-    gpd.m_DepthStencilState.m_BackStencilState.m_StencilFunc = EComparisonFunction::Never;
-    gpd.m_DepthStencilState.m_EnableDepthTest = false;
-
-    // TODO: Setup render state: scissor enabled
-
-    gpd.m_VertexInputLayout.m_NumInputElements = 3;
-    gpd.m_VertexInputLayout.m_InputElements[0] = VertexInputElement{ 0, 0, "POSITION", EFormat::RG32_float, EInstanceDataStepClassification::PerVertex, 0 };
-    gpd.m_VertexInputLayout.m_InputElements[1] = VertexInputElement{ 0, 0, "TEXCOORD", EFormat::RG32_float, EInstanceDataStepClassification::PerVertex, 0 };
-    gpd.m_VertexInputLayout.m_InputElements[2] = VertexInputElement{ 0, 0, "COLOR", EFormat::RGBA8_unorm, EInstanceDataStepClassification::PerVertex, 0 };
-
-    impData->m_GraphicsPipeline = device->CreateGraphicsPipeline(gpd, "ImGui pipeline");
-
-    impData->m_Sampler = device->CreateSampler({ EFilterMode::Linear, EFilterMode::Linear, tabi::EMipMapMode::Linear, tabi::EWrapMode::Clamp });
-    // TODO: Size is placeholder, as we can create a new buffer while drawing if needed.
-    impData->m_VertexBuffer = device->CreateBuffer({ EFormat::RG32_float, EBufferRole::Vertex, 2048 * sizeof(ImDrawVert), sizeof(ImDrawVert) }, "ImGui vertices");
-    impData->m_VertexBufferSize = 2048 * sizeof(ImDrawVert);
-    impData->m_IndexBuffer = device->CreateBuffer({ sizeof(ImDrawIdx) == 2 ? EFormat::R16_uint : EFormat::R32_uint, EBufferRole::Index, 2048 * sizeof(ImDrawIdx), sizeof(ImDrawIdx) }, "ImGui indices");
-    impData->m_IndexBufferSize = 2048 * sizeof(ImDrawIdx);
-
-    impData->m_ConstantBuffer = device->CreateBuffer({ EFormat::RGBA32_float, EBufferRole::Constant, sizeof(ImGuiConstantBufferData), 0 }, "ImGui cbuffer");
-
-    impData->m_CommandList->EndRecording();
-    device->ExecuteCommandList(impData->m_CommandList);
-
-    const auto& window = tabi::graphics::IWindow::GetInstance();
-    window.GetWindowDimensions(s_WindowSize.m_WindowWidth, s_WindowSize.m_WindowHeight);
-    window.OnWindowResize().Subscribe(&s_WindowSize, &WindowSize::Resize);
+    InitRenderContext();
 }
 
 void tabi::imgui::NewFrame(float a_DeltaTime)

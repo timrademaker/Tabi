@@ -30,6 +30,11 @@ void tabi::OpenGLCommandList::EndRecording()
 void tabi::OpenGLCommandList::Reset()
 {
 	m_PendingCommands.Reset();
+
+	m_GraphicsPipeline = nullptr;
+	m_ComputePipeline = nullptr;
+	m_IndexBuffer = nullptr;
+
 	m_IsRecording = false;
 }
 
@@ -221,15 +226,21 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_GraphicsPipeline != nullptr);
-	
+
+	if(a_GraphicsPipeline == m_GraphicsPipeline)
+	{
+		return;
+	}
+
 	m_GraphicsPipeline = static_cast<const OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
+	m_ComputePipeline = nullptr;
 
 	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
 		{
 			glBindProgramPipeline(pipeline->GetID());
 			glBindVertexArray(pipeline->GetVAO());
 
-			const auto & pipelineDesc = pipeline->GetPipelineDescription();
+			const auto& pipelineDesc = pipeline->GetPipelineDescription();
 
 		    if(pipelineDesc.m_IndividualBlend)
 		    {
@@ -382,8 +393,9 @@ void tabi::OpenGLCommandList::UseComputePipeline(const ComputePipeline* a_Comput
 	}
 
 	m_ComputePipeline = static_cast<const OpenGLComputePipeline*>(a_ComputePipeline);
+	m_GraphicsPipeline = nullptr;
 
-	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
+	m_PendingCommands.Add([pipeline = m_ComputePipeline]
 		{
 			glBindProgramPipeline(pipeline->GetID());
 		}

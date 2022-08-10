@@ -11,15 +11,13 @@
 #include <Buffer.h>
 
 #include <Graphics.h>
+#include <IWindow.h>
 
 #include <InputManager.h>
 
 #include <imgui/imgui.h>
 
 #include <glad/gl.h>
-
-
-#include <IWindow.h>
 
 namespace tabi
 {
@@ -47,8 +45,22 @@ namespace tabi
         {
             tabi::mat4 m_OrthoMatrix;
         };
+
+        struct WindowSize
+        {
+            uint32_t m_WindowWidth = 0;
+            uint32_t m_WindowHeight = 0;
+
+            void Resize(WindowResizeEventData a_Data)
+            {
+                m_WindowWidth = a_Data.m_NewWidth;
+                m_WindowHeight = a_Data.m_NewHeight;
+            }
+        };
     }
 }
+
+static tabi::imgui::WindowSize s_WindowSize;
 
 tabi::imgui::ImplementationData* GetImplementationData()
 {
@@ -57,8 +69,6 @@ tabi::imgui::ImplementationData* GetImplementationData()
 
 void tabi::imgui::Init()
 {
-    // TODO: Set up window resize event here (io.DisplaySize.x/y)
-
     ImplementationData* impData = new ImplementationData;
 
     auto* device = IDevice::GetInstance();
@@ -77,7 +87,6 @@ void tabi::imgui::Init()
     int width;
     int height;
     unsigned char* pixels = nullptr;
-    // TODO: Can we use the alpha-only function?
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     impData->m_FontTexture = device->CreateTexture(tabi::TextureDescription{ ETextureDimension::Tex2D, ETextureRole::Texture, EFormat::RGBA8_unorm, static_cast<uint64_t>(width), static_cast<uint64_t>(height), 1, 1 }, "ImGui Font");
     TextureUpdateDescription tud;
@@ -111,8 +120,6 @@ void tabi::imgui::Init()
     gpd.m_DepthStencilState.m_EnableDepthTest = false;
 
     // TODO: Setup render state: scissor enabled
-    // TODO: Setup viewport covering draw_data->DisplayPos to draw_data->DisplayPos + draw_data->DisplaySize
-    // TODO: Setup orthographic projection matrix cover draw_data->DisplayPos to draw_data->DisplayPos + draw_data->DisplaySize
 
     gpd.m_VertexInputLayout.m_NumInputElements = 3;
     gpd.m_VertexInputLayout.m_InputElements[0] = VertexInputElement{ 0, 0, "POSITION", EFormat::RG32_float, EInstanceDataStepClassification::PerVertex, 0 };
@@ -121,7 +128,6 @@ void tabi::imgui::Init()
 
     impData->m_GraphicsPipeline = device->CreateGraphicsPipeline(gpd, "ImGui pipeline");
 
-    // TODO: Verify these settings
     impData->m_Sampler = device->CreateSampler({ EFilterMode::Linear, EFilterMode::Linear, tabi::EMipMapMode::Linear, tabi::EWrapMode::Clamp });
     // TODO: Size is placeholder, as we can create a new buffer while drawing if needed.
     impData->m_VertexBuffer = device->CreateBuffer({ EFormat::RG32_float, EBufferRole::Vertex, 2048 * sizeof(ImDrawVert), sizeof(ImDrawVert) }, "ImGui vertices");
@@ -133,20 +139,20 @@ void tabi::imgui::Init()
 
     impData->m_CommandList->EndRecording();
     device->ExecuteCommandList(impData->m_CommandList);
+
+    const auto& window = tabi::graphics::IWindow::GetInstance();
+    window.GetWindowDimensions(s_WindowSize.m_WindowWidth, s_WindowSize.m_WindowHeight);
+    window.OnWindowResize().Subscribe(&s_WindowSize, &WindowSize::Resize);
 }
 
 void tabi::imgui::NewFrame(float a_DeltaTime)
 {
-    const auto& window = tabi::graphics::IWindow::GetInstance();
-    uint32_t ww;
-    uint32_t wh;
-    window.GetWindowDimensions(ww, wh);
-
     // TODO: Update button state
     auto& io = ::ImGui::GetIO();
     io.DeltaTime = a_DeltaTime;
-    io.DisplaySize.x = ww;
-    io.DisplaySize.y = wh;
+    io.DisplaySize.x = s_WindowSize.m_WindowWidth;
+    io.DisplaySize.y = s_WindowSize.m_WindowHeight;
+
     // TODO:
     // io.AddMousePosEvent();
     //io.AddMouseButtonEvent(0, );
@@ -165,7 +171,8 @@ namespace tabi
             auto* data = GetImplementationData();
             TABI_ASSERT(data);
 
-            // TODO: glViewport(0, 0, (GLsizei)a_FrameBufferWidth, (GLsizei)a_FrameBufferheight);
+            data->m_CommandList->SetViewport(0, 0, a_FrameBufferWidth, a_FrameBufferheight);
+
             const float L = a_DrawData->DisplayPos.x;
             const float R = a_DrawData->DisplayPos.x + a_DrawData->DisplaySize.x;
             const float T = a_DrawData->DisplayPos.y;
@@ -180,17 +187,10 @@ namespace tabi
                 (R + L) / (L - R), (T + B) / (B - T), 0.0f, 1.0f
             );
 
-            data->m_CommandList->CopyDataToBuffer(data->m_ConstantBuffer, reinterpret_cast<const char*>(&bufferData), sizeof(ImGuiConstantBufferData));
+            data->m_CommandList->CopyDataToBuffer(data->m_ConstantBuffer, &bufferData, sizeof(ImGuiConstantBufferData));
 
             data->m_CommandList->UseGraphicsPipeline(data->m_GraphicsPipeline);
 
-            // TODO: Should we do this?
-            /*
-            #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_BIND_SAMPLER
-            if (bd->GlVersion >= 330)
-                glBindSampler(0, 0); // We use combined texture/sampler state. Applications using GL 3.3 may set that otherwise.
-            #endif
-            */
             data->m_CommandList->BindSampler(data->m_Sampler, 0);
 
             data->m_CommandList->BindVertexBuffers(0, &data->m_VertexBuffer, 1);
@@ -205,7 +205,8 @@ void tabi::imgui::EndFrame()
     ::ImGui::EndFrame();
     ::ImGui::Render();
 
-    ImDrawData* drawData = ::ImGui::GetDrawData();
+    const ImDrawData* drawData = ::ImGui::GetDrawData();
+
     // Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
     const int32_t fbWidth = static_cast<int>(drawData->DisplaySize.x * drawData->FramebufferScale.x);
     const int32_t fbHeight = static_cast<int>(drawData->DisplaySize.y * drawData->FramebufferScale.y);
@@ -216,6 +217,8 @@ void tabi::imgui::EndFrame()
     TABI_ASSERT(data);
 
     data->m_CommandList->BeginRecording();
+    // Draw to the screen directly
+    data->m_CommandList->SetRenderTarget(nullptr);
 
     /*
     // Will project scissor/clipping rectangles into framebuffer space

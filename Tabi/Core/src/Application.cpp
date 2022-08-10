@@ -5,6 +5,7 @@
 #include <IInputHandler.h>
 
 #include <IDevice.h>
+#include <ICommandList.h>
 
 #include <TabiImGui.h>
 
@@ -16,14 +17,12 @@
 #include "Windows/WindowsInputHandler.h"
 #endif
 
-
 tabi::IDevice* s_Device = nullptr;
 
 using tabi::Application;
 using tabi::GameBase;
 using tabi::logger::ELogLevel;
 using tabi::logger::TabiLog;
-
 
 Application& Application::Get()
 {
@@ -37,7 +36,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
     Get().Initialize(a_Game->GetWindowName(), a_Game->GetWindowWidth(), a_Game->GetWindowHeight());
 
     if (!a_Game->OnInitialize()) {
-        TabiLog(ELogLevel::Error, "Failed to initialize game!");
+        TABI_ERROR("Failed to initialize game!");
         return 1;
     }
 
@@ -104,9 +103,12 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
         s_Device->Initialize(graphics::IWindow::GetInstance().GetHandle(), a_Width, a_Height);
 
         window.OnWindowResize().Subscribe(s_Device, [device = s_Device](tabi::WindowResizeEventData a_Data)
-        {
-                device->ResizeRenderingContext(a_Data.m_NewWidth, a_Data.m_NewHeight);
-        });
+            {
+                auto* cmd = device->CreateCommandList("Window resize");
+                cmd->SetViewport(0, 0, a_Data.m_NewWidth, a_Data.m_NewHeight);
+                device->DestroyCommandList(cmd);
+            }
+        );
 
         m_Initialized = true;
 

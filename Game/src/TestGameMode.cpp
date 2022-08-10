@@ -14,14 +14,14 @@
 #include <GraphicsPipeline.h>
 #include <RenderTarget.h>
 #include <Texture.h>
+#include <TextureUpdateDescription.h>
 #include <Enums/GraphicsPipelineEnums.h>
 
 #include <ResourceManager.h>
 #include <Resources/Mesh.h>
 #include <Resources/Model.h>
+#include <Resources/Material.h>
 
-#include "TextureUpdateDescription.h"
-#include "Resources/Material.h"
 
 static constexpr bool s_RenderToRenderTarget = false;
 
@@ -202,6 +202,7 @@ void TestGameMode::OnRender()
 {
     m_CommandList->BeginRecording();
 
+    m_CommandList->SetRenderTarget(nullptr);
     static constexpr float mainClearCol[] = { 0.25f, 0.3f, 1.0f, 1.0f };
     m_CommandList->ClearRenderTarget(nullptr, mainClearCol);
     m_CommandList->ClearDepthStencil(nullptr);

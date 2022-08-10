@@ -589,4 +589,18 @@ void tabi::OpenGLCommandList::DispatchComputePipeline(uint32_t a_GroupCountX, ui
 	);
 }
 
+void tabi::OpenGLCommandList::SetViewport(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height, float a_MinDepth, float a_MaxDepth)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_MinDepth >= 0.0f && a_MinDepth <= 1.0f);
+	TABI_ASSERT(a_MaxDepth >= 0.0f && a_MaxDepth <= 1.0f);
+
+	m_PendingCommands.Add([a_X, a_Y, a_Width, a_Height, a_MinDepth, a_MaxDepth]
+		{
+			glViewport(a_X, a_Y, a_Width, a_Height);
+			glDepthRangef(a_MinDepth, a_MaxDepth);
+		}
+	);
+}
+
 #undef ENSURE_COMMAND_LIST_IS_RECORDING

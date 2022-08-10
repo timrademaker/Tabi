@@ -60,6 +60,8 @@ namespace tabi
 
 		virtual void DispatchComputePipeline(uint32_t a_GroupCountX, uint32_t a_GroupCountY, uint32_t a_GroupCountZ) override;
 
+		virtual void SetViewport(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height, float a_MinDepth = 0.0f, float a_MaxDepth = 1.0f) override;
+
 		/**
 		 * @brief Get the command list's pending commands
 		 */

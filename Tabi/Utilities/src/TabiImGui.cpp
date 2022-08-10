@@ -98,8 +98,10 @@ void tabi::imgui::Init()
 
     gpd.m_IndividualBlend = false;
     gpd.m_BlendState[0].m_BlendEnabled = true;
+    gpd.m_BlendState[0].m_BlendOperationRGB = EBlendOperation::Add;
+    gpd.m_BlendState[0].m_BlendOperationAlpha = EBlendOperation::Add;
     gpd.m_BlendState[0].m_SourceBlendFactorRGB = EBlendFactor::SrcAlpha;
-    gpd.m_BlendState[0].m_DestBlendFactorRGB = EBlendFactor::InvDstAlpha;
+    gpd.m_BlendState[0].m_DestBlendFactorRGB = EBlendFactor::InvSrcAlpha;
     gpd.m_BlendState[0].m_SourceBlendFactorAlpha = EBlendFactor::One;
     gpd.m_BlendState[0].m_DestBlendFactorAlpha = EBlendFactor::InvSrcAlpha;
 

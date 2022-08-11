@@ -15,6 +15,9 @@
 
 #include <glad/gl.h>
 
+uint32_t tabi::OpenGLCommandList::s_WindowWidth = 0;
+uint32_t tabi::OpenGLCommandList::s_WindowHeight = 0;
+
 #define ENSURE_COMMAND_LIST_IS_RECORDING() TABI_ASSERT(m_IsRecording, "Command list function called while recording is not active!")
 
 void tabi::OpenGLCommandList::BeginRecording()
@@ -227,10 +230,7 @@ void tabi::OpenGLCommandList::SetRenderTarget(const RenderTarget* a_RenderTarget
 	}
 	else
 	{
-        uint32_t windowWidth = 0;
-		uint32_t windowHeight = 0;
-        tabi::graphics::IWindow::GetInstance().GetWindowDimensions(windowWidth, windowHeight);
-		SetViewport(0, 0, windowWidth, windowHeight);
+		SetViewport(0, 0, s_WindowWidth, s_WindowHeight);
 	}
 }
 
@@ -643,10 +643,23 @@ void tabi::OpenGLCommandList::SetViewport(int32_t a_X, int32_t a_Y, int32_t a_Wi
 	TABI_ASSERT(a_MinDepth >= 0.0f && a_MinDepth <= 1.0f);
 	TABI_ASSERT(a_MaxDepth >= 0.0f && a_MaxDepth <= 1.0f);
 
-	m_PendingCommands.Add([a_X, a_Y, a_Width, a_Height, a_MinDepth, a_MaxDepth]
+	// Invert Y because OpenGL viewport (0, 0) is in the bottom left unlike various other APIs
+	m_PendingCommands.Add([a_X, y = s_WindowHeight - (a_Y + a_Height), a_Width, a_Height, a_MinDepth, a_MaxDepth]
 		{
-			glViewport(a_X, a_Y, a_Width, a_Height);
+			glViewport(a_X, y, a_Width, a_Height);
 			glDepthRangef(a_MinDepth, a_MaxDepth);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::SetScissorRect(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	// Invert Y because OpenGL viewport (0, 0) is in the bottom left unlike various other APIs
+	m_PendingCommands.Add([a_X, y = s_WindowHeight - (a_Y + a_Height), a_Width, a_Height]
+		{
+			glScissor(a_X, y, a_Width, a_Height);
 		}
 	);
 }

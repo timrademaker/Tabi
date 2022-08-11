@@ -109,8 +109,6 @@ namespace tabi
             gpd.m_DepthStencilState.m_BackStencilState.m_StencilFunc = EComparisonFunction::Never;
             gpd.m_DepthStencilState.m_EnableDepthTest = false;
 
-            // TODO: Setup render state: scissor enabled
-
             gpd.m_VertexInputLayout.m_NumInputElements = 3;
             gpd.m_VertexInputLayout.m_InputElements[0] = VertexInputElement{ 0, 0, "POSITION", EFormat::RG32_float, EInstanceDataStepClassification::PerVertex, 0 };
             gpd.m_VertexInputLayout.m_InputElements[1] = VertexInputElement{ 0, 0, "TEXCOORD", EFormat::RG32_float, EInstanceDataStepClassification::PerVertex, 0 };
@@ -175,7 +173,7 @@ namespace tabi
     {
         void SetUpRenderState(const ImDrawData* a_DrawData, int32_t a_FrameBufferWidth, int32_t a_FrameBufferheight)
         {
-            auto* data = GetImplementationData();
+            const auto* data = GetImplementationData();
             TABI_ASSERT(data);
 
             data->m_CommandList->SetViewport(0, 0, a_FrameBufferWidth, a_FrameBufferheight);
@@ -227,13 +225,11 @@ void tabi::imgui::EndFrame()
     // Draw to the screen directly
     data->m_CommandList->SetRenderTarget(nullptr);
 
-    /*
-    // Will project scissor/clipping rectangles into framebuffer space
-    ImVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports
-    ImVec2 clip_scale = draw_data->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
-    */
-    
+
     SetUpRenderState(drawData, fbWidth, fbHeight);
+
+    const ImVec2 clipOffset = drawData->DisplayPos;
+    const ImVec2 clipScale = drawData->FramebufferScale;
 
     for (size_t i = 0; i < drawData->CmdListsCount; ++i)
     {
@@ -251,8 +247,8 @@ void tabi::imgui::EndFrame()
             data->m_IndexBufferSize = indexBufferDataSize;
             // TODO: Create new buffer
         }
-        data->m_CommandList->CopyDataToBuffer(data->m_VertexBuffer, reinterpret_cast<const char*>(drawList->VtxBuffer.Data), vertexBufferDataSize, 0);
-        data->m_CommandList->CopyDataToBuffer(data->m_IndexBuffer, reinterpret_cast<const char*>(drawList->IdxBuffer.Data), indexBufferDataSize, 0);
+        data->m_CommandList->CopyDataToBuffer(data->m_VertexBuffer, drawList->VtxBuffer.Data, vertexBufferDataSize, 0);
+        data->m_CommandList->CopyDataToBuffer(data->m_IndexBuffer, drawList->IdxBuffer.Data, indexBufferDataSize, 0);
 
         for (size_t j = 0; j < drawList->CmdBuffer.Size; ++j)
         {
@@ -270,16 +266,13 @@ void tabi::imgui::EndFrame()
             }
             else
             {
-                /* TODO:
-                // Project scissor/clipping rectangles into framebuffer space
-                ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x, (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
-                ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x, (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
-                if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
+                const ImVec2 clipMin((cmd->ClipRect.x - clipOffset.x) * clipScale.x, (cmd->ClipRect.y - clipOffset.y) * clipScale.y);
+                const ImVec2 clipMax((cmd->ClipRect.z - clipOffset.x) * clipScale.x, (cmd->ClipRect.w - clipOffset.y) * clipScale.y);
+                if (clipMax.x <= clipMin.x || clipMax.y <= clipMin.y)
                     continue;
 
-                // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
-                glScissor((int)clip_min.x, (int)((float)fb_height - clip_max.y), (int)(clip_max.x - clip_min.x), (int)(clip_max.y - clip_min.y));
-                */
+                data->m_CommandList->SetScissorRect(static_cast<int32_t>(clipMin.x), static_cast<int32_t>(clipMin.y), 
+                    static_cast<int32_t>(clipMax.x - clipMin.x), static_cast<int32_t>(clipMax.y - clipMin.y));
 
                 data->m_CommandList->BindTexture(static_cast<Texture*>(cmd->GetTexID()), 0);
                 data->m_CommandList->DrawIndexed(cmd->ElemCount, cmd->IdxOffset, cmd->VtxOffset);

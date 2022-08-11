@@ -179,15 +179,21 @@ namespace tabi
 
 		/**
 		 * @brief Set the viewport
-		 * @param a_X The X coordinate of the lower left corner of the viewport
-		 * @param a_Y The Y coordinate of the lower left corner of the viewport
-		 * @param a_Width The new width of the context
-		 * @param a_Height The new height of the context
+		 * @param a_X The X coordinate of the top left corner of the viewport
+		 * @param a_Y The Y coordinate of the top left corner of the viewport
+		 * @param a_Width The width of the viewport
+		 * @param a_Height The height of the viewport
 		 * @param a_MinDepth The minimum depth of the viewport. Ranges between 0 and 1.
 		 * @param a_MaxDepth The maximum depth of the viewport. Ranges between 0 and 1.
-		 *
-		 * @note This does not need a proper implementation on platforms where the window is unable to resize
 		 */
 		virtual void SetViewport(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height, float a_MinDepth = 0.0f, float a_MaxDepth = 1.0f) = 0;
+		/**
+		 * @brief Set the scissor rect
+		 * @param a_X The X coordinate of the top left corner of the scissor rect
+		 * @param a_Y The Y coordinate of the top left corner of the scissor rect
+		 * @param a_Width The width of the scissor rect
+		 * @param a_Height The height of the scissor rect
+		 */
+		virtual void SetScissorRect(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height) = 0;
 	};
 }

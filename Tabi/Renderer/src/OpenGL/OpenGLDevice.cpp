@@ -14,6 +14,8 @@
 #include "Helpers/RendererLogger.h"
 #include "Helpers/FormatInfo.h"
 
+#include <IWindow.h>
+
 #include <glad/wgl.h>
 
 #pragma comment (lib, "opengl32.lib")
@@ -94,9 +96,9 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 {
 	TABI_ASSERT(m_DeviceContext == nullptr, "Device already initialized");
 
-	auto* window = static_cast<HWND>(a_Window);
-	auto* context = GetDC(window);
-	m_DeviceContext = new GLDeviceContext{ window, context };
+	auto* hwnd = static_cast<HWND>(a_Window);
+	auto* context = GetDC(hwnd);
+	m_DeviceContext = new GLDeviceContext{ hwnd, context };
 
 	const PIXELFORMATDESCRIPTOR pfd =
 	{
@@ -155,8 +157,24 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 #endif
 
 			glViewport(0, 0, a_Width, a_Height);
+			glEnable(GL_SCISSOR_TEST);
 		}
 	);
+
+	OpenGLCommandList::SetWindowSize(a_Width, a_Height);
+	const auto& window = graphics::IWindow::GetInstance();
+
+	uint32_t windowWidth = 0;
+	uint32_t windowHeight = 0;
+	window.GetWindowDimensions(windowWidth, windowHeight);
+	OpenGLCommandList::SetWindowSize(windowWidth, windowHeight);
+
+	window.OnWindowResize().Subscribe(this, [](tabi::WindowResizeEventData a_Data)
+		{
+			OpenGLCommandList::SetWindowSize(a_Data.m_NewWidth, a_Data.m_NewHeight);
+		}
+	);
+
 }
 
 void tabi::OpenGLDevice::Finalize()

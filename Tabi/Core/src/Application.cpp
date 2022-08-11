@@ -7,6 +7,8 @@
 #include <IDevice.h>
 #include <ICommandList.h>
 
+#include <Graphics.h>
+
 #include <TabiImGui.h>
 
 #include <Logging.h>
@@ -54,7 +56,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         // TODO: Update active scene?
         // TODO: Update subsystems
 
-        s_Device->BeginFrame();
+        graphics::BeginFrame();
 
         tabi::imgui::NewFrame(deltaTime);
 
@@ -63,8 +65,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 
         tabi::imgui::EndFrame();
 
-        s_Device->EndFrame();
-        s_Device->Present();
+        graphics::EndFrame();
 
         InputManager::Update();
 
@@ -97,23 +98,11 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
     {
         // Create window
         graphics::IWindow::Initialize(a_WindowTitle, a_Width, a_Height);
-        const auto& window = graphics::IWindow::GetInstance();
 
         s_Device = tabi::IDevice::GetInstance();
         s_Device->Initialize(graphics::IWindow::GetInstance().GetHandle(), a_Width, a_Height);
 
-        window.OnWindowResize().Subscribe(s_Device, [device = s_Device](tabi::WindowResizeEventData a_Data)
-            {
-                auto* cmd = device->CreateCommandList("Window resize");
-                cmd->BeginRecording();
-                cmd->SetViewport(0, 0, a_Data.m_NewWidth, a_Data.m_NewHeight);
-                cmd->EndRecording();
-                device->DestroyCommandList(cmd);
-            }
-        );
-
         m_Initialized = true;
-
 
         tabi::imgui::Init();
     }

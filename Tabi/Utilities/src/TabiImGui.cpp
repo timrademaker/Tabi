@@ -34,9 +34,6 @@ namespace tabi
             Buffer* m_IndexBuffer = nullptr;
             Buffer* m_ConstantBuffer = nullptr;
 
-            size_t m_VertexBufferSize = 0;
-            size_t m_IndexBufferSize = 0;
-
             Shader* m_VertexShader = nullptr;
             Shader* m_PixelShader = nullptr;
         };
@@ -63,6 +60,21 @@ namespace tabi
         ImplementationData* GetImplementationData()
         {
             return ImGui::GetCurrentContext() ? static_cast<ImplementationData*>(ImGui::GetIO().BackendRendererUserData) : nullptr;
+        }
+
+        Buffer* CreateVertexBuffer(size_t a_Size)
+        {
+            return IDevice::GetInstance()->CreateBuffer({ EFormat::RG32_float, EBufferRole::Vertex, a_Size, sizeof(ImDrawVert) }, "ImGui vertices");
+        }
+
+        Buffer* CreateIndexBuffer(size_t a_Size)
+        {
+            return IDevice::GetInstance()->CreateBuffer({ sizeof(ImDrawIdx) == 2 ? EFormat::R16_uint : EFormat::R32_uint, EBufferRole::Index, a_Size, sizeof(ImDrawIdx) }, "ImGui indices");
+        }
+
+        void DestroyBuffer(Buffer*& a_Buffer)
+        {
+            IDevice::GetInstance()->DestroyBuffer(a_Buffer);
         }
 
         void InitRenderContext()
@@ -119,11 +131,8 @@ namespace tabi
             impData->m_GraphicsPipeline = device->CreateGraphicsPipeline(gpd, "ImGui pipeline");
 
             impData->m_Sampler = device->CreateSampler({ EFilterMode::Linear, EFilterMode::Linear, tabi::EMipMapMode::Linear, tabi::EWrapMode::Clamp });
-            // TODO: Size is placeholder, as we can create a new buffer while drawing if needed.
-            impData->m_VertexBuffer = device->CreateBuffer({ EFormat::RG32_float, EBufferRole::Vertex, 2048 * sizeof(ImDrawVert), sizeof(ImDrawVert) }, "ImGui vertices");
-            impData->m_VertexBufferSize = 2048 * sizeof(ImDrawVert);
-            impData->m_IndexBuffer = device->CreateBuffer({ sizeof(ImDrawIdx) == 2 ? EFormat::R16_uint : EFormat::R32_uint, EBufferRole::Index, 2048 * sizeof(ImDrawIdx), sizeof(ImDrawIdx) }, "ImGui indices");
-            impData->m_IndexBufferSize = 2048 * sizeof(ImDrawIdx);
+            impData->m_VertexBuffer = CreateVertexBuffer(2048 * sizeof(ImDrawVert));
+            impData->m_IndexBuffer = CreateIndexBuffer(2048 * sizeof(ImDrawIdx));
 
             impData->m_ConstantBuffer = device->CreateBuffer({ EFormat::RGBA32_float, EBufferRole::Constant, sizeof(imgui::ImGuiConstantBufferData), 0 }, "ImGui cbuffer");
 
@@ -185,7 +194,6 @@ namespace tabi
             const float T = a_DrawData->DisplayPos.y;
             const float B = a_DrawData->DisplayPos.y + a_DrawData->DisplaySize.y;
 
-            // TODO: This can probably be done more efficiently, as there are only 4 values that need to be passed to the shader.
             ImGuiConstantBufferData bufferData;
             bufferData.m_OrthoMatrix = tabi::mat4(
                 2.0f / (R - L), 0.0f, 0.0f, 0.0f,
@@ -227,7 +235,6 @@ void tabi::imgui::EndFrame()
     // Draw to the screen directly
     data->m_CommandList->SetRenderTarget(nullptr);
 
-
     SetUpRenderState(drawData, fbWidth, fbHeight);
 
     const ImVec2 clipOffset = drawData->DisplayPos;
@@ -239,15 +246,15 @@ void tabi::imgui::EndFrame()
 
         const GLsizeiptr vertexBufferDataSize = static_cast<GLsizeiptr>(drawList->VtxBuffer.Size) * static_cast<int>(sizeof(ImDrawVert));
         const GLsizeiptr indexBufferDataSize = static_cast<GLsizeiptr>(drawList->IdxBuffer.Size) * static_cast<int>(sizeof(ImDrawIdx));
-        if (data->m_VertexBufferSize < vertexBufferDataSize)
+        if (data->m_VertexBuffer->GetBufferSize() < vertexBufferDataSize)
         {
-            data->m_VertexBufferSize = vertexBufferDataSize;
-            // TODO: Create new buffer
+            DestroyBuffer(data->m_VertexBuffer);
+            data->m_VertexBuffer = CreateVertexBuffer(vertexBufferDataSize);
         }
-        if (data->m_IndexBufferSize < indexBufferDataSize)
+        if (data->m_IndexBuffer->GetBufferSize() < indexBufferDataSize)
         {
-            data->m_IndexBufferSize = indexBufferDataSize;
-            // TODO: Create new buffer
+            DestroyBuffer(data->m_IndexBuffer);
+            data->m_IndexBuffer = CreateIndexBuffer(indexBufferDataSize);
         }
         data->m_CommandList->CopyDataToBuffer(data->m_VertexBuffer, drawList->VtxBuffer.Data, vertexBufferDataSize, 0);
         data->m_CommandList->CopyDataToBuffer(data->m_IndexBuffer, drawList->IdxBuffer.Data, indexBufferDataSize, 0);

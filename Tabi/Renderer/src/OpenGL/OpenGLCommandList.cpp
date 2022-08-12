@@ -241,9 +241,17 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, co
 	tabi::array<float, 4> clearColor;
 	std::copy_n(a_ClearColor, 4, clearColor.begin());
 
-	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), clearColor = std::move(clearColor)]
+	const bool scissorIsEnabled = m_GraphicsPipeline ? m_GraphicsPipeline->GetPipelineDescription().m_RasterizerState.m_ScissorEnabled : false;
+
+	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), clearColor = std::move(clearColor), scissorIsEnabled]
 		{
+			glDisable(GL_SCISSOR_TEST);
 			glClearNamedFramebufferfv(renderTarget ? renderTarget->GetID() : 0, GL_COLOR, 0, &clearColor[0]);
+
+		    if(scissorIsEnabled)
+		    {
+			    glEnable(GL_SCISSOR_TEST);
+		    }
 		}
 	);
 }
@@ -252,9 +260,17 @@ void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, fl
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), a_DepthValue, a_StencilValue]
+	const bool scissorIsEnabled = m_GraphicsPipeline ? m_GraphicsPipeline->GetPipelineDescription().m_RasterizerState.m_ScissorEnabled : false;
+
+	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), a_DepthValue, a_StencilValue, scissorIsEnabled]
 		{
+		    glDisable(GL_SCISSOR_TEST);
 			glClearNamedFramebufferfi(renderTarget ? renderTarget->GetID() : 0, GL_DEPTH_STENCIL, 0, a_DepthValue, a_StencilValue);
+
+	        if (scissorIsEnabled)
+	        {
+		        glEnable(GL_SCISSOR_TEST);
+	        }
 		}
 	);
 }
@@ -414,6 +430,15 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 				glFrontFace(pipelineDesc.m_RasterizerState.m_TriangleFrontIsCounterClockwise ? GL_CCW : GL_CW);
 				glCullFace(GLCullMode(pipelineDesc.m_RasterizerState.m_CullMode));
 				glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(pipelineDesc.m_RasterizerState.m_PolygonMode));
+			}
+
+			if (pipelineDesc.m_RasterizerState.m_ScissorEnabled)
+			{
+				glEnable(GL_SCISSOR_TEST);
+			}
+			else
+			{
+				glDisable(GL_SCISSOR_TEST);
 			}
 		}
 	);

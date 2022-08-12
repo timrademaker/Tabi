@@ -17,13 +17,6 @@ void tabi::graphics::BeginFrame()
     auto* cmd = device->CreateCommandList("BeginFrame");
     cmd->BeginRecording();
 
-    // Reset viewport and scissor rect
-    uint32_t windowWidth = 0;
-    uint32_t windowHeight = 0;
-    IWindow::GetInstance().GetWindowDimensions(windowWidth, windowHeight);
-
-    cmd->SetScissorRect(0, 0, windowWidth, windowHeight);
-
     // Bind default render target and clear its color- and stencil values
     cmd->SetRenderTarget(nullptr);
     static constexpr float clearColor[] = { 0.109f, 0.4218f, 0.8984f, 1.0f };

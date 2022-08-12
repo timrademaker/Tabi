@@ -105,6 +105,8 @@ namespace tabi
             gpd.m_BlendState[0].m_DestBlendFactorAlpha = EBlendFactor::InvSrcAlpha;
 
             gpd.m_RasterizerState.m_CullMode = ECullMode::None;
+            gpd.m_RasterizerState.m_ScissorEnabled = true;
+
             gpd.m_DepthStencilState.m_FrontStencilState.m_StencilFunc = EComparisonFunction::Never;
             gpd.m_DepthStencilState.m_BackStencilState.m_StencilFunc = EComparisonFunction::Never;
             gpd.m_DepthStencilState.m_EnableDepthTest = false;

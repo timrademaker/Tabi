@@ -157,7 +157,6 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 #endif
 
 			glViewport(0, 0, a_Width, a_Height);
-			glEnable(GL_SCISSOR_TEST);
 		}
 	);
 

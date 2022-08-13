@@ -157,6 +157,22 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
     {
         m_MouseWheelDeltaY += static_cast<float>(GET_WHEEL_DELTA_WPARAM(a_Msg.wParam)) / static_cast<float>(WHEEL_DELTA);
     }
+    else if(a_Msg.message == WM_MOUSEMOVE)
+    {
+        if (!m_MouseIsInWindowRect)
+        {
+            m_MouseIsInWindowRect = true;
+            SetCursorIcon(IDC_ARROW);
+        }
+
+        // Make sure we know when the cursor leaves the window
+        TRACKMOUSEEVENT ev{ sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_WindowHandle, 0 };
+        TrackMouseEvent(&ev);
+    }
+    else if(a_Msg.message == WM_MOUSELEAVE)
+    {
+        m_MouseIsInWindowRect = false;
+    }
 }
 
 bool tabi::InputHandler::IsButtonDownInternal(unsigned a_Button, bool* a_DownLastFrame) const
@@ -302,6 +318,11 @@ void tabi::InputHandler::CaptureCursor()
         SetCursorVisible(!m_HideCursor);
         SetCursorPos(m_WindowRect.right - (m_WindowWidth / 2), m_WindowRect.bottom - (m_WindowHeight / 2));
     }
+}
+
+void tabi::InputHandler::SetCursorIcon(LPTSTR a_CursorIcon) const
+{
+    ::SetCursor(::LoadCursor(NULL, a_CursorIcon));
 }
 
 unsigned int tabi::InputHandler::ConvertDeviceType(EInputDevice a_Device)

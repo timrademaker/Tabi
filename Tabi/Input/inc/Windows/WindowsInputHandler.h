@@ -62,10 +62,12 @@ namespace tabi
 
         void SetCursorVisible(bool a_Visible);
         void CaptureCursor();
+        void SetCursorIcon(LPTSTR a_CursorIcon) const;
 
     private:
         const HWND m_WindowHandle;
         RECT m_WindowRect{ 0 };
+        bool m_MouseIsInWindowRect = false;
 
         static tabi::unordered_map<EMouse, unsigned int> ms_MouseTable;
         static tabi::unordered_map<EKeyboard, unsigned int> ms_KeyboardTable;

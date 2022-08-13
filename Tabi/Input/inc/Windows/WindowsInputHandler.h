@@ -83,6 +83,9 @@ namespace tabi
         RAWINPUTDEVICE m_RawInputDevice;
         tabi::vector<char> m_RawBuffer;
 
+        // Delta of the mouse wheel since the last frame. Positive means up, negative means down
+        float m_MouseWheelDeltaY = 0.0f;
+
         // Mouse capture
         bool m_CaptureMouse = false;
 

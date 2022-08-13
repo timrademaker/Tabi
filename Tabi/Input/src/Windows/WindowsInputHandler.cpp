@@ -72,6 +72,7 @@ void tabi::InputHandler::Update()
 
     m_MouseDeltaX = 0;
     m_MouseDeltaY = 0;
+    m_MouseWheelDeltaY = 0;
 
     m_GaInputManager.Update();
 
@@ -152,6 +153,10 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
             m_MouseDeltaY += ri.data.mouse.lLastY;
         }
     }
+    else if(a_Msg.message == WM_MOUSEWHEEL)
+    {
+        m_MouseWheelDeltaY += static_cast<float>(GET_WHEEL_DELTA_WPARAM(a_Msg.wParam)) / static_cast<float>(WHEEL_DELTA);
+    }
 }
 
 bool tabi::InputHandler::IsButtonDownInternal(unsigned a_Button, bool* a_DownLastFrame) const
@@ -172,11 +177,25 @@ float tabi::InputHandler::GetAxisValueInternal(unsigned int a_Axis, float* a_Del
 {
     a_Axis += UserButtonAxisOffset;
 
-#if _DEBUG
-    TABI_ASSERT(IsBound(a_Axis), "Trying to get button state for an unbound axis");
-#endif
+    float pos = 0.0f;
 
-    const float pos = m_InputMap.GetFloat(a_Axis);
+    if (a_Axis != static_cast<unsigned>(EMouse::Wheel) + UserButtonAxisOffset)
+    {
+#if _DEBUG
+        TABI_ASSERT(IsBound(a_Axis), "Trying to get button state for an unbound axis");
+#endif
+        pos = m_InputMap.GetFloat(a_Axis);
+    }
+
+    if (a_Axis == static_cast<unsigned>(EMouse::MouseX) + UserButtonAxisOffset)
+    {
+        pos *= static_cast<float>(m_WindowWidth);
+    }
+    else if (a_Axis == static_cast<unsigned>(EMouse::MouseY) + UserButtonAxisOffset)
+    {
+        pos *= static_cast<float>(m_WindowHeight);
+    }
+
     if (a_Delta)
     {
         if (a_Axis == static_cast<unsigned>(EMouse::MouseX) + UserButtonAxisOffset)
@@ -186,6 +205,10 @@ float tabi::InputHandler::GetAxisValueInternal(unsigned int a_Axis, float* a_Del
         else if (a_Axis == static_cast<unsigned>(EMouse::MouseY) + UserButtonAxisOffset)
         {
             *a_Delta = static_cast<float>(m_MouseDeltaY) / static_cast<float>(m_WindowHeight);
+        }
+        else if(a_Axis == static_cast<unsigned>(EMouse::Wheel) + UserButtonAxisOffset)
+        {
+            *a_Delta = m_MouseWheelDeltaY;
         }
         else
         {

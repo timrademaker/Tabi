@@ -27,8 +27,6 @@ tabi::unordered_map<tabi::EMouse, unsigned int> tabi::InputHandler::ms_MouseTabl
     {EMouse::Mouse5, gainput::MouseButton::MouseButton6},
     {EMouse::MouseX, gainput::MouseButton::MouseAxisX},
     {EMouse::MouseY, gainput::MouseButton::MouseAxisY},
-    {EMouse::WheelUp, gainput::MouseButton::MouseButtonWheelUp},
-    {EMouse::WheelDown, gainput::MouseButton::MouseButtonWheelDown}
 };
 
 tabi::unordered_map<EKeyboard, unsigned int> tabi::InputHandler::ms_KeyboardTable =

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <TabiPointers.h>
 #include <Camera.h>
 
 #include <InputManager.h>
@@ -10,12 +9,12 @@ class MovableCamera : public tabi::Camera
 public:
     MovableCamera(float a_AspectRatio);
 
-    void MoveUp         (tabi::ButtonEvent);
-    void MoveDown       (tabi::ButtonEvent);
-    void MoveLeft       (tabi::ButtonEvent);
-    void MoveRight      (tabi::ButtonEvent);
-    void MoveForward    (tabi::ButtonEvent);
-    void MoveBackwards  (tabi::ButtonEvent);
+    void MoveUp         (tabi::ButtonDownEvent);
+    void MoveDown       (tabi::ButtonDownEvent);
+    void MoveLeft       (tabi::ButtonDownEvent);
+    void MoveRight      (tabi::ButtonDownEvent);
+    void MoveForward    (tabi::ButtonDownEvent);
+    void MoveBackwards  (tabi::ButtonDownEvent);
 
     void RotateHorizontal   (tabi::AxisEvent a_Event);
     void RotateVertical     (tabi::AxisEvent a_Event);

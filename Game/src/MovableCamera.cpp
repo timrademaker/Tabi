@@ -29,32 +29,32 @@ MovableCamera::MovableCamera(float a_AspectRatio)
     tabi::InputManager::BindAxis(tabi::EController::RightStickY, this, &MovableCamera::RotateVerticalController);
 }
 
-void MovableCamera::MoveUp(tabi::ButtonEvent)
+void MovableCamera::MoveUp(tabi::ButtonDownEvent)
 {
     MoveBy(GetUp() * m_Speed * m_DeltaTime);
 }
 
-void MovableCamera::MoveDown(tabi::ButtonEvent)
+void MovableCamera::MoveDown(tabi::ButtonDownEvent)
 {
     MoveBy(-GetUp() * m_Speed * m_DeltaTime);
 }
 
-void MovableCamera::MoveLeft(tabi::ButtonEvent)
+void MovableCamera::MoveLeft(tabi::ButtonDownEvent)
 {
     MoveBy(-GetRight() * m_Speed * m_DeltaTime);
 }
 
-void MovableCamera::MoveRight(tabi::ButtonEvent)
+void MovableCamera::MoveRight(tabi::ButtonDownEvent)
 {
     MoveBy(GetRight() * m_Speed * m_DeltaTime);
 }
 
-void MovableCamera::MoveForward(tabi::ButtonEvent)
+void MovableCamera::MoveForward(tabi::ButtonDownEvent)
 {
     MoveBy(GetForward() * m_Speed * m_DeltaTime);
 }
 
-void MovableCamera::MoveBackwards(tabi::ButtonEvent)
+void MovableCamera::MoveBackwards(tabi::ButtonDownEvent)
 {
     MoveBy(GetForward() * -m_Speed * m_DeltaTime);
 }

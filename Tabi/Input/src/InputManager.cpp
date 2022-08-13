@@ -67,19 +67,83 @@ void InputManager::Update()
     auto& manager = GetInstance();
     auto& handler = IInputHandler::GetInstance();
 
-    for (BoundButtonMap::iterator buttonIter = manager.m_BoundButtons.begin(); buttonIter != manager.m_BoundButtons.end(); ++buttonIter)
+    for (auto buttonIter = manager.m_BoundButtons.begin(); buttonIter != manager.m_BoundButtons.end(); ++buttonIter)
     {
+        bool isDown = false;
         bool downLastFrame = false;
-        if (handler.IsButtonDown(buttonIter->first, &downLastFrame))
+
+        switch (DetermineDeviceType(buttonIter->first))
         {
-            buttonIter->second.Broadcast(tabi::ButtonEvent{ downLastFrame });
+        case EInputDevice::Mouse:
+        {
+            isDown = handler.IsButtonDown(static_cast<EMouse>(buttonIter->first), &downLastFrame);
+            break;
+        }
+        case EInputDevice::Keyboard:
+        {
+            isDown = handler.IsButtonDown(static_cast<EKeyboard>(buttonIter->first), &downLastFrame);
+            break;
+        }
+        case EInputDevice::Controller:
+        {
+            isDown = handler.IsButtonDown(static_cast<EController>(buttonIter->first), &downLastFrame);
+            break;
+        }
+
+        default:
+            TABI_ASSERT(false);
+        }
+
+        if (isDown)
+        {
+            buttonIter->second.m_ButtonDownCallback.Broadcast(tabi::ButtonDownEvent{ !downLastFrame });
+        }
+        else if(downLastFrame)
+        {
+            buttonIter->second.m_ButtonUpCallback.Broadcast();
         }
     }
 
-    for (BoundAxesMap::iterator axisIter = manager.m_BoundAxes.begin(); axisIter != manager.m_BoundAxes.end(); ++axisIter)
+    // TODO: IInputHandler is currently expected to handle buttons from EMouse and EController as well. Not sure if that makes sense.
+    // Maybe split up each device into devicetype::EButton and devicetype::EAxis? (But what are L2 and R2?)
+    for (auto axisIter = manager.m_BoundAxes.begin(); axisIter != manager.m_BoundAxes.end(); ++axisIter)
     {
         float delta = 0.0f;
-        float val = handler.GetAxisValue(axisIter->first, &delta);
+        float val = 0.0f;
+        switch (DetermineDeviceType(axisIter->first))
+        {
+        case EInputDevice::Mouse:
+        {
+            val = handler.GetAxisValue(static_cast<EMouse>(axisIter->first), &delta);
+            break;
+        }
+        case EInputDevice::Keyboard:
+        {
+            bool downLastFrame = false;
+            const bool isDown = handler.IsButtonDown(static_cast<EKeyboard>(axisIter->first), &downLastFrame);
+            val = isDown ? 1.0f : 0.0f;
+
+            if(isDown && !downLastFrame)
+            {
+                delta = 1.0f;
+            }
+            else if(!isDown && downLastFrame)
+            {
+                delta = -1.0f;
+            }
+
+            break;
+        }
+        case EInputDevice::Controller:
+        {
+            val = handler.GetAxisValue(static_cast<EController>(axisIter->first), &delta);
+            break;
+        }
+
+        default:
+            TABI_ASSERT(false);
+        }
+
         axisIter->second.Broadcast(tabi::AxisEvent{ val, delta });
     }
 
@@ -96,20 +160,15 @@ void tabi::InputManager::SetCursorCapture(bool a_Capture)
     IInputHandler::GetInstance().SetMouseCursorCapture(a_Capture);
 }
 
-void tabi::InputManager::BindButtonInternal(unsigned int a_Button, void* a_Object, ButtonHandlerSignature a_Callback)
-{
-    IInputHandler::GetInstance().BindButton(a_Button);
-    m_BoundButtons[a_Button].Subscribe(a_Object, a_Callback);
-};
-
 void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Object)
 {
     // Check if the button is bound
-    auto iter = m_BoundButtons.find(a_Button);
+    const auto iter = m_BoundButtons.find(a_Button);
     if (iter != m_BoundButtons.end())
     {
-        auto& buttonEvent = iter->second;
-        bool foundAny = buttonEvent.Unsubscribe(a_Object);
+        const auto& buttonEvent = iter->second;
+        bool foundAny = buttonEvent.m_ButtonDownCallback.Unsubscribe(a_Object);
+        foundAny |= buttonEvent.m_ButtonUpCallback.Unsubscribe(a_Object);
 
 #if defined(_DEBUG)
         if (!foundAny)
@@ -119,28 +178,21 @@ void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Obj
 #else
         TABI_UNUSED(foundAny);
 #endif
-        
-        // If there's no more subscribers, unbind in IInputHandler
-        if (!buttonEvent.HasSubscribers())
-        {
-            IInputHandler::GetInstance().UnbindButton(a_Button);
-        }
     }
 }
 
 void tabi::InputManager::BindAxisInternal(unsigned int a_Axis, void* a_Object, AxisHandlerSignature a_Callback)
 {
-    IInputHandler::GetInstance().BindAxis(a_Axis);
     m_BoundAxes[a_Axis].Subscribe(a_Object, a_Callback);
 }
 
 void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
 {
     // Check if the axis is bound
-    auto iter = m_BoundAxes.find(a_Axis);
+    const auto iter = m_BoundAxes.find(a_Axis);
     if (iter != m_BoundAxes.end())
     {
-        auto& axisEvent = iter->second;
+        const auto& axisEvent = iter->second;
         bool foundAny = axisEvent.Unsubscribe(a_Object);
 
 #if defined(_DEBUG)
@@ -151,15 +203,27 @@ void tabi::InputManager::UnbindAxisInternal(unsigned int a_Axis, void* a_Object)
 #else
         TABI_UNUSED(foundAny);
 #endif
-
-        // If there's no more subscribers, unbind in IInputHandler
-        if (!axisEvent.HasSubscribers())
-        {
-            IInputHandler::GetInstance().UnbindAxis(a_Axis);
-        }
     }
 }
 
+tabi::EInputDevice InputManager::DetermineDeviceType(unsigned a_Button)
+{
+    if (a_Button & static_cast<unsigned>(EInputDevice::Controller))
+    {
+        return EInputDevice::Controller;
+    }
+    else if (a_Button & static_cast<unsigned>(EInputDevice::Keyboard))
+    {
+        return EInputDevice::Keyboard;
+    }
+    else if (a_Button & static_cast<unsigned>(EInputDevice::Mouse))
+    {
+        return EInputDevice::Mouse;
+    }
+
+    TABI_ASSERT(false, "Unable to determine device type");
+    return {};
+}
 
 InputManager& InputManager::GetInstance()
 {

@@ -59,13 +59,31 @@ void tabi::InputManager::UnbindAllAxes(void* a_Object)
 
 bool tabi::InputManager::AnyButtonDown()
 {
-    return IInputHandler::GetInstance().AnyButtonDown();
+    return  GetInstance().m_InputHandler->AnyButtonDown();
+}
+
+void InputManager::BlockInput(EInputDevice a_Device)
+{
+    GetInstance().m_InputBlockCount[a_Device] += 1;
+}
+
+void InputManager::UnblockInput(EInputDevice a_Device)
+{
+    auto& blockCount = GetInstance().m_InputBlockCount[a_Device];
+
+    if (blockCount > 0)
+    {
+        TABI_WARN("Trying to unblock input on a device where input was not blocked!");
+    }
+    else
+    {
+        --blockCount;
+    }
 }
 
 void InputManager::Update()
 {
     auto& manager = GetInstance();
-    auto& handler = IInputHandler::GetInstance();
 
     for (auto buttonIter = manager.m_BoundButtons.begin(); buttonIter != manager.m_BoundButtons.end(); ++buttonIter)
     {
@@ -76,17 +94,17 @@ void InputManager::Update()
         {
         case EInputDevice::Mouse:
         {
-            isDown = handler.IsButtonDown(static_cast<EMouse>(buttonIter->first), &downLastFrame);
+            isDown = IsButtonDown(static_cast<EMouse>(buttonIter->first), &downLastFrame);
             break;
         }
         case EInputDevice::Keyboard:
         {
-            isDown = handler.IsButtonDown(static_cast<EKeyboard>(buttonIter->first), &downLastFrame);
+            isDown = IsButtonDown(static_cast<EKeyboard>(buttonIter->first), &downLastFrame);
             break;
         }
         case EInputDevice::Controller:
         {
-            isDown = handler.IsButtonDown(static_cast<EController>(buttonIter->first), &downLastFrame);
+            isDown = IsButtonDown(static_cast<EController>(buttonIter->first), &downLastFrame);
             break;
         }
 
@@ -114,13 +132,13 @@ void InputManager::Update()
         {
         case EInputDevice::Mouse:
         {
-            val = handler.GetAxisValue(static_cast<EMouse>(axisIter->first), &delta);
+            val = GetAxisValue(static_cast<EMouse>(axisIter->first), &delta);
             break;
         }
         case EInputDevice::Keyboard:
         {
             bool downLastFrame = false;
-            const bool isDown = handler.IsButtonDown(static_cast<EKeyboard>(axisIter->first), &downLastFrame);
+            const bool isDown = IsButtonDown(static_cast<EKeyboard>(axisIter->first), &downLastFrame);
             val = isDown ? 1.0f : 0.0f;
 
             if(isDown && !downLastFrame)
@@ -136,7 +154,7 @@ void InputManager::Update()
         }
         case EInputDevice::Controller:
         {
-            val = handler.GetAxisValue(static_cast<EController>(axisIter->first), &delta);
+            val = GetAxisValue(static_cast<EController>(axisIter->first), &delta);
             break;
         }
 
@@ -147,17 +165,39 @@ void InputManager::Update()
         axisIter->second.Broadcast(tabi::AxisEvent{ val, delta });
     }
 
-    handler.Update();
+    manager.m_InputHandler->Update();
 }
 
 void tabi::InputManager::SetCursorVisible(bool a_ShowCursor)
 {
-    IInputHandler::GetInstance().SetMouseCursorVisible(a_ShowCursor);
+    GetInstance().m_InputHandler->SetMouseCursorVisible(a_ShowCursor);
 }
 
 void tabi::InputManager::SetCursorCapture(bool a_Capture)
 {
-    IInputHandler::GetInstance().SetMouseCursorCapture(a_Capture);
+    GetInstance().m_InputHandler->SetMouseCursorCapture(a_Capture);
+}
+
+void InputManager::HandleWindowsMsg(const void* a_Msg)
+{
+    GetInstance().m_InputHandler->HandleWindowMsg(a_Msg);
+}
+
+InputManager::InputManager()
+    : m_InputHandler(IInputHandler::CreateInstance())
+{
+    m_InputBlockCount[EInputDevice::Controller] = 0;
+    m_InputBlockCount[EInputDevice::Keyboard] = 0;
+    m_InputBlockCount[EInputDevice::Mouse] = 0;
+}
+
+InputManager::~InputManager()
+{
+    if (m_InputHandler)
+    {
+        delete m_InputHandler;
+        m_InputHandler = nullptr;
+    }
 }
 
 void tabi::InputManager::UnbindButtonInternal(unsigned int a_Button, void* a_Object)

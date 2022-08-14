@@ -125,15 +125,16 @@ void tabi::InputHandler::SetMouseCursorCapture(bool a_Capture)
     m_CaptureMouse = a_Capture;
 }
 
-void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
+void tabi::InputHandler::HandleWindowMsg(const void* a_Msg)
 {
-    m_GaInputManager.HandleMessage(a_Msg);
+    const auto msg = *static_cast<const MSG*>(a_Msg);
+    m_GaInputManager.HandleMessage(msg);
 
     // Handle raw mouse input
-    if (a_Msg.message == WM_INPUT)
+    if (msg.message == WM_INPUT)
     {
         UINT size;
-        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(a_Msg.lParam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1)
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(msg.lParam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1)
         {
             return;
         }
@@ -141,7 +142,7 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
         m_RawBuffer.resize(size);
 
 
-        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(a_Msg.lParam), RID_INPUT, m_RawBuffer.data(), &size, sizeof(RAWINPUTHEADER)) != size)
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(msg.lParam), RID_INPUT, m_RawBuffer.data(), &size, sizeof(RAWINPUTHEADER)) != size)
         {
             return;
         }
@@ -153,11 +154,11 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
             m_MouseDeltaY += ri.data.mouse.lLastY;
         }
     }
-    else if(a_Msg.message == WM_MOUSEWHEEL)
+    else if(msg.message == WM_MOUSEWHEEL)
     {
-        m_MouseWheelDeltaY += static_cast<float>(GET_WHEEL_DELTA_WPARAM(a_Msg.wParam)) / static_cast<float>(WHEEL_DELTA);
+        m_MouseWheelDeltaY += static_cast<float>(GET_WHEEL_DELTA_WPARAM(msg.wParam)) / static_cast<float>(WHEEL_DELTA);
     }
-    else if(a_Msg.message == WM_MOUSEMOVE)
+    else if(msg.message == WM_MOUSEMOVE)
     {
         if (!m_MouseIsInWindowRect)
         {
@@ -169,7 +170,7 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
         TRACKMOUSEEVENT ev{ sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_WindowHandle, 0 };
         TrackMouseEvent(&ev);
     }
-    else if(a_Msg.message == WM_MOUSELEAVE)
+    else if(msg.message == WM_MOUSELEAVE)
     {
         m_MouseIsInWindowRect = false;
     }

@@ -26,7 +26,7 @@ namespace tabi
     {
     public:
         InputHandler();
-        virtual ~InputHandler() = default;
+        virtual ~InputHandler() override = default;
 
         virtual void Update() override;
 
@@ -42,8 +42,7 @@ namespace tabi
         virtual void SetMouseCursorVisible(bool a_Visible) override;
         virtual void SetMouseCursorCapture(bool a_Capture) override;
         
-        
-        void HandleMsg(const MSG& a_Msg);
+        virtual void HandleWindowMsg(const void* a_Msg) override;
 
 
     private:

@@ -8,8 +8,11 @@ namespace tabi
 {
     class IInputHandler
     {
+        friend class InputManager;
+        static IInputHandler* CreateInstance();
+
     public:
-        static IInputHandler& GetInstance();
+        virtual ~IInputHandler() = default;
 
         /**
          * @brief Update the input state
@@ -25,7 +28,7 @@ namespace tabi
         /**
         * @brief Determines if a button is currently down
         * @param a_Button The button to check the state for
-        * @param a_DownLastFrame Will be set to true if the button went down last frame (optional)
+        * @param a_DownLastFrame Will be set to true if the button was down last frame (optional)
         * @returns True if the button is down
         */
         virtual bool IsButtonDown(EKeyboard a_Button, bool* a_DownLastFrame = nullptr) const = 0;
@@ -53,9 +56,14 @@ namespace tabi
         */
         virtual void SetMouseCursorCapture(bool a_Capture) { }
 
+        /**
+         * @brief Handle a platform-specific window message
+         * @param a_Msg The message to handle
+         */
+        virtual void HandleWindowMsg(const void* a_Msg) { }
+
     protected:
         IInputHandler() = default;
-        ~IInputHandler() = default;
     };
 
 }

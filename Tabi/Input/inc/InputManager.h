@@ -1,5 +1,8 @@
 #pragma once
 
+#include "IInputHandler.h"
+#include "Enums/EInputDevice.h"
+
 #include <TabiContainers.h>
 #include <TabiEvent.h>
 
@@ -7,7 +10,6 @@
 
 namespace tabi
 {
-    enum class EInputDevice;
     enum class EMouse;
     enum class EKeyboard;
     enum class EController;
@@ -41,9 +43,19 @@ namespace tabi
         };
 
         using ButtonDownEventMap = tabi::unordered_map<unsigned int, ButtonCallbacks>;
-        
+
         using AxisHandlerSignature = std::function<void(AxisEvent)>;
         using AxisEventMap = tabi::unordered_map<unsigned int, AxisCallbackEvent>;
+
+        template<typename ButtonEnumType>
+        struct is_button_type : std::bool_constant<std::is_same_v<ButtonEnumType, EController> || std::is_same_v<ButtonEnumType, EKeyboard> || std::is_same_v<ButtonEnumType, EMouse>> {};
+        template<class ButtonEnumType>
+        static inline constexpr bool is_button_type_v = is_button_type<ButtonEnumType>::value;
+
+        template<typename AxisEnumType>
+        struct is_axis_type : std::bool_constant<std::is_same_v<AxisEnumType, EController> || std::is_same_v<AxisEnumType, EMouse>> {};
+        template<class AxisEnumType>
+        static inline constexpr bool is_axis_type_v = is_button_type<AxisEnumType>::value;
 
     public:
         /**
@@ -108,6 +120,58 @@ namespace tabi
         static bool AnyButtonDown();
 
         /**
+        * @brief Determines if a button is currently down
+        * @param a_Button The button to check the state for
+        * @param a_DownLastFrame Will be set to true if the button was down last frame (optional)
+        * @returns True if the button is down
+        */
+        template<typename ButtonEnumType>
+        static std::enable_if_t<is_button_type_v<ButtonEnumType>, bool>
+            IsButtonDown(ButtonEnumType a_Button, bool* a_DownLastFrame = nullptr);
+
+        /**
+        * @brief Gets the axis value of an axis
+        * @param a_Axis The axis to retrieve the axis value for
+        * @param a_Delta Will be filled with the axis delta compared to last frame (optional)
+        * @returns The axis value
+        */
+        template<typename AxisEnumType>
+        static std::enable_if_t<is_axis_type_v<AxisEnumType>, float>
+            GetAxisValue(AxisEnumType a_Axis, float* a_Delta = nullptr);
+
+        /**
+        * @brief Determines if a button is currently down. Ignores input block state.
+        * @param a_Button The button to check the state for
+        * @param a_DownLastFrame Will be set to true if the button was down last frame (optional)
+        * @returns True if the button is down
+        */
+        template<typename ButtonEnumType>
+        static std::enable_if_t<is_button_type_v<ButtonEnumType>, bool>
+            IsButtonDownRaw(ButtonEnumType a_Button, bool* a_DownLastFrame = nullptr);
+
+        /**
+        * @brief Gets the axis value of an axis. Ignores input block state.
+        * @param a_Axis The axis to retrieve the axis value for
+        * @param a_Delta Will be filled with the axis delta compared to last frame (optional)
+        * @returns The axis value
+        */
+        template<typename AxisEnumType>
+        static std::enable_if_t<is_axis_type_v<AxisEnumType>, float>
+            GetAxisValueRaw(AxisEnumType a_Axis, float* a_Delta = nullptr);
+
+        /**
+         * @brief Disable input from a given device
+         * @note Each call to this function should be matched by a call to UnblockInput
+         */
+        static void BlockInput(EInputDevice a_Device);
+
+        /**
+         * @brief Enable input from a given device
+         * @note This function should be called once for every time BlockInput is called
+         */
+        static void UnblockInput(EInputDevice a_Device);
+
+        /**
         * @brief Updates user input and calls callback functions if a button was pressed
         */
         static void Update();
@@ -124,24 +188,43 @@ namespace tabi
         */
         static void SetCursorCapture(bool a_Capture);
 
+        /**
+         * @brief Handle a platform-specific window message
+         * @param a_Msg The message to handle
+         */
+        static void HandleWindowsMsg(const void* a_Msg);
+
     private:
-        InputManager() = default;
-        ~InputManager() = default;
+        InputManager();
+        ~InputManager();
 
         template<typename ButtonEnumType, typename UserClass>
-        void BindButtonInternal(ButtonEnumType a_Button, UserClass * a_Object, void(UserClass::* a_ButtonDownCallback)(ButtonDownEvent), void(UserClass:: * a_ButtonUpCallback)());
+        void BindButtonInternal(ButtonEnumType a_Button, UserClass* a_Object, void(UserClass::* a_ButtonDownCallback)(ButtonDownEvent), void(UserClass::* a_ButtonUpCallback)());
 
         void UnbindButtonInternal(unsigned int a_Button, void* a_Object);
         void BindAxisInternal(unsigned int a_Axis, void* a_Object, AxisHandlerSignature a_Callback);
         void UnbindAxisInternal(unsigned int a_Axis, void* a_Object);
 
+        template<typename ButtonEnumType>
+        static std::enable_if_t<is_button_type_v<ButtonEnumType> || is_axis_type_v<ButtonEnumType>, bool>
+            IsInputBlocked();
+
         static EInputDevice DetermineDeviceType(unsigned int a_Button);
+
+        template<typename ButtonEnumType>
+        static constexpr std::enable_if_t<is_button_type_v<ButtonEnumType> || is_axis_type_v<ButtonEnumType>, EInputDevice>
+            DetermineDeviceType();
 
         static InputManager& GetInstance(); // Used for the internal instance
 
     private:
         ButtonDownEventMap m_BoundButtons;
         AxisEventMap m_BoundAxes;
+
+        IInputHandler* m_InputHandler;
+
+        // Used to track how often input was blocked for a given device
+        tabi::map<EInputDevice, int32_t> m_InputBlockCount;
     };
 
     template<typename UserClass>
@@ -181,6 +264,75 @@ namespace tabi
     {
         auto boundFunction = std::bind(a_Callback, a_Object, std::placeholders::_1);
         GetInstance().BindAxisInternal(static_cast<unsigned>(a_Axis), a_Object, boundFunction);
+    }
+
+    template <typename ButtonEnumType>
+    std::enable_if_t<InputManager::is_button_type_v<ButtonEnumType>, bool>
+        InputManager::IsButtonDown(ButtonEnumType a_Button, bool* a_DownLastFrame)
+    {
+        if (!IsInputBlocked<ButtonEnumType>())
+        {
+            return IsButtonDownRaw(a_Button, a_DownLastFrame);
+        }
+
+        return false;
+    }
+
+    template <typename AxisEnumType>
+    std::enable_if_t<InputManager::is_axis_type_v<AxisEnumType>, float>
+        InputManager::GetAxisValue(AxisEnumType a_Axis, float* a_Delta)
+    {
+        if (!IsInputBlocked<AxisEnumType>())
+        {
+            return GetAxisValueRaw(a_Axis, a_Delta);
+        }
+
+        return 0.0f;
+    }
+
+    template <typename ButtonEnumType>
+    std::enable_if_t<InputManager::is_button_type_v<ButtonEnumType>, bool>
+    InputManager::IsButtonDownRaw(ButtonEnumType a_Button, bool* a_DownLastFrame)
+    {
+        return GetInstance().m_InputHandler->IsButtonDown(a_Button, a_DownLastFrame);
+    }
+
+    template <typename AxisEnumType>
+    std::enable_if_t<InputManager::is_axis_type_v<AxisEnumType>, float>
+    InputManager::GetAxisValueRaw(AxisEnumType a_Axis, float* a_Delta)
+    {
+        return GetInstance().m_InputHandler->GetAxisValue(a_Axis, a_Delta);
+    }
+
+    template <typename ButtonEnumType>
+    std::enable_if_t<InputManager::is_button_type_v<ButtonEnumType> || InputManager::is_axis_type_v<ButtonEnumType>, bool>
+        InputManager::IsInputBlocked()
+    {
+        const EInputDevice inputDevice = DetermineDeviceType<ButtonEnumType>();
+        return GetInstance().m_InputBlockCount[inputDevice] > 0;
+    }
+
+    template <typename ButtonEnumType>
+    constexpr std::enable_if_t<InputManager::is_button_type_v<ButtonEnumType> || InputManager::is_axis_type_v<ButtonEnumType>, EInputDevice>
+        InputManager::DetermineDeviceType()
+    {
+        if constexpr (std::is_same_v<ButtonEnumType, EController>)
+        {
+            return EInputDevice::Controller;
+        }
+        else if constexpr (std::is_same_v<ButtonEnumType, EKeyboard>)
+        {
+            return EInputDevice::Keyboard;
+        }
+        else if constexpr (std::is_same_v<ButtonEnumType, EMouse>)
+        {
+            return EInputDevice::Mouse;
+        }
+        else
+        {
+            static_assert(!std::is_same_v<ButtonEnumType, ButtonEnumType>, "Unknown button type");
+            return static_cast<EInputDevice>(-1);
+        }
     }
 
     template <typename ButtonEnumType, typename UserClass>

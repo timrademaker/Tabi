@@ -62,7 +62,6 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
 
         a_Game->OnRender();
 
-
         tabi::imgui::EndFrame();
 
         graphics::EndFrame();
@@ -77,7 +76,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         MSG msg = MSG();
         while(PeekMessage(&msg, windowHandle, NULL, NULL, PM_REMOVE))
         {
-            reinterpret_cast<InputHandler*>(&IInputHandler::GetInstance())->HandleMsg(msg);
+            InputManager::HandleWindowsMsg(&msg);
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }

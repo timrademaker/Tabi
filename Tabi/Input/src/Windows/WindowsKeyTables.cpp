@@ -102,6 +102,7 @@ tabi::unordered_map<EKeyboard, unsigned int> tabi::InputHandler::ms_KeyboardTabl
     {EKeyboard::KP_PLUS, gainput::Key::KeyKpAdd},
     {EKeyboard::KP_MINUS, gainput::Key::KeyKpSubtract},
     {EKeyboard::KP_DOT, gainput::Key::KeyKpDelete},
+    {EKeyboard::KP_ENTER, gainput::Key::KeyKpEnter},
     // Function keys
     {EKeyboard::F1, gainput::Key::KeyF1},
     {EKeyboard::F2, gainput::Key::KeyF2},

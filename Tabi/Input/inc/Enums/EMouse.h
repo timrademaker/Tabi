@@ -8,9 +8,9 @@ namespace tabi
     {
         Left = 1 | static_cast<unsigned>(EInputDevice::Mouse),
         Right,
-        Middle = 4 | static_cast<unsigned>(EInputDevice::Mouse),
-        Mouse4 = 5 | static_cast<unsigned>(EInputDevice::Mouse),
-        Mouse5 = 6 | static_cast<unsigned>(EInputDevice::Mouse),
+        Middle,
+        Mouse4,
+        Mouse5,
         MouseX,
         MouseY,
         Wheel,

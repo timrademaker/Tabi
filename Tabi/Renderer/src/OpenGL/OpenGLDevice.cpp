@@ -490,7 +490,7 @@ tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePi
 
 			if (pipelineDesc.m_ComputeShader)
 			{
-				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<const OpenGLShader*>(pipelineDesc.m_ComputeShader)->GetID());
+				glUseProgramStages(pipelineId, GL_COMPUTE_SHADER_BIT, static_cast<const OpenGLShader*>(pipelineDesc.m_ComputeShader)->GetID());
 			}
 
 			glValidateProgramPipeline(pipelineId);

@@ -114,8 +114,8 @@ bool TestGameMode::OnInitialize()
         m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 }, "Test constant buffer");
 
         // Create vertex pipeline
-        const auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
-        const auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
+        auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
+        auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
 
         tabi::VertexInputLayout vertexInput;
         vertexInput.m_NumInputElements = 3;
@@ -137,6 +137,9 @@ bool TestGameMode::OnInitialize()
 
         const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
         m_MeshPipeline = device->CreateGraphicsPipeline(pipelineDesc, "Test pipeline");
+
+        device->DestroyShader(vertShader);
+        device->DestroyShader(pixShader);
     }
 
     // Render target test
@@ -148,6 +151,7 @@ bool TestGameMode::OnInitialize()
             0.8f, 0.8f,         1.0f, 1.0f,
             -0.8f, 0.8f,        0.0f, 1.0f
         };
+
         m_UIQuad.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RG32_float, tabi::EBufferRole::Vertex, sizeof(quadVertices), sizeof(quadVertices) / 4 }, "Quad vertex buffer");
         m_UIQuad.m_VertexCount = sizeof(quadVertices) / sizeof(float) / 4;
         m_CommandList->CopyDataToBuffer(m_UIQuad.m_VertexBuffer, reinterpret_cast<const char*>(&quadVertices[0]), sizeof(quadVertices), 0);
@@ -160,8 +164,8 @@ bool TestGameMode::OnInitialize()
         m_CommandList->CopyDataToBuffer(m_UIQuad.m_IndexBuffer, reinterpret_cast<const char*>(&quadIndices[0]), sizeof(quadIndices), 0);
 
         // Create vertex pipeline
-        const auto* uiVertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.vert", tabi::EShaderType::Vertex, "UI vertex shader");
-        const auto* uiPixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.frag", tabi::EShaderType::Pixel, "UI pixel shader");
+        auto* uiVertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.vert", tabi::EShaderType::Vertex, "UI vertex shader");
+        auto* uiPixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.frag", tabi::EShaderType::Pixel, "UI pixel shader");
 
         tabi::VertexInputLayout uiVertexInput;
         uiVertexInput.m_NumInputElements = 2;
@@ -178,6 +182,9 @@ bool TestGameMode::OnInitialize()
         depthStencilState.m_EnableDepthTest = false;
 
         m_UIPipeline = device->CreateGraphicsPipeline(tabi::GraphicsPipelineDescription{ uiVertShader, uiPixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, uiVertexInput }, "UI pipeline");
+
+        device->DestroyShader(uiVertShader);
+        device->DestroyShader(uiPixShader);
 
         m_DrawTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::RenderTexture, tabi::EFormat::RGBA32_uint, 1280, 720, 1, 1 }, "Render texture");
         m_DepthTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::DepthStencil, tabi::EFormat::Depth24Stencil8, 1280, 720, 1, 1 }, "Depth texture");

@@ -44,6 +44,8 @@ tabi::KeyboardCharConversionTable::KeyboardCharConversionTable()
     Add(EKeyboard::Backslash, { '\\', '|' });
     Add(EKeyboard::AccentGrave, { '`', '~' });
 
+    Add(EKeyboard::Space, { ' ' });
+
     Add(EKeyboard::Key0, { '0', ')' });
     Add(EKeyboard::Key1, { '1', '!' });
     Add(EKeyboard::Key2, { '2', '@' });

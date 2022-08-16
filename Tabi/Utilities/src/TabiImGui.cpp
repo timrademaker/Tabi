@@ -16,6 +16,7 @@
 #include <IWindow.h>
 
 #include <InputManager.h>
+#include <Helpers/KeyboardKeyToChar.h>
 
 #include <imgui/imgui.h>
 
@@ -189,6 +190,20 @@ namespace tabi
 
             Shader* m_VertexShader = nullptr;
             Shader* m_PixelShader = nullptr;
+
+            ~RenderContext()
+            {
+                auto* device = IDevice::GetInstance();
+                device->DestroyCommandList(m_CommandList);
+                device->DestroyGraphicsPipeline(m_GraphicsPipeline);
+                device->DestroySampler(m_Sampler);
+                device->DestroyBuffer(m_VertexBuffer);
+                device->DestroyBuffer(m_IndexBuffer);
+                device->DestroyBuffer(m_ConstantBuffer);
+                device->DestroyShader(m_VertexShader);
+                device->DestroyShader(m_PixelShader);
+                device->DestroyTexture(m_FontTexture);
+            }
         };
 
         struct ImGuiConstantBufferData
@@ -296,16 +311,6 @@ namespace tabi
             window.OnWindowResize().Subscribe(&s_WindowSize, &WindowSize::Resize);
         }
 
-        //struct PlatformContext
-        //{
-        //    // TODO: ???
-        //};
-
-        //PlatformContext* GetPlatformContext()
-        //{
-        //    return ImGui::GetCurrentContext() ? static_cast<PlatformContext*>(ImGui::GetIO().BackendPlatformUserData) : nullptr;
-        //}
-
         void UpdateMouseCursor()
         {
             const auto& io = ImGui::GetIO();
@@ -316,7 +321,10 @@ namespace tabi
             }
 
             const ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
-            tabi::InputManager::SetCursorVisible(imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor);
+            if (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor)
+            {
+                tabi::InputManager::SetCursorVisible(false);
+            }
         }
 
         void UpdateMouseData()
@@ -348,6 +356,9 @@ namespace tabi
         {
             static EKeyboardToImGuiTable KeyboardTable;
 
+
+            const bool shiftIsDown = tabi::InputManager::IsButtonDownRaw(EKeyboard::Shift);
+
             auto& io = ImGui::GetIO();
 
             for (size_t i = 0; i < KeyboardTable.m_NumEntries; ++i)
@@ -363,8 +374,21 @@ namespace tabi
                         io.AddKeyEvent(key, isDown);
                     }
 
-                    // TODO: Character input
-                    // io.AddInputCharacter()
+                    if (isDown && isDown != wasDown)
+                    {
+                        const auto& charInfo = KeyboardToCharTable.Get(i);
+                        if (charInfo.m_Char != 0)
+                        {
+                            if (shiftIsDown)
+                            {
+                                io.AddInputCharacter(charInfo.m_Shift);
+                            }
+                            else
+                            {
+                                io.AddInputCharacter(charInfo.m_Char);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -400,10 +424,6 @@ void tabi::imgui::Init()
     io.BackendRendererName = "imgui_impl_tabi";
     io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
-    // TODO: Set up io
-    //auto* platformContext = new PlatformContext;
-    //io.BackendPlatformUserData = platformContext;
-
     io.BackendPlatformName = "imgui_impl_tabi";
 
 #if defined(_WIN32)
@@ -414,13 +434,12 @@ void tabi::imgui::Init()
 
 void tabi::imgui::NewFrame(float a_DeltaTime)
 {
-    // TODO: Update button state
     auto& io = ::ImGui::GetIO();
     io.DeltaTime = a_DeltaTime;
     io.DisplaySize.x = s_WindowSize.m_WindowWidth;
     io.DisplaySize.y = s_WindowSize.m_WindowHeight;
 
-    // TODO: UpdateMouseCursor()?
+    UpdateMouseCursor();
     UpdateMouseData();
     UpdateKeyboard();
     UpdateGamepad();
@@ -549,21 +568,8 @@ void tabi::imgui::Shutdown()
     auto* renderContext = GetRenderContext();
     if (renderContext)
     {
-        auto* device = IDevice::GetInstance();
-        device->DestroyCommandList(renderContext->m_CommandList);
-        device->DestroyGraphicsPipeline(renderContext->m_GraphicsPipeline);
-        device->DestroySampler(renderContext->m_Sampler);
-        device->DestroyBuffer(renderContext->m_VertexBuffer);
-        device->DestroyBuffer(renderContext->m_IndexBuffer);
-        device->DestroyBuffer(renderContext->m_ConstantBuffer);
-        device->DestroyShader(renderContext->m_VertexShader);
-        device->DestroyShader(renderContext->m_PixelShader);
-        device->DestroyTexture(renderContext->m_FontTexture);
-
         delete renderContext;
     }
-
-    // TODO: Destroy platform context
-
+    
     ::ImGui::DestroyContext();
 }

@@ -14,14 +14,14 @@ namespace tabi
     class SequentialConversionTable
     {
     public:
-        ValueType Get(uint32_t a_KeyIndex) const
+        const ValueType& Get(uint32_t a_KeyIndex) const
         {
             TABI_ASSERT(a_KeyIndex < m_NumEntries);
 
             return m_Table[a_KeyIndex];
         }
 
-        ValueType Get(KeyType a_Key) const
+        const ValueType& Get(KeyType a_Key) const
         {
             TABI_ASSERT(static_cast<int64_t>(a_Key) - m_FirstEntryValue < m_NumEntries);
 
@@ -37,7 +37,7 @@ namespace tabi
         SequentialConversionTable(ValueType a_InvalidEntry)
             : m_InvalidEntry(a_InvalidEntry)
         {
-            static_assert(static_cast<int64_t>(LastEntry) - static_cast<int64_t>(FirstEntry) <= UINT32_MAX, "Entry range too big for the table!");
+            static_assert(static_cast<int64_t>(LastEntry) - static_cast<int64_t>(FirstEntry) + 1 <= UINT32_MAX, "Entry range too big for the table!");
 
             for (uint32_t i = 0; i < m_NumEntries; ++i)
             {
@@ -54,11 +54,11 @@ namespace tabi
 
     public:
         const int64_t m_FirstEntryValue = static_cast<int64_t>(FirstEntry);
-        const uint32_t m_NumEntries = static_cast<int64_t>(LastEntry) - static_cast<int64_t>(FirstEntry);
+        const uint32_t m_NumEntries = static_cast<int64_t>(LastEntry) - static_cast<int64_t>(FirstEntry) + 1;
 
         const ValueType m_InvalidEntry = static_cast<ValueType>(-1);
 
     private:
-        tabi::array<ValueType, static_cast<int64_t>(LastEntry) - static_cast<int64_t>(FirstEntry)> m_Table;
+        tabi::array<ValueType, static_cast<int64_t>(LastEntry) - static_cast<int64_t>(FirstEntry) + 1> m_Table;
     };
 }

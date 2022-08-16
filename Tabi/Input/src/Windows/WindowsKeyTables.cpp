@@ -59,8 +59,8 @@ tabi::unordered_map<EKeyboard, unsigned int> tabi::InputHandler::ms_KeyboardTabl
     {EKeyboard::Y, gainput::Key::KeyY},
     {EKeyboard::Z, gainput::Key::KeyZ},
 
-    {EKeyboard::Minus, gainput::Key::KeyZ},
-    {EKeyboard::Equals, gainput::Key::KeyMinus},
+    {EKeyboard::Minus, gainput::Key::KeyMinus},
+    {EKeyboard::Equals, gainput::Key::KeyEquals},
     {EKeyboard::BracketLeft, gainput::Key::KeyBracketLeft},
     {EKeyboard::BracketRight, gainput::Key::KeyBracketRight},
     {EKeyboard::Semicolon, gainput::Key::KeySemicolon},

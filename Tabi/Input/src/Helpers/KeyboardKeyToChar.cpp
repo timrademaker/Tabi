@@ -44,31 +44,31 @@ tabi::KeyboardCharConversionTable::KeyboardCharConversionTable()
     Add(EKeyboard::Backslash, { '\\', '|' });
     Add(EKeyboard::AccentGrave, { '`', '~' });
 
-    Add(EKeyboard::KEY0, { '0', ')' });
-    Add(EKeyboard::KEY1, { '1', '!' });
-    Add(EKeyboard::KEY2, { '2', '@' });
-    Add(EKeyboard::KEY3, { '3', '#' });
-    Add(EKeyboard::KEY4, { '4', '$' });
-    Add(EKeyboard::KEY5, { '5', '%' });
-    Add(EKeyboard::KEY6, { '6', '^' });
-    Add(EKeyboard::KEY7, { '7', '&' });
-    Add(EKeyboard::KEY8, { '8', '*' });
-    Add(EKeyboard::KEY9, { '9', '(' });
+    Add(EKeyboard::Key0, { '0', ')' });
+    Add(EKeyboard::Key1, { '1', '!' });
+    Add(EKeyboard::Key2, { '2', '@' });
+    Add(EKeyboard::Key3, { '3', '#' });
+    Add(EKeyboard::Key4, { '4', '$' });
+    Add(EKeyboard::Key5, { '5', '%' });
+    Add(EKeyboard::Key6, { '6', '^' });
+    Add(EKeyboard::Key7, { '7', '&' });
+    Add(EKeyboard::Key8, { '8', '*' });
+    Add(EKeyboard::Key9, { '9', '(' });
 
-    Add(EKeyboard::KP_0, { '0' });
-    Add(EKeyboard::KP_1, { '1' });
-    Add(EKeyboard::KP_2, { '2' });
-    Add(EKeyboard::KP_3, { '3' });
-    Add(EKeyboard::KP_4, { '4' });
-    Add(EKeyboard::KP_5, { '5' });
-    Add(EKeyboard::KP_6, { '6' });
-    Add(EKeyboard::KP_7, { '7' });
-    Add(EKeyboard::KP_8, { '8' });
-    Add(EKeyboard::KP_9, { '9' });
+    Add(EKeyboard::Keypad0, { '0' });
+    Add(EKeyboard::Keypad1, { '1' });
+    Add(EKeyboard::Keypad2, { '2' });
+    Add(EKeyboard::Keypad3, { '3' });
+    Add(EKeyboard::Keypad4, { '4' });
+    Add(EKeyboard::Keypad5, { '5' });
+    Add(EKeyboard::Keypad6, { '6' });
+    Add(EKeyboard::Keypad7, { '7' });
+    Add(EKeyboard::Keypad8, { '8' });
+    Add(EKeyboard::Keypad9, { '9' });
 
-    Add(EKeyboard::KP_PLUS, { '+' });
-    Add(EKeyboard::KP_MINUS, { '-' });
-    Add(EKeyboard::KP_ASTERISK, { '*' });
-    Add(EKeyboard::KP_SLASH, { '/' });
-    Add(EKeyboard::KP_DOT, { '.' });
+    Add(EKeyboard::KeypadPlus, { '+' });
+    Add(EKeyboard::KeypadMinus, { '-' });
+    Add(EKeyboard::KeypadAsterisk, { '*' });
+    Add(EKeyboard::KeypadSlash, { '/' });
+    Add(EKeyboard::KeypadPeriod, { '.' });
 }

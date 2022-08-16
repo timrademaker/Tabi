@@ -10,9 +10,9 @@ MovableCamera::MovableCamera(float a_AspectRatio)
 {
     // Keyboard and mouse
     tabi::InputManager::BindButton(tabi::EMouse::Left, this, &MovableCamera::MoveUp);
-    tabi::InputManager::BindButton(tabi::EKeyboard::LSHIFT, this, &MovableCamera::MoveUp);
+    tabi::InputManager::BindButton(tabi::EKeyboard::LeftShift, this, &MovableCamera::MoveUp);
     tabi::InputManager::BindButton(tabi::EMouse::Right, this, &MovableCamera::MoveDown);
-    tabi::InputManager::BindButton(tabi::EKeyboard::LCTRL, this, &MovableCamera::MoveDown);
+    tabi::InputManager::BindButton(tabi::EKeyboard::LeftCtrl, this, &MovableCamera::MoveDown);
     tabi::InputManager::BindButton(tabi::EKeyboard::W, this, &MovableCamera::MoveForward);
     tabi::InputManager::BindButton(tabi::EKeyboard::S, this, &MovableCamera::MoveBackwards);
     tabi::InputManager::BindButton(tabi::EKeyboard::A, this, &MovableCamera::MoveLeft);

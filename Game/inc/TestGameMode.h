@@ -70,4 +70,7 @@ private:
     tabi::RenderTarget* m_RenderTarget = nullptr;
 
     tabi::vector<tabi::Shader*> m_Shaders;
+
+    float m_DeltaTime = 0.0f;
+    bool m_EnableInput = true;
 };

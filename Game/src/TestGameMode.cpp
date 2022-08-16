@@ -22,6 +22,7 @@
 #include <Resources/Model.h>
 #include <Resources/Material.h>
 
+#include <imgui/imgui.h>
 
 static constexpr bool s_RenderToRenderTarget = false;
 
@@ -202,10 +203,36 @@ bool TestGameMode::OnInitialize()
 void TestGameMode::OnUpdate(float a_DeltaTime)
 {
     m_Camera->Update(a_DeltaTime);
+
+    m_DeltaTime = a_DeltaTime;
+
+    bool wasDown = false;
+    bool isDown = tabi::InputManager::IsButtonDownRaw(tabi::EKeyboard::F1, &wasDown);
+    if(isDown && isDown != wasDown)
+    {
+        m_EnableInput = !m_EnableInput;
+
+        if (m_EnableInput)
+        {
+            tabi::InputManager::UnblockInput(tabi::EInputDevice::Keyboard);
+            tabi::InputManager::UnblockInput(tabi::EInputDevice::Mouse);
+        }
+        else
+        {
+            tabi::InputManager::BlockInput(tabi::EInputDevice::Keyboard);
+            tabi::InputManager::BlockInput(tabi::EInputDevice::Mouse);
+        }
+
+        tabi::InputManager::SetCursorCapture(m_EnableInput);
+        tabi::InputManager::SetCursorVisible(!m_EnableInput);
+    }
 }
 
 void TestGameMode::OnRender()
 {
+    size_t vtxCount = 0;
+    size_t idxCount = 0;
+
     m_CommandList->BeginRecording();
 
     m_CommandList->SetRenderTarget(nullptr);
@@ -249,6 +276,9 @@ void TestGameMode::OnRender()
         m_CommandList->CopyDataToBuffer(m_ModelData, reinterpret_cast<const char*>(&md), sizeof(md), 0);
 
         m_CommandList->DrawIndexed(m_Models[i].m_IndexCount);
+
+        vtxCount += m_Models[i].m_VertexCount;
+        idxCount += m_Models[i].m_IndexCount;
     }
 
     if (s_RenderToRenderTarget)
@@ -259,12 +289,31 @@ void TestGameMode::OnRender()
         m_CommandList->BindVertexBuffers(0, &m_UIQuad.m_VertexBuffer, 1);
         m_CommandList->BindIndexBuffer(m_UIQuad.m_IndexBuffer);
         m_CommandList->DrawIndexed(m_UIQuad.m_IndexCount);
+
+        vtxCount += m_UIQuad.m_VertexCount;
+        idxCount += m_UIQuad.m_IndexCount;
     }
 
     m_CommandList->EndRecording();
 
     tabi::IDevice::GetInstance()->ExecuteCommandList(m_CommandList);
     m_CommandList->Reset();
+
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
+    {
+        const float padding = 10.0f;
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        const ImVec2 windowPos{ viewport->WorkPos.x + padding, viewport->WorkPos.y + padding };
+        ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always);
+    }
+    ImGui::SetNextWindowBgAlpha(0.7f);
+    if (ImGui::Begin("Render stats", nullptr, window_flags))
+    {
+        ImGui::Text("FPS: %.1f (%.1f ms)", 1.0f / m_DeltaTime, m_DeltaTime * 1000.0f);
+        ImGui::Text("Vertices: %d", vtxCount);
+        ImGui::Text("Indices: %d", idxCount);
+    }
+    ImGui::End();
 }
 
 void TestGameMode::OnDestroy()

@@ -58,6 +58,19 @@ tabi::unordered_map<EKeyboard, unsigned int> tabi::InputHandler::ms_KeyboardTabl
     {EKeyboard::X, gainput::Key::KeyX},
     {EKeyboard::Y, gainput::Key::KeyY},
     {EKeyboard::Z, gainput::Key::KeyZ},
+
+    {EKeyboard::Minus, gainput::Key::KeyZ},
+    {EKeyboard::Equals, gainput::Key::KeyMinus},
+    {EKeyboard::BracketLeft, gainput::Key::KeyBracketLeft},
+    {EKeyboard::BracketRight, gainput::Key::KeyBracketRight},
+    {EKeyboard::Semicolon, gainput::Key::KeySemicolon},
+    {EKeyboard::Apostrophe, gainput::Key::KeyApostrophe},
+    {EKeyboard::Comma, gainput::Key::KeyComma},
+    {EKeyboard::Period, gainput::Key::KeyPeriod},
+    {EKeyboard::Slash, gainput::Key::KeySlash},
+    {EKeyboard::Backslash, gainput::Key::KeyBackslash},
+    {EKeyboard::AccentGrave, gainput::Key::KeyGrave},
+
     // Modifiers
     {EKeyboard::LCTRL, gainput::Key::KeyCtrlL},
     {EKeyboard::RCTRL, gainput::Key::KeyCtrlR},
@@ -115,7 +128,17 @@ tabi::unordered_map<EKeyboard, unsigned int> tabi::InputHandler::ms_KeyboardTabl
     {EKeyboard::F9, gainput::Key::KeyF9},
     {EKeyboard::F10, gainput::Key::KeyF10},
     {EKeyboard::F11, gainput::Key::KeyF11},
-    {EKeyboard::F12, gainput::Key::KeyF12}
+    {EKeyboard::F12, gainput::Key::KeyF12},
+
+    { EKeyboard::Insert, gainput::Key::KeyInsert },
+    { EKeyboard::Delete, gainput::Key::KeyDelete },
+    { EKeyboard::Home, gainput::Key::KeyHome },
+    { EKeyboard::End, gainput::Key::KeyEnd },
+    { EKeyboard::PageUp, gainput::Key::KeyKpPageUp },
+    { EKeyboard::PageDown, gainput::Key::KeyKpPageDown },
+    { EKeyboard::PrintScreen, gainput::Key::KeyPrint },
+    { EKeyboard::ScrollLock, gainput::Key::KeyScrollLock },
+    { EKeyboard::Pause, gainput::Key::KeyBreak },
 };
 
 tabi::unordered_map<EController, unsigned int> tabi::InputHandler::ms_ControllerTable =

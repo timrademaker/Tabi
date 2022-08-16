@@ -33,6 +33,19 @@ namespace tabi
         X,
         Y,
         Z,
+
+        Minus,
+        Equals,
+        BracketLeft,
+        BracketRight,
+        Semicolon,
+        Apostrophe,
+        Comma,
+        Period,
+        Slash,
+        Backslash,
+        AccentGrave,
+
         // Modifiers
         LCTRL,
         CTRL = LCTRL,
@@ -51,11 +64,13 @@ namespace tabi
         ESC = ESCAPE,
         SPACE,
         TAB,
-        // Arrows
+
+        // Arrow keys
         ARROW_UP,
         ARROW_DOWN,
         ARROW_LEFT,
         ARROW_RIGHT,
+
         // Numbers
         KEY0,
         KEY1,
@@ -67,6 +82,7 @@ namespace tabi
         KEY7,
         KEY8,
         KEY9,
+
         // Numpad/Keypad
         KP_0,
         KP_INSERT = KP_0,
@@ -99,6 +115,7 @@ namespace tabi
         KP_DOT,
         KP_DELETE = KP_DOT,
         KP_ENTER,
+
         // Function keys
         F1,
         F2,
@@ -112,5 +129,15 @@ namespace tabi
         F10,
         F11,
         F12,
+
+        Insert,
+        Delete,
+        Home,
+        End,
+        PageUp,
+        PageDown,
+        PrintScreen,
+        ScrollLock,
+        Pause,
     };
 }

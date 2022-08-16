@@ -69,6 +69,19 @@ namespace tabi
                 Add(EKeyboard::Y, ::ImGuiKey_Y);
                 Add(EKeyboard::Z, ::ImGuiKey_Z);
 
+                Add(EKeyboard::Minus, ::ImGuiKey_Minus);
+                Add(EKeyboard::Equals, ::ImGuiKey_Equal);
+                Add(EKeyboard::BracketLeft, ::ImGuiKey_LeftBracket);
+                Add(EKeyboard::BracketRight, ::ImGuiKey_RightBracket);
+                Add(EKeyboard::Semicolon, ::ImGuiKey_Semicolon);
+                Add(EKeyboard::Apostrophe, ::ImGuiKey_Apostrophe);
+                Add(EKeyboard::Comma, ::ImGuiKey_Comma);
+                Add(EKeyboard::Period, ::ImGuiKey_Period);
+                Add(EKeyboard::Slash, ::ImGuiKey_Slash);
+                Add(EKeyboard::Backslash, ::ImGuiKey_Backslash);
+                Add(EKeyboard::AccentGrave, ::ImGuiKey_GraveAccent);
+
+
                 Add(EKeyboard::LCTRL, ::ImGuiKey_LeftCtrl);
                 Add(EKeyboard::RCTRL, ::ImGuiKey_RightCtrl);
                 Add(EKeyboard::LALT, ::ImGuiKey_LeftAlt);
@@ -125,6 +138,16 @@ namespace tabi
                 Add(EKeyboard::F10, ::ImGuiKey_F10);
                 Add(EKeyboard::F11, ::ImGuiKey_F11);
                 Add(EKeyboard::F12, ::ImGuiKey_F12);
+
+                Add(EKeyboard::Insert, ::ImGuiKey_Insert);
+                Add(EKeyboard::Delete, ::ImGuiKey_Delete);
+                Add(EKeyboard::Home, ::ImGuiKey_Home);
+                Add(EKeyboard::End, ::ImGuiKey_End);
+                Add(EKeyboard::PageUp, ::ImGuiKey_PageUp);
+                Add(EKeyboard::PageDown, ::ImGuiKey_PageDown);
+                Add(EKeyboard::PrintScreen, ::ImGuiKey_PrintScreen);
+                Add(EKeyboard::ScrollLock, ::ImGuiKey_ScrollLock);
+                Add(EKeyboard::Pause, ::ImGuiKey_Pause);
             }
         };
 

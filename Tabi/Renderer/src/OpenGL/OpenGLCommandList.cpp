@@ -693,7 +693,7 @@ void tabi::OpenGLCommandList::SetViewport(int32_t a_X, int32_t a_Y, int32_t a_Wi
 	TABI_ASSERT(a_MaxDepth >= 0.0f && a_MaxDepth <= 1.0f);
 
 	// Invert Y because OpenGL viewport (0, 0) is in the bottom left unlike various other APIs
-	m_PendingCommands.Add([a_X, y = s_WindowHeight - (a_Y + a_Height), a_Width, a_Height, a_MinDepth, a_MaxDepth]
+	m_PendingCommands.Add([a_X, y = static_cast<int32_t>(s_WindowHeight) - (a_Y + a_Height), a_Width, a_Height, a_MinDepth, a_MaxDepth]
 		{
 			glViewport(a_X, y, a_Width, a_Height);
 			glDepthRangef(a_MinDepth, a_MaxDepth);
@@ -706,7 +706,7 @@ void tabi::OpenGLCommandList::SetScissorRect(int32_t a_X, int32_t a_Y, int32_t a
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
 	// Invert Y because OpenGL viewport (0, 0) is in the bottom left unlike various other APIs
-	m_PendingCommands.Add([a_X, y = s_WindowHeight - (a_Y + a_Height), a_Width, a_Height]
+	m_PendingCommands.Add([a_X, y = static_cast<int32_t>(s_WindowHeight) - (a_Y + a_Height), a_Width, a_Height]
 		{
 			glScissor(a_X, y, a_Width, a_Height);
 		}

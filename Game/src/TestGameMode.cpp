@@ -117,6 +117,9 @@ bool TestGameMode::OnInitialize()
         auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
         auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
 
+        m_Shaders.push_back(vertShader);
+        m_Shaders.push_back(pixShader);
+
         tabi::VertexInputLayout vertexInput;
         vertexInput.m_NumInputElements = 3;
 
@@ -137,9 +140,6 @@ bool TestGameMode::OnInitialize()
 
         const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
         m_MeshPipeline = device->CreateGraphicsPipeline(pipelineDesc, "Test pipeline");
-
-        device->DestroyShader(vertShader);
-        device->DestroyShader(pixShader);
     }
 
     // Render target test
@@ -166,6 +166,8 @@ bool TestGameMode::OnInitialize()
         // Create vertex pipeline
         auto* uiVertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.vert", tabi::EShaderType::Vertex, "UI vertex shader");
         auto* uiPixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.frag", tabi::EShaderType::Pixel, "UI pixel shader");
+        m_Shaders.push_back(uiVertShader);
+        m_Shaders.push_back(uiPixShader);
 
         tabi::VertexInputLayout uiVertexInput;
         uiVertexInput.m_NumInputElements = 2;
@@ -182,9 +184,6 @@ bool TestGameMode::OnInitialize()
         depthStencilState.m_EnableDepthTest = false;
 
         m_UIPipeline = device->CreateGraphicsPipeline(tabi::GraphicsPipelineDescription{ uiVertShader, uiPixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, uiVertexInput }, "UI pipeline");
-
-        device->DestroyShader(uiVertShader);
-        device->DestroyShader(uiPixShader);
 
         m_DrawTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::RenderTexture, tabi::EFormat::RGBA32_uint, 1280, 720, 1, 1 }, "Render texture");
         m_DepthTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::DepthStencil, tabi::EFormat::Depth24Stencil8, 1280, 720, 1, 1 }, "Depth texture");
@@ -278,6 +277,11 @@ void TestGameMode::OnDestroy()
         device->DestroyBuffer(m_Models[i].m_IndexBuffer);
     }
     m_Models.clear();
+
+    for (auto& shader : m_Shaders)
+    {
+        device->DestroyShader(shader);
+    }
 
     device->DestroyBuffer(m_ConstBuffer);
     device->DestroyGraphicsPipeline(m_MeshPipeline);

@@ -12,6 +12,7 @@ namespace tabi
     class ICommandList;
     class Buffer;
     class GraphicsPipeline;
+    class Shader;
 
     class Texture;
     class RenderTarget;
@@ -67,4 +68,6 @@ private:
     tabi::Texture* m_DrawTex = nullptr;
     tabi::Texture* m_DepthTex = nullptr;
     tabi::RenderTarget* m_RenderTarget = nullptr;
+
+    tabi::vector<tabi::Shader*> m_Shaders;
 };

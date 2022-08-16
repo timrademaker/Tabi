@@ -71,7 +71,7 @@ void InputManager::UnblockInput(EInputDevice a_Device)
 {
     auto& blockCount = GetInstance().m_InputBlockCount[a_Device];
 
-    if (blockCount > 0)
+    if (blockCount <= 0)
     {
         TABI_WARN("Trying to unblock input on a device where input was not blocked!");
     }

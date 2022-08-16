@@ -7,6 +7,7 @@ set(HEADERS
     inc/TabiEvent.h
     inc/Stopwatch.h
     inc/TabiImGui.h
+    inc/SequentialConversionTable.h
 )
 
 # Set sources for Utilities
@@ -14,6 +15,7 @@ set(SOURCES
     src/TabiUtilities.cpp
     src/Stopwatch.cpp 
     src/TabiImGui.cpp
+    src/SequentialConversionTable.cpp
 )
 
 # Add source to this project's executable.
@@ -22,5 +24,5 @@ add_library(Utilities ${SOURCES} ${HEADERS})
 target_include_directories(Utilities PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(Utilities PUBLIC TabiCommon Logger)
+target_link_libraries(Utilities PUBLIC TabiCommon Logger Core)
 target_link_libraries(Utilities PRIVATE Renderer Graphics Input imgui)

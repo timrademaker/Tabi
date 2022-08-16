@@ -1,5 +1,7 @@
 #include "TabiImGui.h"
 
+#include "SequentialConversionTable.h"
+
 #include <Math/mat4.h>
 
 #include <IDevice.h>
@@ -23,44 +25,8 @@ namespace tabi
 {
     namespace imgui
     {
-        template<typename EnumType, typename KeyType, size_t ElementCount, size_t FirstEnumValue>
-        class TabiButtonToImGuiTable
-        {
-        public:
-            KeyType GetKey(size_t a_ButtonIndex) const
-            {
-                TABI_ASSERT(static_cast<size_t>(a_ButtonIndex) < ElementCount);
 
-                return m_Table[a_ButtonIndex];
-            }
-
-        protected:
-            TabiButtonToImGuiTable()
-            {
-                for(size_t i = 0; i < ElementCount; ++i)
-                {
-                    m_Table[i] = m_InvalidEntry;
-                }
-            }
-
-            void Add(EnumType a_Button, KeyType a_Key)
-            {
-                TABI_ASSERT(static_cast<size_t>(a_Button) - FirstEnumValue < ElementCount);
-
-                m_Table[static_cast<size_t>(a_Button) - FirstEnumValue] = a_Key;
-            }
-
-        public:
-            size_t m_FirstEnumValue = FirstEnumValue;
-            size_t m_EntryCount = ElementCount;
-
-            KeyType m_InvalidEntry = static_cast<KeyType>(-1);
-
-        private:
-            tabi::array<KeyType, ElementCount> m_Table;
-        };
-
-        class EMouseToImGuiTable : public TabiButtonToImGuiTable<EMouse, ::ImGuiMouseButton_, 3, static_cast<size_t>(EMouse::Left)>
+        class EMouseToImGuiTable : public SequentialConversionTable<EMouse, ::ImGuiMouseButton_, EMouse::Left, EMouse::Wheel>
         {
         public:
             EMouseToImGuiTable()
@@ -71,7 +37,7 @@ namespace tabi
             }
         };
 
-        class EKeyboardToImGuiTable : public TabiButtonToImGuiTable<EKeyboard, ::ImGuiKey, 79, static_cast<size_t>(EKeyboard::A)>
+        class EKeyboardToImGuiTable : public SequentialConversionTable<EKeyboard, ::ImGuiKey, EKeyboard::A, EKeyboard::Pause>
         {
         public:
             EKeyboardToImGuiTable()
@@ -162,7 +128,7 @@ namespace tabi
             }
         };
 
-        class EControllerToImGuiTable : public TabiButtonToImGuiTable<EController, ::ImGuiKey, 27, static_cast<size_t>(EController::DPadLeft)>
+        class EControllerToImGuiTable : public SequentialConversionTable<EController, ::ImGuiKey, EController::DPadLeft, EController::MagneticFieldZ>
         {
         public:
             EControllerToImGuiTable()
@@ -336,12 +302,12 @@ namespace tabi
 
             auto& io = ImGui::GetIO();
 
-            for(size_t i = 0; i < MouseTable.m_EntryCount; ++i)
+            for(size_t i = 0; i < MouseTable.m_NumEntries; ++i)
             {
-                const auto key = MouseTable.GetKey(i);
+                const auto key = MouseTable.Get(i);
                 if(key != MouseTable.m_InvalidEntry)
                 {
-                    io.AddMouseButtonEvent(key, tabi::InputManager::IsButtonDownRaw(static_cast<EMouse>(i + MouseTable.m_FirstEnumValue)));
+                    io.AddMouseButtonEvent(key, tabi::InputManager::IsButtonDownRaw(static_cast<EMouse>(i + MouseTable.m_FirstEntryValue)));
                 }
             }
 
@@ -361,13 +327,13 @@ namespace tabi
 
             auto& io = ImGui::GetIO();
 
-            for (size_t i = 0; i < KeyboardTable.m_EntryCount; ++i)
+            for (size_t i = 0; i < KeyboardTable.m_NumEntries; ++i)
             {
-                const auto key = KeyboardTable.GetKey(i);
+                const auto key = KeyboardTable.Get(i);
                 if (key != KeyboardTable.m_InvalidEntry)
                 {
                     bool wasDown = false;
-                    const bool isDown = tabi::InputManager::IsButtonDownRaw(static_cast<EKeyboard>(i + KeyboardTable.m_FirstEnumValue), &wasDown);
+                    const bool isDown = tabi::InputManager::IsButtonDownRaw(static_cast<EKeyboard>(i + KeyboardTable.m_FirstEntryValue), &wasDown);
 
                     if(wasDown != isDown)
                     {
@@ -386,12 +352,12 @@ namespace tabi
 
             auto& io = ImGui::GetIO();
 
-            for (size_t i = 0; i < ControllerTable.m_EntryCount; ++i)
+            for (size_t i = 0; i < ControllerTable.m_NumEntries; ++i)
             {
-                const auto key = ControllerTable.GetKey(i);
+                const auto key = ControllerTable.Get(i);
                 if (key != ControllerTable.m_InvalidEntry)
                 {
-                    io.AddKeyEvent(key, tabi::InputManager::IsButtonDownRaw(static_cast<EController>(i + ControllerTable.m_FirstEnumValue)));
+                    io.AddKeyEvent(key, tabi::InputManager::IsButtonDownRaw(static_cast<EController>(i + ControllerTable.m_FirstEntryValue)));
                 }
             }
         }

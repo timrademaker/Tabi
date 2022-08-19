@@ -168,12 +168,10 @@ namespace tabi
                 Add(EController::SpecialLeft, ::ImGuiKey_GamepadStart);
                 Add(EController::SpecialRight, ::ImGuiKey_GamepadBack);
                 Add(EController::L1, ::ImGuiKey_GamepadL1);
-                Add(EController::L2, ::ImGuiKey_GamepadL2);
                 Add(EController::L3, ::ImGuiKey_GamepadL3);
                 Add(EController::R1, ::ImGuiKey_GamepadR1);
-                Add(EController::R2, ::ImGuiKey_GamepadR2);
                 Add(EController::R3, ::ImGuiKey_GamepadR3);
-                // TODO: Stick left/right/up/down
+                // Sticks and triggers are handled separately
             }
         };
 
@@ -399,6 +397,7 @@ namespace tabi
 
             auto& io = ImGui::GetIO();
 
+            // Update buttons
             for (size_t i = 0; i < ControllerTable.m_NumEntries; ++i)
             {
                 const auto key = ControllerTable.Get(i);
@@ -407,6 +406,32 @@ namespace tabi
                     io.AddKeyEvent(key, tabi::InputManager::IsButtonDownRaw(static_cast<EController>(i + ControllerTable.m_FirstEntryValue)));
                 }
             }
+
+            // When this value is exceeded, consider the stick to be "pressed"
+            static constexpr float AxisInputThreshold = 0.1f;
+
+            // Update axes
+            float current = tabi::InputManager::GetAxisValueRaw(EController::LeftStickX);
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickLeft, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickRight, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
+
+            current = tabi::InputManager::GetAxisValueRaw(EController::LeftStickY);
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickUp, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickDown, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+
+            current = tabi::InputManager::GetAxisValueRaw(EController::RightStickX);
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickLeft, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickRight, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
+
+            current = tabi::InputManager::GetAxisValueRaw(EController::RightStickY);
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickUp, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickDown, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+
+            current = tabi::InputManager::GetAxisValueRaw(EController::L2);
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadL2, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
+
+            current = tabi::InputManager::GetAxisValueRaw(EController::R2);
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadR2, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
         }
 
     }

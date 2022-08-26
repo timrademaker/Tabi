@@ -131,8 +131,8 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 
 			TABI_ASSERT(gladLoaderLoadWGL(context), "Failed to initialize WGL");
 			const int attributes[] = {
-			    WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-			    WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+			    WGL_CONTEXT_MAJOR_VERSION_ARB, MINIMUM_OGL_VERSION_MAJOR,
+			    WGL_CONTEXT_MINOR_VERSION_ARB, MINIMUM_OGL_VERSION_MINOR,
 				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 				0
 			};

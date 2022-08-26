@@ -203,7 +203,7 @@ void tabi::OpenGLCommandList::SetRenderTarget(const RenderTarget* a_RenderTarget
 		}
 	);
 
-	// Resize viewport based on the render target
+    // Resize viewport based on the render target
     if (renderTarget)
 	{
 		const auto& rtDesc = renderTarget->GetRenderTargetDescription();
@@ -244,6 +244,15 @@ namespace tabi
 			(a_Mask & EColorMask::Blue) != EColorMask::None ? GL_TRUE : GL_FALSE,
 			(a_Mask & EColorMask::Alpha) != EColorMask::None ? GL_TRUE : GL_FALSE);
 	}
+	void SetColorMask(size_t a_Target, tabi::EColorMask a_Mask)
+	{
+		glColorMaski(
+			a_Target,
+			(a_Mask & EColorMask::Red) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Green) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Blue) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Alpha) != EColorMask::None ? GL_TRUE : GL_FALSE);
+	}
 }
 
 void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, const float a_ClearColor[4])
@@ -258,23 +267,23 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, co
 
 	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), clearColor = std::move(clearColor), scissorIsEnabled, colorMask]
 		{
-		    // Reset specific pipeline state that might interfere with clearing
-		    // This function can be called before a pipeline is bound, so assume that we need to reset them
+			// Reset specific pipeline state that might interfere with clearing
+			// This function can be called before a pipeline is bound, so assume that we need to reset them
 			glDisable(GL_SCISSOR_TEST);
-	        SetColorMask(EColorMask::All);
-		
+			SetColorMask(0, EColorMask::All);
+
 			glClearNamedFramebufferfv(renderTarget ? renderTarget->GetID() : 0, GL_COLOR, 0, &clearColor[0]);
 
-		    // Restore pipeline state
-		    if(scissorIsEnabled)
-		    {
-			    glEnable(GL_SCISSOR_TEST);
-		    }
+			// Restore pipeline state
+			if (scissorIsEnabled)
+			{
+				glEnable(GL_SCISSOR_TEST);
+			}
 
-		    if(colorMask != EColorMask::All)
-		    {
-				SetColorMask(colorMask);
-		    }
+			if(colorMask != EColorMask::All)
+			{
+				SetColorMask(0, colorMask);
+			}
 		}
 	);
 }
@@ -289,14 +298,14 @@ void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, fl
 		{
 			// Reset specific pipeline state that might interfere with clearing
 			// This function can be called before a pipeline is bound, so assume that we need to reset them
-		    glDisable(GL_SCISSOR_TEST);
+			glDisable(GL_SCISSOR_TEST);
 
 			glClearNamedFramebufferfi(renderTarget ? renderTarget->GetID() : 0, GL_DEPTH_STENCIL, 0, a_DepthValue, a_StencilValue);
 
-	        if (scissorIsEnabled)
-	        {
-		        glEnable(GL_SCISSOR_TEST);
-	        }
+			if (scissorIsEnabled)
+			{
+				glEnable(GL_SCISSOR_TEST);
+			}
 		}
 	);
 }
@@ -349,11 +358,7 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 							glBlendFuncSeparatei(i, GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
 						}
 
-						glColorMaski(i,
-							(blend.m_ColorWriteMask & EColorMask::Red) != EColorMask::None ? GL_TRUE : GL_FALSE,
-							(blend.m_ColorWriteMask & EColorMask::Green) != EColorMask::None ? GL_TRUE : GL_FALSE,
-							(blend.m_ColorWriteMask & EColorMask::Blue) != EColorMask::None ? GL_TRUE : GL_FALSE,
-							(blend.m_ColorWriteMask & EColorMask::Alpha) != EColorMask::None ? GL_TRUE : GL_FALSE);
+						SetColorMask(i, blend.m_ColorWriteMask);
 					}
 					else
 					{

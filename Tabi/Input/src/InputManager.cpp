@@ -178,7 +178,7 @@ void tabi::InputManager::SetCursorCapture(bool a_Capture)
     GetInstance().m_InputHandler->SetMouseCursorCapture(a_Capture);
 }
 
-void InputManager::HandleWindowsMsg(const void* a_Msg)
+void InputManager::HandleWindowMsg(const void* a_Msg)
 {
     GetInstance().m_InputHandler->HandleWindowMsg(a_Msg);
 }

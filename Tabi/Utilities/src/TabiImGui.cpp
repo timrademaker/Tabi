@@ -20,8 +20,6 @@
 
 #include <imgui/imgui.h>
 
-#include <glad/gl.h>
-
 namespace tabi
 {
     namespace imgui
@@ -331,7 +329,7 @@ namespace tabi
 
             auto& io = ImGui::GetIO();
 
-            for(size_t i = 0; i < MouseTable.m_NumEntries; ++i)
+            for(uint32_t i = 0; i < MouseTable.m_NumEntries; ++i)
             {
                 const auto key = MouseTable.Get(i);
                 if(key != MouseTable.m_InvalidEntry)
@@ -354,12 +352,11 @@ namespace tabi
         {
             static EKeyboardToImGuiTable KeyboardTable;
 
-
             const bool shiftIsDown = tabi::InputManager::IsButtonDownRaw(EKeyboard::Shift);
 
             auto& io = ImGui::GetIO();
 
-            for (size_t i = 0; i < KeyboardTable.m_NumEntries; ++i)
+            for (uint32_t i = 0; i < KeyboardTable.m_NumEntries; ++i)
             {
                 const auto key = KeyboardTable.Get(i);
                 if (key != KeyboardTable.m_InvalidEntry)
@@ -370,20 +367,20 @@ namespace tabi
                     if(wasDown != isDown)
                     {
                         io.AddKeyEvent(key, isDown);
-                    }
 
-                    if (isDown && isDown != wasDown)
-                    {
-                        const auto& charInfo = KeyboardToCharTable.Get(i);
-                        if (charInfo.m_Char != 0)
+                        if(isDown)
                         {
-                            if (shiftIsDown)
+                            const auto& charInfo = KeyboardToCharTable.Get(i);
+                            if (charInfo.m_Char != 0)
                             {
-                                io.AddInputCharacter(charInfo.m_Shift);
-                            }
-                            else
-                            {
-                                io.AddInputCharacter(charInfo.m_Char);
+                                if (shiftIsDown)
+                                {
+                                    io.AddInputCharacter(charInfo.m_Shift);
+                                }
+                                else
+                                {
+                                    io.AddInputCharacter(charInfo.m_Char);
+                                }
                             }
                         }
                     }
@@ -398,7 +395,7 @@ namespace tabi
             auto& io = ImGui::GetIO();
 
             // Update buttons
-            for (size_t i = 0; i < ControllerTable.m_NumEntries; ++i)
+            for (uint32_t i = 0; i < ControllerTable.m_NumEntries; ++i)
             {
                 const auto key = ControllerTable.Get(i);
                 if (key != ControllerTable.m_InvalidEntry)
@@ -412,20 +409,20 @@ namespace tabi
 
             // Update axes
             float current = tabi::InputManager::GetAxisValueRaw(EController::LeftStickX);
-            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickLeft, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickLeft, current < -AxisInputThreshold, std::clamp(-current, 0.0f, 1.0f));
             io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickRight, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
 
             current = tabi::InputManager::GetAxisValueRaw(EController::LeftStickY);
             io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickUp, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
-            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickDown, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadLStickDown, current < -AxisInputThreshold, std::clamp(-current, 0.0f, 1.0f));
 
             current = tabi::InputManager::GetAxisValueRaw(EController::RightStickX);
-            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickLeft, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickLeft, current < -AxisInputThreshold, std::clamp(-current, 0.0f, 1.0f));
             io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickRight, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
 
             current = tabi::InputManager::GetAxisValueRaw(EController::RightStickY);
             io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickUp, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
-            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickDown, current < -AxisInputThreshold, std::clamp(current, -1.0f, 0.0f));
+            io.AddKeyAnalogEvent(ImGuiKey_GamepadRStickDown, current < -AxisInputThreshold, std::clamp(-current, 0.0f, 1.0f));
 
             current = tabi::InputManager::GetAxisValueRaw(EController::L2);
             io.AddKeyAnalogEvent(ImGuiKey_GamepadL2, current > AxisInputThreshold, std::clamp(current, 0.0f, 1.0f));
@@ -538,8 +535,8 @@ void tabi::imgui::EndFrame()
     {
         const ImDrawList* drawList = drawData->CmdLists[i];
 
-        const GLsizeiptr vertexBufferDataSize = static_cast<GLsizeiptr>(drawList->VtxBuffer.Size) * static_cast<int>(sizeof(ImDrawVert));
-        const GLsizeiptr indexBufferDataSize = static_cast<GLsizeiptr>(drawList->IdxBuffer.Size) * static_cast<int>(sizeof(ImDrawIdx));
+        const size_t vertexBufferDataSize = static_cast<size_t>(drawList->VtxBuffer.Size) * sizeof(ImDrawVert);
+        const size_t indexBufferDataSize = static_cast<size_t>(drawList->IdxBuffer.Size) * sizeof(ImDrawIdx);
         if (ctx->m_VertexBuffer->GetBufferSize() < vertexBufferDataSize)
         {
             DestroyBuffer(ctx->m_VertexBuffer);

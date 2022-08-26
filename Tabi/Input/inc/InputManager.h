@@ -192,7 +192,7 @@ namespace tabi
          * @brief Handle a platform-specific window message
          * @param a_Msg The message to handle
          */
-        static void HandleWindowsMsg(const void* a_Msg);
+        static void HandleWindowMsg(const void* a_Msg);
 
     private:
         InputManager();

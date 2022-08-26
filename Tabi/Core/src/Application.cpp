@@ -76,7 +76,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         MSG msg = MSG();
         while(PeekMessage(&msg, windowHandle, NULL, NULL, PM_REMOVE))
         {
-            InputManager::HandleWindowsMsg(&msg);
+            InputManager::HandleWindowMsg(&msg);
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }

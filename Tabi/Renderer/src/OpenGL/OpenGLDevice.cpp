@@ -130,7 +130,7 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 			wglMakeCurrent(context, tempContext);
 
 			TABI_ASSERT(gladLoaderLoadWGL(context), "Failed to initialize WGL");
-			int attributes[] = {
+			const int attributes[] = {
 			    WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 			    WGL_CONTEXT_MINOR_VERSION_ARB, 5,
 				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
@@ -335,11 +335,16 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				GLint shaderLogLength = 0;
 				glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &shaderLogLength);
 
-				std::vector<GLchar> shaderLog(shaderLogLength + 1);
-				glGetShaderInfoLog(shaderId, shaderLogLength, &shaderLogLength, &shaderLog[0]);
+				if (shaderLogLength > 0)
+				{
+					std::vector<GLchar> shaderLog(shaderLogLength + 1);
+					glGetShaderInfoLog(shaderId, shaderLogLength, &shaderLogLength, shaderLog.data());
+
+					LOG_ERROR("Failed to compile shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(shaderLog.data()));
+				}
+
 				glDeleteShader(shaderId);
 
-				LOG_ERROR("Failed to compile shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(shaderLog.data()));
 				TABI_ASSERT(isCompiled == GL_TRUE, "Shader failed to compile!");
 				return;
 			}
@@ -359,12 +364,17 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				GLint programLogLength = 0;
 				glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &programLogLength);
 
-				std::vector<GLchar> programLog(programLogLength);
-				glGetProgramInfoLog(programId, programLogLength, &programLogLength, programLog.data());
+				if (programLogLength > 0)
+				{
+					std::vector<GLchar> programLog(programLogLength + 1);
+					glGetProgramInfoLog(programId, programLogLength, &programLogLength, programLog.data());
+
+					LOG_ERROR("Failed to link program for shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(programLog.data()));
+				}
+
 				glDeleteProgram(programId);
 				glDeleteShader(shaderId);
 
-				LOG_ERROR("Failed to link program for shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(programLog.data()));
 				TABI_ASSERT(isLinked == GL_TRUE, "Shader program failed to link!");
 
 				glDeleteProgram(programId);
@@ -447,6 +457,24 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 			}
 
 			glValidateProgramPipeline(pipelineId);
+
+			GLint validated = GL_FALSE;
+			glGetProgramPipelineiv(pipelineId, GL_VALIDATE_STATUS, &validated);
+			if(validated != GL_TRUE)
+			{
+				GLint pipelineLogLength = 0;
+				glGetProgramPipelineiv(pipelineId, GL_INFO_LOG_LENGTH, &pipelineLogLength);
+
+				if (pipelineLogLength > 0)
+				{
+					tabi::vector<GLchar> log(pipelineLogLength + 1);
+					glGetProgramPipelineInfoLog(pipelineId, pipelineLogLength, &pipelineLogLength, log.data());
+
+					LOG_ERROR("Failed to validate program pipeline %s. Error: %s", debugName.c_str(), static_cast<const char*>(log.data()));
+				}
+
+				TABI_ASSERT(validated == GL_TRUE, "Failed to validate program pipeline");
+			}
 
 			GLuint vaoId = 0;
 			glCreateVertexArrays(1, &vaoId);

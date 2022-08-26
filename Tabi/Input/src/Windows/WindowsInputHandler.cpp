@@ -24,6 +24,10 @@ using tabi::EKeyboard;
 using tabi::EController;
 using tabi::EInputDevice;
 
+// Value to use as offset for axis binds. The alternative to this would be modifying Gainput's InputMap::MapBool(), as MappedInput mi's input filter function is not set up (which causes a nullptr guard somewhere else to pass)
+// TODO: Get rid of this at some point (see TODO in InputManager::Update() - buttons and axes should be split up at some point)
+static constexpr unsigned int UserButtonAxisOffset = 100u;
+
 tabi::InputHandler::InputHandler()
     : m_InputMap(m_GaInputManager)
     , m_WindowHandle(tabi::graphics::IWindow::GetInstance().GetHandle())
@@ -31,6 +35,25 @@ tabi::InputHandler::InputHandler()
     m_InputDeviceTable[EInputDevice::Controller] = m_GaInputManager.CreateDevice<gainput::InputDevicePad>();
     m_InputDeviceTable[EInputDevice::Keyboard] = m_GaInputManager.CreateDevice<gainput::InputDeviceKeyboard>();
     m_InputDeviceTable[EInputDevice::Mouse] = m_GaInputManager.CreateDevice<gainput::InputDeviceMouse>();
+
+    // Bind all buttons so we can check their state when needed
+    for(const auto& btn : ms_MouseTable)
+    {
+        m_InputMap.MapBool(static_cast<unsigned>(btn.first), ConvertDeviceType(EInputDevice::Mouse), btn.second);
+        m_InputMap.MapFloat(static_cast<unsigned>(btn.first) + UserButtonAxisOffset, ConvertDeviceType(EInputDevice::Mouse), btn.second);
+    }
+
+    for (const auto& btn : ms_ControllerTable)
+    {
+        m_InputMap.MapBool(static_cast<unsigned>(btn.first), ConvertDeviceType(EInputDevice::Controller), btn.second);
+        m_InputMap.MapFloat(static_cast<unsigned>(btn.first) + UserButtonAxisOffset, ConvertDeviceType(EInputDevice::Controller), btn.second);
+
+    }
+
+    for (const auto& btn : ms_KeyboardTable)
+    {
+        m_InputMap.MapBool(static_cast<unsigned>(btn.first), ConvertDeviceType(EInputDevice::Keyboard), btn.second);
+    }
 
     // Raw input device
     m_RawInputDevice.hwndTarget = nullptr;
@@ -49,6 +72,7 @@ void tabi::InputHandler::Update()
 
     m_MouseDeltaX = 0;
     m_MouseDeltaY = 0;
+    m_MouseWheelDeltaY = 0;
 
     m_GaInputManager.Update();
 
@@ -58,92 +82,35 @@ void tabi::InputHandler::Update()
     }
 }
 
-void tabi::InputHandler::BindButton(unsigned int a_Button)
+bool tabi::InputHandler::IsButtonDown(EKeyboard a_Button, bool* a_DownLastFrame) const
 {
-    if (!IsBound(a_Button))
-    {
-        const EInputDevice deviceType = DetermineDeviceType(a_Button);
-        m_InputMap.MapBool(a_Button, ConvertDeviceType(deviceType), ConvertButton(a_Button));
-    }
+    return IsButtonDownInternal(static_cast<unsigned>(a_Button), a_DownLastFrame);
 }
 
-void tabi::InputHandler::UnbindButton(unsigned int a_Button)
+bool tabi::InputHandler::IsButtonDown(EController a_Button, bool* a_DownLastFrame) const
 {
-    if (IsBound(a_Button))
-    {
-        m_InputMap.Unmap(a_Button);
-    }
+    return IsButtonDownInternal(static_cast<unsigned>(a_Button), a_DownLastFrame);
 }
 
-void tabi::InputHandler::BindAxis(unsigned int a_Axis)
+bool tabi::InputHandler::IsButtonDown(EMouse a_Button, bool* a_DownLastFrame) const
 {
-    if (!IsBound(a_Axis))
-    {
-        const EInputDevice deviceType = DetermineDeviceType(a_Axis);
-        m_InputMap.MapFloat(a_Axis, ConvertDeviceType(deviceType), ConvertButton(a_Axis));
-    }
+    return IsButtonDownInternal(static_cast<unsigned>(a_Button), a_DownLastFrame);
 }
 
-void tabi::InputHandler::UnbindAxis(unsigned int a_Axis)
-{
-    if (IsBound(a_Axis))
-    {
-        m_InputMap.Unmap(a_Axis);
-    }
-}
-
-bool tabi::InputHandler::IsButtonDown(unsigned int a_Button, bool* a_DownLastFrame)
-{
-    if (IsBound(a_Button))
-    {
-        if (a_DownLastFrame)
-        {
-            *a_DownLastFrame = m_InputMap.GetBoolIsNew(a_Button);
-        }
-
-        return m_InputMap.GetBool(a_Button);
-    }
-    else
-    {
-        TABI_WARN("Trying to get button state for an unbound button: %d", a_Button);
-        return false;
-    }
-}
-
-bool tabi::InputHandler::AnyButtonDown()
+bool tabi::InputHandler::AnyButtonDown() const
 {
     gainput::DeviceButtonSpec spec;
     return m_GaInputManager.GetAnyButtonDown(&spec, 1) > 0;
 }
 
-float tabi::InputHandler::GetAxisValue(unsigned int a_Axis, float* a_Delta)
+float tabi::InputHandler::GetAxisValue(EController a_Axis, float* a_Delta) const
 {
-    if (IsBound(a_Axis))
-    {
-        const float pos = m_InputMap.GetFloat(a_Axis);
-        if (a_Delta)
-        {
-            if (a_Axis == static_cast<unsigned>(EMouse::MouseX))
-            {
-                *a_Delta = static_cast<float>(m_MouseDeltaX) / static_cast<float>(m_WindowWidth);
-            }
-            else if (a_Axis == static_cast<unsigned>(EMouse::MouseY))
-            {
-                *a_Delta = static_cast<float>(m_MouseDeltaY) / static_cast<float>(m_WindowHeight);
-            }
-            else
-            {
-                *a_Delta = m_InputMap.GetFloatDelta(a_Axis);
-            }
-        }
+    return GetAxisValueInternal(static_cast<unsigned>(a_Axis), a_Delta);
+}
 
-        return pos;
-    }
-    else
-    {
-        TABI_WARN("Trying to get button state for an unbound axis: %d", a_Axis);
-        return 0.0f;
-    }
+float tabi::InputHandler::GetAxisValue(EMouse a_Axis, float* a_Delta) const
+{
+    return GetAxisValueInternal(static_cast<unsigned>(a_Axis), a_Delta);
 }
 
 void tabi::InputHandler::SetMouseCursorVisible(bool a_Visible)
@@ -158,15 +125,16 @@ void tabi::InputHandler::SetMouseCursorCapture(bool a_Capture)
     m_CaptureMouse = a_Capture;
 }
 
-void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
+void tabi::InputHandler::HandleWindowMsg(const void* a_Msg)
 {
-    m_GaInputManager.HandleMessage(a_Msg);
+    const auto msg = *static_cast<const MSG*>(a_Msg);
+    m_GaInputManager.HandleMessage(msg);
 
     // Handle raw mouse input
-    if (a_Msg.message == WM_INPUT)
+    if (msg.message == WM_INPUT)
     {
         UINT size;
-        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(a_Msg.lParam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1)
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(msg.lParam), RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == -1)
         {
             return;
         }
@@ -174,7 +142,7 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
         m_RawBuffer.resize(size);
 
 
-        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(a_Msg.lParam), RID_INPUT, m_RawBuffer.data(), &size, sizeof(RAWINPUTHEADER)) != size)
+        if (GetRawInputData(reinterpret_cast<HRAWINPUT>(msg.lParam), RID_INPUT, m_RawBuffer.data(), &size, sizeof(RAWINPUTHEADER)) != size)
         {
             return;
         }
@@ -186,38 +154,86 @@ void tabi::InputHandler::HandleMsg(const MSG& a_Msg)
             m_MouseDeltaY += ri.data.mouse.lLastY;
         }
     }
+    else if(msg.message == WM_MOUSEWHEEL)
+    {
+        m_MouseWheelDeltaY += static_cast<float>(GET_WHEEL_DELTA_WPARAM(msg.wParam)) / static_cast<float>(WHEEL_DELTA);
+    }
+    else if(msg.message == WM_MOUSEMOVE)
+    {
+        if (!m_MouseIsInWindowRect)
+        {
+            m_MouseIsInWindowRect = true;
+            SetCursorIcon(IDC_ARROW);
+        }
+
+        // Make sure we know when the cursor leaves the window
+        TRACKMOUSEEVENT ev{ sizeof(TRACKMOUSEEVENT), TME_LEAVE, m_WindowHandle, 0 };
+        TrackMouseEvent(&ev);
+    }
+    else if(msg.message == WM_MOUSELEAVE)
+    {
+        m_MouseIsInWindowRect = false;
+    }
 }
 
-
-unsigned int tabi::InputHandler::ConvertButton(unsigned int a_Button)
+bool tabi::InputHandler::IsButtonDownInternal(unsigned a_Button, bool* a_DownLastFrame) const
 {
-    const EInputDevice deviceType = DetermineDeviceType(a_Button);
-    unsigned int convertedButton;
-    switch (deviceType)
+#if _DEBUG
+    TABI_ASSERT(IsBound(a_Button), "Trying to get button state for an unbound button");
+#endif
+
+    if (a_DownLastFrame)
     {
-    case tabi::EInputDevice::Mouse:
-    {
-        convertedButton = ConvertButton(static_cast<EMouse>(a_Button));
-        break;
-    }
-    case tabi::EInputDevice::Keyboard:
-    {
-        convertedButton = ConvertButton(static_cast<EKeyboard>(a_Button));
-        break;
-    }
-    case tabi::EInputDevice::Controller:
-    {
-        convertedButton = ConvertButton(static_cast<EController>(a_Button));
-        break;
-    }
-    default:
-    {
-        convertedButton = 0;
-        break;
-    }
+        *a_DownLastFrame = m_InputMap.GetBoolPrevious(a_Button);
     }
 
-    return convertedButton;
+    return m_InputMap.GetBool(a_Button);
+}
+
+float tabi::InputHandler::GetAxisValueInternal(unsigned int a_Axis, float* a_Delta) const
+{
+    a_Axis += UserButtonAxisOffset;
+
+    float pos = 0.0f;
+
+    if (a_Axis != static_cast<unsigned>(EMouse::Wheel) + UserButtonAxisOffset)
+    {
+#if _DEBUG
+        TABI_ASSERT(IsBound(a_Axis), "Trying to get button state for an unbound axis");
+#endif
+        pos = m_InputMap.GetFloat(a_Axis);
+    }
+
+    if (a_Axis == static_cast<unsigned>(EMouse::MouseX) + UserButtonAxisOffset)
+    {
+        pos *= static_cast<float>(m_WindowWidth);
+    }
+    else if (a_Axis == static_cast<unsigned>(EMouse::MouseY) + UserButtonAxisOffset)
+    {
+        pos *= static_cast<float>(m_WindowHeight);
+    }
+
+    if (a_Delta)
+    {
+        if (a_Axis == static_cast<unsigned>(EMouse::MouseX) + UserButtonAxisOffset)
+        {
+            *a_Delta = static_cast<float>(m_MouseDeltaX) / static_cast<float>(m_WindowWidth);
+        }
+        else if (a_Axis == static_cast<unsigned>(EMouse::MouseY) + UserButtonAxisOffset)
+        {
+            *a_Delta = static_cast<float>(m_MouseDeltaY) / static_cast<float>(m_WindowHeight);
+        }
+        else if(a_Axis == static_cast<unsigned>(EMouse::Wheel) + UserButtonAxisOffset)
+        {
+            *a_Delta = m_MouseWheelDeltaY;
+        }
+        else
+        {
+            *a_Delta = m_InputMap.GetFloatDelta(a_Axis);
+        }
+    }
+
+    return pos;
 }
 
 unsigned int tabi::InputHandler::ConvertButton(EMouse a_Button)
@@ -262,25 +278,6 @@ unsigned int tabi::InputHandler::ConvertButton(EController a_Button)
     }
 }
 
-EInputDevice tabi::InputHandler::DetermineDeviceType(unsigned int a_Button)
-{
-    if (a_Button & static_cast<unsigned>(EInputDevice::Controller))
-    {
-        return EInputDevice::Controller;
-    }
-    else if (a_Button & static_cast<unsigned>(EInputDevice::Keyboard))
-    {
-        return EInputDevice::Keyboard;
-    }
-    else if (a_Button & static_cast<unsigned>(EInputDevice::Mouse))
-    {
-        return EInputDevice::Mouse;
-    }
-
-    TABI_WARN("Unable to determine device type for button %d", a_Button);
-    return EInputDevice();
-}
-
 bool tabi::InputHandler::IsBound(unsigned int a_Button) const
 {
     return m_InputMap.IsMapped(a_Button);
@@ -322,6 +319,11 @@ void tabi::InputHandler::CaptureCursor()
         SetCursorVisible(!m_HideCursor);
         SetCursorPos(m_WindowRect.right - (m_WindowWidth / 2), m_WindowRect.bottom - (m_WindowHeight / 2));
     }
+}
+
+void tabi::InputHandler::SetCursorIcon(LPTSTR a_CursorIcon) const
+{
+    ::SetCursor(::LoadCursor(NULL, a_CursorIcon));
 }
 
 unsigned int tabi::InputHandler::ConvertDeviceType(EInputDevice a_Device)

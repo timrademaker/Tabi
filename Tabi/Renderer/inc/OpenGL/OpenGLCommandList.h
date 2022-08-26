@@ -50,7 +50,7 @@ namespace tabi
 		virtual void UseComputePipeline(const ComputePipeline* a_ComputePipeline) override;
 		
 		virtual void CopyDataToTexture(Texture* a_Texture, const TextureUpdateDescription& a_TextureUpdateDescription) override;
-		virtual void CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset) override;
+		virtual void CopyDataToBuffer(Buffer* a_Buffer, const void* a_Data, size_t a_DataSize, size_t a_Offset = 0) override;
 
 		virtual void DrawVertices(uint32_t a_VertexCount, uint32_t a_StartVertexLocation) override;
 		virtual void DrawInstanced(uint32_t a_VertexCountPerInstance, uint32_t a_InstanceCount, uint32_t a_StartVertexLocation = 0) override;
@@ -60,10 +60,19 @@ namespace tabi
 
 		virtual void DispatchComputePipeline(uint32_t a_GroupCountX, uint32_t a_GroupCountY, uint32_t a_GroupCountZ) override;
 
+		virtual void SetViewport(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height, float a_MinDepth = 0.0f, float a_MaxDepth = 1.0f) override;
+		virtual void SetScissorRect(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height) override;
+
 		/**
 		 * @brief Get the command list's pending commands
 		 */
 		inline const tabi::ExecutionQueue& GetPendingCommands() const { return m_PendingCommands; }
+
+		static inline void SetWindowSize(uint32_t a_Width, uint32_t a_Height)
+		{
+			s_WindowWidth = a_Width;
+			s_WindowHeight = a_Height;
+		}
 	private:
 		bool m_IsRecording = false;
 
@@ -75,5 +84,8 @@ namespace tabi
 		tabi::ExecutionQueue m_PendingCommands{ 128 };
 
 		tabi::string m_DebugName;
+
+		static uint32_t s_WindowWidth;
+		static uint32_t s_WindowHeight;
 	};
 }

@@ -11,7 +11,12 @@
 #include "Helpers/FormatInfo.h"
 #include "TextureUpdateDescription.h"
 
+#include <IWindow.h>
+
 #include <glad/gl.h>
+
+uint32_t tabi::OpenGLCommandList::s_WindowWidth = 0;
+uint32_t tabi::OpenGLCommandList::s_WindowHeight = 0;
 
 #define ENSURE_COMMAND_LIST_IS_RECORDING() TABI_ASSERT(m_IsRecording, "Command list function called while recording is not active!")
 
@@ -30,6 +35,11 @@ void tabi::OpenGLCommandList::EndRecording()
 void tabi::OpenGLCommandList::Reset()
 {
 	m_PendingCommands.Reset();
+
+	m_GraphicsPipeline = nullptr;
+	m_ComputePipeline = nullptr;
+	m_IndexBuffer = nullptr;
+
 	m_IsRecording = false;
 }
 
@@ -140,7 +150,7 @@ void tabi::OpenGLCommandList::BindWritableTexture(const Texture* a_Texture, int3
 			}
 			}
 
-			glBindImageTexture(a_Slot, tex->GetID(), 0, textureIsLayered, 0, GL_READ_WRITE, GLFormat(tex->GetTextureDescription().m_Format));
+			glBindImageTexture(a_Slot, tex->GetID(), 0, textureIsLayered, 0, GL_READ_WRITE, GLInternalFormat(tex->GetTextureDescription().m_Format));
 		}
 	);
 }
@@ -185,11 +195,64 @@ void tabi::OpenGLCommandList::SetRenderTarget(const RenderTarget* a_RenderTarget
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget)]
+	const auto* renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget);
+
+	m_PendingCommands.Add([renderTarget]
 		{
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderTarget ? renderTarget->GetID() : 0);
 		}
 	);
+
+    // Resize viewport based on the render target
+    if (renderTarget)
+	{
+		const auto& rtDesc = renderTarget->GetRenderTargetDescription();
+
+		auto* tex = rtDesc.m_RenderTextures[0].m_Texture;
+		auto mip = rtDesc.m_RenderTextures[0].m_MipLevel;
+
+		if(tex == nullptr)
+		{
+			tex = rtDesc.m_DepthStencil.m_Texture;
+			mip = rtDesc.m_DepthStencil.m_MipLevel;
+		}
+
+		if(tex)
+		{
+			const auto& texDesc = tex->GetTextureDescription();
+			SetViewport(0, 0, texDesc.m_Width >> mip, texDesc.m_Height >> mip);
+		}
+		else
+		{
+			// Okay, not entirely true if someone decides to only bind textures to a non-zero index
+			TABI_ASSERT(false, "Trying to bind render target with no texture or depth stencil");
+		}
+	}
+	else
+	{
+		SetViewport(0, 0, s_WindowWidth, s_WindowHeight);
+	}
+}
+
+namespace tabi
+{
+	void SetColorMask(tabi::EColorMask a_Mask)
+	{
+		glColorMask(
+			(a_Mask & EColorMask::Red) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Green) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Blue) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Alpha) != EColorMask::None ? GL_TRUE : GL_FALSE);
+	}
+	void SetColorMask(size_t a_Target, tabi::EColorMask a_Mask)
+	{
+		glColorMaski(
+			a_Target,
+			(a_Mask & EColorMask::Red) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Green) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Blue) != EColorMask::None ? GL_TRUE : GL_FALSE,
+			(a_Mask & EColorMask::Alpha) != EColorMask::None ? GL_TRUE : GL_FALSE);
+	}
 }
 
 void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, const float a_ClearColor[4])
@@ -199,9 +262,28 @@ void tabi::OpenGLCommandList::ClearRenderTarget(RenderTarget* a_RenderTarget, co
 	tabi::array<float, 4> clearColor;
 	std::copy_n(a_ClearColor, 4, clearColor.begin());
 
-	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), clearColor = std::move(clearColor)]
+	const bool scissorIsEnabled = m_GraphicsPipeline ? m_GraphicsPipeline->GetPipelineDescription().m_RasterizerState.m_ScissorEnabled : false;
+	const EColorMask colorMask = m_GraphicsPipeline ? m_GraphicsPipeline->GetPipelineDescription().m_BlendState[0].m_ColorWriteMask : EColorMask::All;
+
+	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), clearColor = std::move(clearColor), scissorIsEnabled, colorMask]
 		{
+			// Reset specific pipeline state that might interfere with clearing
+			// This function can be called before a pipeline is bound, so assume that we need to reset them
+			glDisable(GL_SCISSOR_TEST);
+			SetColorMask(0, EColorMask::All);
+
 			glClearNamedFramebufferfv(renderTarget ? renderTarget->GetID() : 0, GL_COLOR, 0, &clearColor[0]);
+
+			// Restore pipeline state
+			if (scissorIsEnabled)
+			{
+				glEnable(GL_SCISSOR_TEST);
+			}
+
+			if(colorMask != EColorMask::All)
+			{
+				SetColorMask(0, colorMask);
+			}
 		}
 	);
 }
@@ -210,9 +292,20 @@ void tabi::OpenGLCommandList::ClearDepthStencil(RenderTarget* a_RenderTarget, fl
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 
-	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), a_DepthValue, a_StencilValue]
+	const bool scissorIsEnabled = m_GraphicsPipeline ? m_GraphicsPipeline->GetPipelineDescription().m_RasterizerState.m_ScissorEnabled : false;
+
+	m_PendingCommands.Add([renderTarget = static_cast<const OpenGLRenderTarget*>(a_RenderTarget), a_DepthValue, a_StencilValue, scissorIsEnabled]
 		{
+			// Reset specific pipeline state that might interfere with clearing
+			// This function can be called before a pipeline is bound, so assume that we need to reset them
+			glDisable(GL_SCISSOR_TEST);
+
 			glClearNamedFramebufferfi(renderTarget ? renderTarget->GetID() : 0, GL_DEPTH_STENCIL, 0, a_DepthValue, a_StencilValue);
+
+			if (scissorIsEnabled)
+			{
+				glEnable(GL_SCISSOR_TEST);
+			}
 		}
 	);
 }
@@ -222,19 +315,20 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_GraphicsPipeline != nullptr);
 
-	if (a_GraphicsPipeline == m_GraphicsPipeline)
+	if(a_GraphicsPipeline == m_GraphicsPipeline)
 	{
 		return;
 	}
-	
+
 	m_GraphicsPipeline = static_cast<const OpenGLGraphicsPipeline*>(a_GraphicsPipeline);
+	m_ComputePipeline = nullptr;
 
 	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
 		{
 			glBindProgramPipeline(pipeline->GetID());
 			glBindVertexArray(pipeline->GetVAO());
 
-			const auto & pipelineDesc = pipeline->GetPipelineDescription();
+			const auto& pipelineDesc = pipeline->GetPipelineDescription();
 
 		    if(pipelineDesc.m_IndividualBlend)
 		    {
@@ -263,6 +357,8 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 						{
 							glBlendFuncSeparatei(i, GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
 						}
+
+						SetColorMask(i, blend.m_ColorWriteMask);
 					}
 					else
 					{
@@ -295,6 +391,8 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 				    {
 					    glBlendFuncSeparate(GLBlendFactor(blend.m_SourceBlendFactorRGB), GLBlendFactor(blend.m_DestBlendFactorRGB), GLBlendFactor(blend.m_SourceBlendFactorAlpha), GLBlendFactor(blend.m_DestBlendFactorAlpha));
 				    }
+
+					SetColorMask(blend.m_ColorWriteMask);
 			    }
 			    else
 			    {
@@ -360,6 +458,15 @@ void tabi::OpenGLCommandList::UseGraphicsPipeline(const GraphicsPipeline* a_Grap
 				glCullFace(GLCullMode(pipelineDesc.m_RasterizerState.m_CullMode));
 				glPolygonMode(GL_FRONT_AND_BACK, GLPolygonMode(pipelineDesc.m_RasterizerState.m_PolygonMode));
 			}
+
+			if (pipelineDesc.m_RasterizerState.m_ScissorEnabled)
+			{
+				glEnable(GL_SCISSOR_TEST);
+			}
+			else
+			{
+				glDisable(GL_SCISSOR_TEST);
+			}
 		}
 	);
 }
@@ -375,9 +482,12 @@ void tabi::OpenGLCommandList::UseComputePipeline(const ComputePipeline* a_Comput
 	}
 
 	m_ComputePipeline = static_cast<const OpenGLComputePipeline*>(a_ComputePipeline);
+	m_GraphicsPipeline = nullptr;
 
-	m_PendingCommands.Add([pipeline = m_GraphicsPipeline]
+	m_PendingCommands.Add([pipeline = m_ComputePipeline]
 		{
+			SetColorMask(EColorMask::All);
+
 			glBindProgramPipeline(pipeline->GetID());
 		}
 	);
@@ -449,11 +559,10 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 	const size_t height = std::max<size_t>(a_TextureUpdateDescription.m_DataHeight, 1);
 	const size_t depth = std::max<size_t>(a_TextureUpdateDescription.m_DataDepth, 1);
 	const size_t bytesPerTexel = GetFormatInfo(a_Texture->GetTextureDescription().m_Format).m_FormatSizeInBytes;
-	const size_t dataSizeDivisor = pow(2, a_TextureUpdateDescription.m_MipLevel);	// Each mip level takes up half the memory of the previous mip level
 
-	const size_t texDataBytes = (width * height * depth * bytesPerTexel) / dataSizeDivisor;
+	const size_t texDataBytes = (width * height * depth * bytesPerTexel) >> a_TextureUpdateDescription.m_MipLevel;
 	tabi::vector<char> stagedTextureData(texDataBytes);
-	std::copy_n(a_TextureUpdateDescription.m_Data, texDataBytes, stagedTextureData.begin());
+	std::copy_n(static_cast<const char*>(a_TextureUpdateDescription.m_Data), texDataBytes, stagedTextureData.begin());
 
 	m_PendingCommands.Add([tex = static_cast<const OpenGLTexture*>(a_Texture), a_TextureUpdateDescription, data = std::move(stagedTextureData)]
 		{
@@ -487,7 +596,7 @@ void tabi::OpenGLCommandList::CopyDataToTexture(Texture* a_Texture, const Textur
 	);
 }
 
-void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_Data, size_t a_DataSize, size_t a_Offset)
+void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const void* a_Data, size_t a_DataSize, size_t a_Offset)
 {
 	ENSURE_COMMAND_LIST_IS_RECORDING();
 	TABI_ASSERT(a_Buffer != nullptr);
@@ -495,7 +604,7 @@ void tabi::OpenGLCommandList::CopyDataToBuffer(Buffer* a_Buffer, const char* a_D
 	TABI_ASSERT(a_Buffer->GetBufferDescription().m_SizeInBytes >= (a_DataSize + a_Offset), "Trying to copy more data into a buffer than would fit");
 
 	tabi::vector<char> stagedBufferData(a_DataSize);
-	std::copy_n(a_Data, a_DataSize, stagedBufferData.begin());
+	std::copy_n(static_cast<const char*>(a_Data), a_DataSize, stagedBufferData.begin());
 
 	m_PendingCommands.Add([buf = static_cast<const OpenGLBuffer*>(a_Buffer), data = std::move(stagedBufferData), a_DataSize, a_Offset]
 		{
@@ -578,6 +687,33 @@ void tabi::OpenGLCommandList::DispatchComputePipeline(uint32_t a_GroupCountX, ui
 	m_PendingCommands.Add([a_GroupCountX, a_GroupCountY, a_GroupCountZ]
 		{
 			glDispatchCompute(a_GroupCountX, a_GroupCountY, a_GroupCountZ);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::SetViewport(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height, float a_MinDepth, float a_MaxDepth)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+	TABI_ASSERT(a_MinDepth >= 0.0f && a_MinDepth <= 1.0f);
+	TABI_ASSERT(a_MaxDepth >= 0.0f && a_MaxDepth <= 1.0f);
+
+	// Invert Y because OpenGL viewport (0, 0) is in the bottom left unlike various other APIs
+	m_PendingCommands.Add([a_X, y = static_cast<int32_t>(s_WindowHeight) - (a_Y + a_Height), a_Width, a_Height, a_MinDepth, a_MaxDepth]
+		{
+			glViewport(a_X, y, a_Width, a_Height);
+			glDepthRangef(a_MinDepth, a_MaxDepth);
+		}
+	);
+}
+
+void tabi::OpenGLCommandList::SetScissorRect(int32_t a_X, int32_t a_Y, int32_t a_Width, int32_t a_Height)
+{
+	ENSURE_COMMAND_LIST_IS_RECORDING();
+
+	// Invert Y because OpenGL viewport (0, 0) is in the bottom left unlike various other APIs
+	m_PendingCommands.Add([a_X, y = static_cast<int32_t>(s_WindowHeight) - (a_Y + a_Height), a_Width, a_Height]
+		{
+			glScissor(a_X, y, a_Width, a_Height);
 		}
 	);
 }

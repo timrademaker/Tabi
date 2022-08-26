@@ -14,6 +14,8 @@
 #include "Helpers/RendererLogger.h"
 #include "Helpers/FormatInfo.h"
 
+#include <IWindow.h>
+
 #include <glad/wgl.h>
 
 #pragma comment (lib, "opengl32.lib")
@@ -62,6 +64,8 @@ namespace tabi
 	void GLAPIENTRY GLMessageCallback(GLenum a_Source, GLenum a_Type, GLuint a_Id, GLenum a_Severity, GLsizei a_Length, const GLchar* a_Message, const void* a_UserParam)
 	{
 		TABI_UNUSED(a_UserParam);
+		TABI_UNUSED(a_Id);
+		TABI_UNUSED(a_Length);
 
 		auto severity = tabi::logger::ELogLevel::Debug;
 		switch (a_Severity)
@@ -92,9 +96,9 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 {
 	TABI_ASSERT(m_DeviceContext == nullptr, "Device already initialized");
 
-	auto* window = static_cast<HWND>(a_Window);
-	auto* context = GetDC(window);
-	m_DeviceContext = new GLDeviceContext{ window, context };
+	auto* hwnd = static_cast<HWND>(a_Window);
+	auto* context = GetDC(hwnd);
+	m_DeviceContext = new GLDeviceContext{ hwnd, context };
 
 	const PIXELFORMATDESCRIPTOR pfd =
 	{
@@ -126,9 +130,9 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 			wglMakeCurrent(context, tempContext);
 
 			TABI_ASSERT(gladLoaderLoadWGL(context), "Failed to initialize WGL");
-			int attributes[] = {
-			    WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-			    WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+			const int attributes[] = {
+			    WGL_CONTEXT_MAJOR_VERSION_ARB, MINIMUM_OGL_VERSION_MAJOR,
+			    WGL_CONTEXT_MINOR_VERSION_ARB, MINIMUM_OGL_VERSION_MINOR,
 				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 				0
 			};
@@ -136,11 +140,14 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 			const auto renderingContext = wglCreateContextAttribsARB(context, NULL, attributes);
 		    if(renderingContext == nullptr)
 		    {
-				TABI_ASSERT(false);
+				TABI_ASSERT(false, "Failed to initialize rendering context");
 		    }
-			wglMakeCurrent(nullptr, nullptr);
-			wglDeleteContext(tempContext);
-			wglMakeCurrent(context, renderingContext);
+			else
+			{
+				wglMakeCurrent(nullptr, nullptr);
+				wglDeleteContext(tempContext);
+				wglMakeCurrent(context, renderingContext);
+			}
 
 			TABI_ASSERT(gladLoaderLoadGL(), "Failed to initialize OpenGL context");
 
@@ -152,6 +159,21 @@ void tabi::OpenGLDevice::Initialize(void* a_Window, uint32_t a_Width, uint32_t a
 			glViewport(0, 0, a_Width, a_Height);
 		}
 	);
+
+	OpenGLCommandList::SetWindowSize(a_Width, a_Height);
+	const auto& window = graphics::IWindow::GetInstance();
+
+	uint32_t windowWidth = 0;
+	uint32_t windowHeight = 0;
+	window.GetWindowDimensions(windowWidth, windowHeight);
+	OpenGLCommandList::SetWindowSize(windowWidth, windowHeight);
+
+	window.OnWindowResize().Subscribe(this, [](tabi::WindowResizeEventData a_Data)
+		{
+			OpenGLCommandList::SetWindowSize(a_Data.m_NewWidth, a_Data.m_NewHeight);
+		}
+	);
+
 }
 
 void tabi::OpenGLDevice::Finalize()
@@ -164,15 +186,6 @@ void tabi::OpenGLDevice::Finalize()
 	}
 
 	EndFrame();
-}
-
-void tabi::OpenGLDevice::ResizeRenderingContext(uint32_t a_Width, uint32_t a_Height)
-{
-	m_CommandQueue.Add([a_Width, a_Height]
-		{
-			glViewport(0, 0, a_Width, a_Height);
-		}
-	);
 }
 
 tabi::Texture* tabi::OpenGLDevice::CreateTexture(const TextureDescription& a_TextureDescription, const char* a_DebugName)
@@ -322,11 +335,16 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				GLint shaderLogLength = 0;
 				glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &shaderLogLength);
 
-				std::vector<GLchar> shaderLog(shaderLogLength + 1);
-				glGetShaderInfoLog(shaderId, shaderLogLength, &shaderLogLength, &shaderLog[0]);
+				if (shaderLogLength > 0)
+				{
+					std::vector<GLchar> shaderLog(shaderLogLength + 1);
+					glGetShaderInfoLog(shaderId, shaderLogLength, &shaderLogLength, shaderLog.data());
+
+					LOG_ERROR("Failed to compile shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(shaderLog.data()));
+				}
+
 				glDeleteShader(shaderId);
 
-				LOG_ERROR("Failed to compile shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(shaderLog.data()));
 				TABI_ASSERT(isCompiled == GL_TRUE, "Shader failed to compile!");
 				return;
 			}
@@ -346,12 +364,17 @@ tabi::Shader* tabi::OpenGLDevice::CreateShader(const ShaderDescription& a_Shader
 				GLint programLogLength = 0;
 				glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &programLogLength);
 
-				std::vector<GLchar> programLog(programLogLength);
-				glGetProgramInfoLog(programId, programLogLength, &programLogLength, programLog.data());
+				if (programLogLength > 0)
+				{
+					std::vector<GLchar> programLog(programLogLength + 1);
+					glGetProgramInfoLog(programId, programLogLength, &programLogLength, programLog.data());
+
+					LOG_ERROR("Failed to link program for shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(programLog.data()));
+				}
+
 				glDeleteProgram(programId);
 				glDeleteShader(shaderId);
 
-				LOG_ERROR("Failed to link program for shader %s. Error: %s", debugName.c_str(), static_cast<const char*>(programLog.data()));
 				TABI_ASSERT(isLinked == GL_TRUE, "Shader program failed to link!");
 
 				glDeleteProgram(programId);
@@ -435,6 +458,24 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 
 			glValidateProgramPipeline(pipelineId);
 
+			GLint validated = GL_FALSE;
+			glGetProgramPipelineiv(pipelineId, GL_VALIDATE_STATUS, &validated);
+			if(validated != GL_TRUE)
+			{
+				GLint pipelineLogLength = 0;
+				glGetProgramPipelineiv(pipelineId, GL_INFO_LOG_LENGTH, &pipelineLogLength);
+
+				if (pipelineLogLength > 0)
+				{
+					tabi::vector<GLchar> log(pipelineLogLength + 1);
+					glGetProgramPipelineInfoLog(pipelineId, pipelineLogLength, &pipelineLogLength, log.data());
+
+					LOG_ERROR("Failed to validate program pipeline %s. Error: %s", debugName.c_str(), static_cast<const char*>(log.data()));
+				}
+
+				TABI_ASSERT(validated == GL_TRUE, "Failed to validate program pipeline");
+			}
+
 			GLuint vaoId = 0;
 			glCreateVertexArrays(1, &vaoId);
 			TABI_ASSERT(vaoId != 0, "Failed to create VAO");
@@ -477,7 +518,7 @@ tabi::ComputePipeline* tabi::OpenGLDevice::CreateComputePipeline(const ComputePi
 
 			if (pipelineDesc.m_ComputeShader)
 			{
-				glUseProgramStages(pipelineId, GL_VERTEX_SHADER_BIT, static_cast<const OpenGLShader*>(pipelineDesc.m_ComputeShader)->GetID());
+				glUseProgramStages(pipelineId, GL_COMPUTE_SHADER_BIT, static_cast<const OpenGLShader*>(pipelineDesc.m_ComputeShader)->GetID());
 			}
 
 			glValidateProgramPipeline(pipelineId);

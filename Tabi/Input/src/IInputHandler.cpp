@@ -4,12 +4,7 @@
 #include "Windows/WindowsInputHandler.h"
 #endif
 
-using tabi::IInputHandler;
-using tabi::InputHandler;
-
-IInputHandler& tabi::IInputHandler::GetInstance()
+tabi::IInputHandler* tabi::IInputHandler::CreateInstance()
 {
-    static IInputHandler* instance = new InputHandler();
-
-    return *instance;
+    return new InputHandler{};
 }

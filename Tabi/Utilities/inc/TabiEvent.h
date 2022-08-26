@@ -1,9 +1,9 @@
 #pragma once
 
+#include <TabiMacros.h>
 #include <TabiTypes.h>
 #include <Logging.h>
 
-#include <assert.h>
 #include <functional>
 
 #define DECLARE_EVENT(EventName, EventInfoClass) \
@@ -12,12 +12,15 @@
 
 namespace tabi
 {
-    struct EmptyEvent {};
+    using EmptyEvent = void;
 
     template<typename EventInfo>
     class EventBase
     {
-        using CallbackType = std::function<void(EventInfo)>;
+    public:
+        typedef std::conditional_t<std::is_same<EventInfo, EmptyEvent>::value, std::function<void()>, std::function<void(EventInfo)>> CallbackType;
+
+    private:
         using CallbackMap = tabi::unordered_map<void*, tabi::vector<CallbackType>>;
 
     public:
@@ -26,34 +29,36 @@ namespace tabi
 
         /**
         * @brief Subscribe a callback to an event
-        * @params a_Object The object subscribing to the event
-        * @params a_Callback The callback function to send events to
+        * @param a_Object The object subscribing to the event
+        * @param a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
         typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type 
             Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo)) const;
         /**
-        * @brief Subscribe a callback to an event
-        * @params a_Object The object subscribing to the event
-        * @params a_Callback The callback function to send events to
-        */
-        void Subscribe(void* a_Object, CallbackType a_Callback) const;
-        /**
         * @brief Subscribe an object's callback to an event
-        * @params a_Object The object subscribing to the event
-        * @params a_Callback The callback function to send events to
+        * @param a_Object The object subscribing to the event
+        * @param a_Callback The callback function to send events to
         */
         template<typename UserClass, typename T = EventInfo>
         typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type 
             Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)()) const;
+
+        /**
+        * @brief Subscribe a callback to an event
+        * @param a_Object The object subscribing to the event
+        * @param a_Callback The callback function to send events to
+        */
+        void Subscribe(void* a_Object, CallbackType a_Callback) const;
+
         /**
         * @brief Subscribe a static function to an event
-        * @params a_Callback The callback function to send events to
+        * @param a_Callback The callback function to send events to
         */
         void SubscribeStatic(CallbackType a_Callback) const;
         /**
         * @brief Unsubscribes an object from events
-        * @params a_Object The object to unsubscribe
+        * @param a_Object The object to unsubscribe
         * @returns True if any callback was removed, false if none were found
         */
         bool Unsubscribe(void* a_Object) const;
@@ -69,10 +74,10 @@ namespace tabi
 
         /**
         * @brief Broadcasts an event to all subscribers
-        * @params a_Event The message sent to all subscribers' callback functions
+        * @param a_Event The message sent to all subscribers' callback functions
         */
         template<typename T = EventInfo>
-        typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast(EventInfo a_Event);
+        typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type Broadcast(EventInfo);
         /**
         * @brief Broadcasts an event to all subscribers. Only available when using tabi::Event
         */
@@ -88,8 +93,8 @@ namespace tabi
     private:
         /**
         * @brief Internal function that stores callbacks
-        * @params a_Object The object subscribing to the event
-        * @params a_Callback The callback function to send events to
+        * @param a_Object The object subscribing to the event
+        * @param a_Callback The callback function to send events to
         */
         void Subscribe_Internal(void* a_Object, CallbackType a_Callback) const;
 
@@ -101,8 +106,8 @@ namespace tabi
     template<typename UserClass, typename T>
     inline typename std::enable_if<!std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)(EventInfo)) const
     {
-        assert(a_Object);
-        assert(a_Callback);
+        TABI_ASSERT(a_Object);
+        TABI_ASSERT(a_Callback);
     
         auto bound = std::bind(a_Callback, a_Object, std::placeholders::_1);
         Subscribe_Internal(a_Object, bound);
@@ -118,8 +123,8 @@ namespace tabi
     template<typename UserClass, typename T>
     inline typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type tabi::EventBase<EventInfo>::Subscribe(UserClass* a_Object, void(UserClass::* a_Callback)()) const
     {
-        assert(a_Object);
-        assert(a_Callback);
+        TABI_ASSERT(a_Object);
+        TABI_ASSERT(a_Callback);
 
         auto bound = std::bind(a_Callback, a_Object);
         Subscribe_Internal(a_Object, bound);
@@ -181,12 +186,11 @@ namespace tabi
     inline
     typename std::enable_if<std::is_same<T, tabi::EmptyEvent>::value, void>::type EventBase<EventInfo>::Broadcast()
     {
-        EmptyEvent ev;
         for (auto iter = m_Callbacks.begin(); iter != m_Callbacks.end(); ++iter)
         {
             for (CallbackType& d : iter->second)
             {
-                d(ev);
+                d();
             }
         }
     }

@@ -30,6 +30,11 @@ namespace tabi
 			return m_BufferDescription;
 		}
 
+		inline size_t GetBufferSize() const
+		{
+			return m_BufferDescription.m_SizeInBytes;
+		}
+
 	protected:
 		Buffer(BufferDescription a_BufferDescription)
 			: m_BufferDescription(a_BufferDescription)

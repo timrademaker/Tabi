@@ -38,7 +38,6 @@ int GLAD_GL_VERSION_4_2 = 0;
 int GLAD_GL_VERSION_4_3 = 0;
 int GLAD_GL_VERSION_4_4 = 0;
 int GLAD_GL_VERSION_4_5 = 0;
-int GLAD_GL_VERSION_4_6 = 0;
 int GLAD_GL_3DFX_multisample = 0;
 int GLAD_GL_3DFX_tbuffer = 0;
 int GLAD_GL_3DFX_texture_compression_FXT1 = 0;
@@ -358,6 +357,7 @@ int GLAD_GL_EXT_shader_framebuffer_fetch_non_coherent = 0;
 int GLAD_GL_EXT_shader_image_load_formatted = 0;
 int GLAD_GL_EXT_shader_image_load_store = 0;
 int GLAD_GL_EXT_shader_integer_mix = 0;
+int GLAD_GL_EXT_shader_samples_identical = 0;
 int GLAD_GL_EXT_shadow_funcs = 0;
 int GLAD_GL_EXT_shared_texture_palette = 0;
 int GLAD_GL_EXT_sparse_texture2 = 0;
@@ -1857,7 +1857,6 @@ PFNGLMULTIDRAWARRAYSINDIRECTPROC glad_glMultiDrawArraysIndirect = NULL;
 PFNGLMULTIDRAWARRAYSINDIRECTAMDPROC glad_glMultiDrawArraysIndirectAMD = NULL;
 PFNGLMULTIDRAWARRAYSINDIRECTBINDLESSCOUNTNVPROC glad_glMultiDrawArraysIndirectBindlessCountNV = NULL;
 PFNGLMULTIDRAWARRAYSINDIRECTBINDLESSNVPROC glad_glMultiDrawArraysIndirectBindlessNV = NULL;
-PFNGLMULTIDRAWARRAYSINDIRECTCOUNTPROC glad_glMultiDrawArraysIndirectCount = NULL;
 PFNGLMULTIDRAWARRAYSINDIRECTCOUNTARBPROC glad_glMultiDrawArraysIndirectCountARB = NULL;
 PFNGLMULTIDRAWELEMENTARRAYAPPLEPROC glad_glMultiDrawElementArrayAPPLE = NULL;
 PFNGLMULTIDRAWELEMENTSPROC glad_glMultiDrawElements = NULL;
@@ -1867,7 +1866,6 @@ PFNGLMULTIDRAWELEMENTSINDIRECTPROC glad_glMultiDrawElementsIndirect = NULL;
 PFNGLMULTIDRAWELEMENTSINDIRECTAMDPROC glad_glMultiDrawElementsIndirectAMD = NULL;
 PFNGLMULTIDRAWELEMENTSINDIRECTBINDLESSCOUNTNVPROC glad_glMultiDrawElementsIndirectBindlessCountNV = NULL;
 PFNGLMULTIDRAWELEMENTSINDIRECTBINDLESSNVPROC glad_glMultiDrawElementsIndirectBindlessNV = NULL;
-PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTPROC glad_glMultiDrawElementsIndirectCount = NULL;
 PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTARBPROC glad_glMultiDrawElementsIndirectCountARB = NULL;
 PFNGLMULTIDRAWMESHTASKSINDIRECTCOUNTNVPROC glad_glMultiDrawMeshTasksIndirectCountNV = NULL;
 PFNGLMULTIDRAWMESHTASKSINDIRECTNVPROC glad_glMultiDrawMeshTasksIndirectNV = NULL;
@@ -2438,7 +2436,6 @@ PFNGLSIGNALSEMAPHOREEXTPROC glad_glSignalSemaphoreEXT = NULL;
 PFNGLSIGNALSEMAPHOREUI64NVXPROC glad_glSignalSemaphoreui64NVX = NULL;
 PFNGLSIGNALVKFENCENVPROC glad_glSignalVkFenceNV = NULL;
 PFNGLSIGNALVKSEMAPHORENVPROC glad_glSignalVkSemaphoreNV = NULL;
-PFNGLSPECIALIZESHADERPROC glad_glSpecializeShader = NULL;
 PFNGLSPECIALIZESHADERARBPROC glad_glSpecializeShaderARB = NULL;
 PFNGLSPRITEPARAMETERFSGIXPROC glad_glSpriteParameterfSGIX = NULL;
 PFNGLSPRITEPARAMETERFVSGIXPROC glad_glSpriteParameterfvSGIX = NULL;
@@ -3900,13 +3897,6 @@ static void glad_gl_load_GL_VERSION_4_5( GLADuserptrloadfunc load, void* userptr
     glad_glVertexArrayElementBuffer = (PFNGLVERTEXARRAYELEMENTBUFFERPROC) load(userptr, "glVertexArrayElementBuffer");
     glad_glVertexArrayVertexBuffer = (PFNGLVERTEXARRAYVERTEXBUFFERPROC) load(userptr, "glVertexArrayVertexBuffer");
     glad_glVertexArrayVertexBuffers = (PFNGLVERTEXARRAYVERTEXBUFFERSPROC) load(userptr, "glVertexArrayVertexBuffers");
-}
-static void glad_gl_load_GL_VERSION_4_6( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GL_VERSION_4_6) return;
-    glad_glMultiDrawArraysIndirectCount = (PFNGLMULTIDRAWARRAYSINDIRECTCOUNTPROC) load(userptr, "glMultiDrawArraysIndirectCount");
-    glad_glMultiDrawElementsIndirectCount = (PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTPROC) load(userptr, "glMultiDrawElementsIndirectCount");
-    glad_glPolygonOffsetClamp = (PFNGLPOLYGONOFFSETCLAMPPROC) load(userptr, "glPolygonOffsetClamp");
-    glad_glSpecializeShader = (PFNGLSPECIALIZESHADERPROC) load(userptr, "glSpecializeShader");
 }
 static void glad_gl_load_GL_3DFX_tbuffer( GLADuserptrloadfunc load, void* userptr) {
     if(!GLAD_GL_3DFX_tbuffer) return;
@@ -7663,6 +7653,7 @@ static int glad_gl_find_extensions_gl( int version) {
     GLAD_GL_EXT_shader_image_load_formatted = glad_gl_has_extension(version, exts, num_exts_i, exts_i, "GL_EXT_shader_image_load_formatted");
     GLAD_GL_EXT_shader_image_load_store = glad_gl_has_extension(version, exts, num_exts_i, exts_i, "GL_EXT_shader_image_load_store");
     GLAD_GL_EXT_shader_integer_mix = glad_gl_has_extension(version, exts, num_exts_i, exts_i, "GL_EXT_shader_integer_mix");
+    GLAD_GL_EXT_shader_samples_identical = glad_gl_has_extension(version, exts, num_exts_i, exts_i, "GL_EXT_shader_samples_identical");
     GLAD_GL_EXT_shadow_funcs = glad_gl_has_extension(version, exts, num_exts_i, exts_i, "GL_EXT_shadow_funcs");
     GLAD_GL_EXT_shared_texture_palette = glad_gl_has_extension(version, exts, num_exts_i, exts_i, "GL_EXT_shared_texture_palette");
     GLAD_GL_EXT_sparse_texture2 = glad_gl_has_extension(version, exts, num_exts_i, exts_i, "GL_EXT_sparse_texture2");
@@ -8008,7 +7999,6 @@ static int glad_gl_find_core_gl(void) {
     GLAD_GL_VERSION_4_3 = (major == 4 && minor >= 3) || major > 4;
     GLAD_GL_VERSION_4_4 = (major == 4 && minor >= 4) || major > 4;
     GLAD_GL_VERSION_4_5 = (major == 4 && minor >= 5) || major > 4;
-    GLAD_GL_VERSION_4_6 = (major == 4 && minor >= 6) || major > 4;
 
     return GLAD_MAKE_VERSION(major, minor);
 }
@@ -8039,7 +8029,6 @@ int gladLoadGLUserPtr( GLADuserptrloadfunc load, void *userptr) {
     glad_gl_load_GL_VERSION_4_3(load, userptr);
     glad_gl_load_GL_VERSION_4_4(load, userptr);
     glad_gl_load_GL_VERSION_4_5(load, userptr);
-    glad_gl_load_GL_VERSION_4_6(load, userptr);
 
     if (!glad_gl_find_extensions_gl(version)) return 0;
     glad_gl_load_GL_3DFX_tbuffer(load, userptr);

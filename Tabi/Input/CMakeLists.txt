@@ -9,6 +9,7 @@ set(HEADERS
     inc/Enums/EMouse.h
     inc/Enums/EKeyboard.h
     inc/Enums/EInputDevice.h
+    inc/Helpers/KeyboardKeyToChar.h
 )
 
 # Set sources for Input
@@ -16,6 +17,7 @@ set(SOURCES
     # src/IInput.cpp
     src/InputManager.cpp
     src/IInputHandler.cpp
+    src/Helpers/KeyboardKeyToChar.cpp
 )
 
 if(WINDOWS)

@@ -5,16 +5,19 @@
 #include <IInputHandler.h>
 
 #include <IDevice.h>
+#include <ICommandList.h>
+
+#include <Graphics.h>
+
+#include <TabiImGui.h>
 
 #include <Logging.h>
 
-#include <cassert>
 #include <chrono>
 
 #if defined(_WINDOWS)
 #include "Windows/WindowsInputHandler.h"
 #endif
-
 
 tabi::IDevice* s_Device = nullptr;
 
@@ -22,7 +25,6 @@ using tabi::Application;
 using tabi::GameBase;
 using tabi::logger::ELogLevel;
 using tabi::logger::TabiLog;
-
 
 Application& Application::Get()
 {
@@ -36,7 +38,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
     Get().Initialize(a_Game->GetWindowName(), a_Game->GetWindowWidth(), a_Game->GetWindowHeight());
 
     if (!a_Game->OnInitialize()) {
-        TabiLog(ELogLevel::Error, "Failed to initialize game!");
+        TABI_ERROR("Failed to initialize game!");
         return 1;
     }
 
@@ -54,12 +56,15 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         // TODO: Update active scene?
         // TODO: Update subsystems
 
-        s_Device->BeginFrame();
+        graphics::BeginFrame();
+
+        tabi::imgui::NewFrame(deltaTime);
 
         a_Game->OnRender();
 
-        s_Device->EndFrame();
-        s_Device->Present();
+        tabi::imgui::EndFrame();
+
+        graphics::EndFrame();
 
         InputManager::Update();
 
@@ -71,7 +76,7 @@ int Application::Run(tabi::shared_ptr<GameBase> a_Game)
         MSG msg = MSG();
         while(PeekMessage(&msg, windowHandle, NULL, NULL, PM_REMOVE))
         {
-            reinterpret_cast<InputHandler*>(&IInputHandler::GetInstance())->HandleMsg(msg);
+            InputManager::HandleWindowMsg(&msg);
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
@@ -92,23 +97,21 @@ void Application::Initialize(const char* a_WindowTitle, unsigned int a_Width, un
     {
         // Create window
         graphics::IWindow::Initialize(a_WindowTitle, a_Width, a_Height);
-        const auto& window = graphics::IWindow::GetInstance();
 
         s_Device = tabi::IDevice::GetInstance();
         s_Device->Initialize(graphics::IWindow::GetInstance().GetHandle(), a_Width, a_Height);
 
-        window.OnWindowResize().Subscribe(s_Device, [device = s_Device](tabi::WindowResizeEventData a_Data)
-        {
-                device->ResizeRenderingContext(a_Data.m_NewWidth, a_Data.m_NewHeight);
-        });
-
         m_Initialized = true;
+
+        tabi::imgui::Init();
     }
 }
 
 
 void Application::Destroy()
 {
+    tabi::imgui::Shutdown();
+
     graphics::IWindow::GetInstance().OnWindowResize().Unsubscribe(s_Device);
     s_Device->Finalize();
 }

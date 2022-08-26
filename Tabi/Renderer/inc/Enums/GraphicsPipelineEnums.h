@@ -52,6 +52,7 @@ namespace tabi
 
 	enum class EColorMask : uint8_t
 	{
+		None = 0,
 		Red = 1 << 0,
 		Green = 1 << 1,
 		Blue = 1 << 2,

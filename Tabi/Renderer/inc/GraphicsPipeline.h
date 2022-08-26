@@ -20,12 +20,16 @@ namespace tabi
 		EBlendFactor m_SourceBlendFactorAlpha = EBlendFactor::One;
 		EBlendFactor m_DestBlendFactorAlpha = EBlendFactor::Zero;
 		EBlendOperation m_BlendOperationAlpha = EBlendOperation::Add;
+
+		// Describes which colors can be drawn to the blend target
+		EColorMask m_ColorWriteMask = EColorMask::All;
 	};
 
 	struct RasterizerState
 	{
 		EPolygonMode m_PolygonMode = EPolygonMode::Fill;
 		ECullMode m_CullMode = ECullMode::Back;
+		bool m_ScissorEnabled = false;
 
 		// If true, a triangle will be considered front-facing if its vertices are counter-clockwise on the render target
 		bool m_TriangleFrontIsCounterClockwise = false;

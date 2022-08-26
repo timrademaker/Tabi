@@ -68,3 +68,18 @@ TEST(EventSystemTests, UnsubscribeAll)
     EXPECT_CALL(mo, EventCallback(::testing::_)).Times(0);
     ev.Broadcast({});
 }
+
+TEST(EventSystemTests, SubscribeToEmptyEvent)
+{
+    // Create event
+    tabi::Event ev;
+    // Create object and subscribe to event
+    MockObject mo;
+    ev.Subscribe(&mo, &MockObject::EmptyEventCallback);
+    ASSERT_TRUE(ev.HasSubscribers());
+
+    EXPECT_CALL(mo, EmptyEventCallback()).Times(1);
+
+    // Broadcast event
+    ev.Broadcast();
+}

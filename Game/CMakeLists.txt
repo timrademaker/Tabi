@@ -26,5 +26,5 @@ target_link_libraries(Game PRIVATE ResourceManager imgui)
 add_custom_command(
     TARGET Game
     POST_BUILD
-	COMMAND xcopy \"${CMAKE_SOURCE_DIR}/Assets\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets\" /S /Y /I /C
+	COMMAND xcopy \"${CMAKE_CURRENT_LIST_DIR}/../Assets\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets\" /S /Y /I /C
 )

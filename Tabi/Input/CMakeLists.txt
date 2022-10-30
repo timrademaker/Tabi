@@ -14,13 +14,12 @@ set(HEADERS
 
 # Set sources for Input
 set(SOURCES
-    # src/IInput.cpp
     src/InputManager.cpp
     src/IInputHandler.cpp
     src/Helpers/KeyboardKeyToChar.cpp
 )
 
-if(WINDOWS)
+if(WIN32)
     list(APPEND HEADERS 
         inc/Windows/WindowsInputHandler.h
     )
@@ -31,11 +30,6 @@ if(WINDOWS)
     )
 endif()
 
-if(ORBIS)
-
-    
-endif()
-
 # Add source to this project's executable.
 # Don't specify STATIC or SHARED explicitly, as the type of library is determined through the variable BUILD_SHARED_LIBS
 add_library(Input EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
@@ -44,5 +38,9 @@ add_library(Input EXCLUDE_FROM_ALL ${SOURCES} ${HEADERS})
 target_include_directories(Input PUBLIC ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 # Add libraries
-target_link_libraries(Input PUBLIC TabiCommon Logger Utilities gainput)
+target_link_libraries(Input PUBLIC TabiCommon Logger Utilities)
 target_link_libraries(Input PRIVATE Graphics)
+
+if(WIN32)
+    target_link_libraries(Input PUBLIC gainput)
+endif()

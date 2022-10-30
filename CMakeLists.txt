@@ -10,9 +10,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin/${BUILD_PLATFORM}/${CMAKE_BUILD_TYPE}/bin")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin/${BUILD_PLATFORM}/${CMAKE_BUILD_TYPE}/lib")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin/${BUILD_PLATFORM}/${CMAKE_BUILD_TYPE}/lib")
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin/${BUILD_PLATFORM}/${CMAKE_BUILD_TYPE}/bin")
+else()
+    set(NO_TABI_EXAMPLE_GAME True)  # If CMAKE_RUNTIME_OUTPUT_DIRECTORY is set, we simply assume the project is used as a submodule
+endif()
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin/${BUILD_PLATFORM}/${CMAKE_BUILD_TYPE}/lib")
+endif()
+if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/bin/${BUILD_PLATFORM}/${CMAKE_BUILD_TYPE}/lib")
+endif()
 
 # Set compiler options
 if (MSVC)
@@ -22,21 +30,20 @@ else ()
 	
 endif ()
 
-if(USE_OPENGL)
+if(WIN32)
+    set(USE_OPENGL True)
     add_compile_definitions("OPENGL")
     add_compile_definitions(MINIMUM_OGL_VERSION_MAJOR=4)
     add_compile_definitions(MINIMUM_OGL_VERSION_MINOR=5)
 endif()
 
-
 # Include sub-projects.
 add_subdirectory("Tabi")
-add_subdirectory("Game")
 add_subdirectory("ThirdParty")
 
-# Copy assets to output directory
-file(COPY "Assets" DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-
+if (NOT NO_TABI_EXAMPLE_GAME)
+    add_subdirectory("Game")
+endif()
 
 include(CTest)
 

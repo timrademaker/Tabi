@@ -28,5 +28,5 @@ target_link_libraries(Core PRIVATE Logger Input)
 add_custom_command(
     TARGET Core
     POST_BUILD
-    COMMAND xcopy \"${CMAKE_SOURCE_DIR}/TabiAssets\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TabiAssets\" /S /Y /I /C
+    COMMAND xcopy \"${CMAKE_CURRENT_LIST_DIR}/../../TabiAssets\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TabiAssets\" /S /Y /I /C
 )

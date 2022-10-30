@@ -11,7 +11,7 @@ set(SOURCES
     src/IFile.cpp
 )
 
-if(WINDOWS)
+if(WIN32)
     list(APPEND HEADERS 
         inc/Windows/FileWindows.h
     )
@@ -19,11 +19,6 @@ if(WINDOWS)
     list(APPEND SOURCES
         src/Windows/FileWindows.cpp
     )
-endif()
-
-if(ORBIS)
-
-    
 endif()
 
 # Add source to this project's executable.

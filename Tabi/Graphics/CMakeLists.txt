@@ -16,7 +16,7 @@ set(SOURCES
     src/IWindow.cpp
 )
 
-if(WINDOWS)
+if(WIN32)
     list(APPEND HEADERS 
         inc/Windows/WindowsWindow.h
     )

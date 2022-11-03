@@ -16,7 +16,7 @@ tabi::shared_ptr<Material> Material::LoadMaterial(const tinygltf::Model& a_Model
 
     auto loadedMaterial = tabi::make_shared<Material>();
     loadedMaterial->m_DoubleSided = mat.doubleSided;
-    auto metalicRoughness = tabi::make_unique<MetalicRoughness>();
+    auto metalicRoughness = tabi::make_unique<MetallicRoughness>();
     auto& baseColor = mat.pbrMetallicRoughness.baseColorFactor;
     metalicRoughness->m_BaseColorFactor = tabi::vec4(
         static_cast<float>(baseColor[0]),
@@ -35,7 +35,7 @@ tabi::shared_ptr<Material> Material::LoadMaterial(const tinygltf::Model& a_Model
         loadedMaterial->m_NormalTexture = TextureResource::LoadTextureFromModel(a_Model, mat.normalTexture.index);
     }
 
-    loadedMaterial->m_MetalicRoughness = std::move(metalicRoughness);
+    loadedMaterial->m_MetallicRoughness = std::move(metalicRoughness);
 
     loadedMaterial->m_Name = tabi::string(mat.name.c_str());
 

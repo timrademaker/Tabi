@@ -14,7 +14,7 @@ namespace tinygltf
 
 namespace tabi
 {
-    struct MetalicRoughness
+    struct MetallicRoughness
     {
         vec4 m_BaseColorFactor;
         tabi::shared_ptr<TextureResource> m_BaseColorTexture;
@@ -30,7 +30,7 @@ namespace tabi
 
     public:
         bool m_DoubleSided = false;
-        tabi::unique_ptr<MetalicRoughness> m_MetalicRoughness;
+        tabi::unique_ptr<MetallicRoughness> m_MetallicRoughness;
         tabi::shared_ptr<TextureResource> m_NormalTexture;
 
         tabi::string m_Name;

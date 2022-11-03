@@ -35,6 +35,11 @@ namespace tabi
 
         static tabi::shared_ptr<Mesh> LoadMesh(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
 
+        const class Buffer* GetVertexBuffer() const { return m_VertexBuffer; }
+        unsigned int GetVertexCount() const { return m_VertexCount; }
+        const class Buffer* GetIndexBuffer() const { return m_IndexBuffer;  }
+        unsigned int GetIndexCount() const { return m_IndexCount; }
+
     private:
         static Mesh LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a_ModelIndex = 0);
 
@@ -42,13 +47,19 @@ namespace tabi
         tabi::vector<Vertex> m_Vertices;
         tabi::vector<unsigned> m_Indices;
 
-        unsigned int m_VertexCount = 0;
-
         tabi::shared_ptr<Material> m_Material = nullptr;
 
         bool m_TextureCoordinatesAreNormalized = false;
 
         tabi::string m_Name;
+
+    private:
+        // TODO: Either remove these two or remove the vectors above
+        unsigned int m_VertexCount = 0;
+        unsigned int m_IndexCount = 0;
+
+        class Buffer* m_VertexBuffer = nullptr;
+        class Buffer* m_IndexBuffer = nullptr;
     };
 
 }

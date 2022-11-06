@@ -50,7 +50,7 @@ tabi::Shader* tabi::graphics::LoadShader(const char* a_ShaderPath, tabi::EShader
         shaderFile->GetLength(fileLen);
         shaderContent.resize(fileLen + 1);
 
-        auto result = shaderFile->Read(&shaderContent[0], fileLen);
+        const auto result = shaderFile->Read(&shaderContent[0], fileLen);
         if (!tabi::IFile::IsSuccess(result))
         {
             TABI_ERROR("Unable to read content from shader \"%s\"", a_ShaderPath);
@@ -59,6 +59,11 @@ tabi::Shader* tabi::graphics::LoadShader(const char* a_ShaderPath, tabi::EShader
         }
 
         shaderFile->Close();
+
+        if(a_DebugName == nullptr)
+        {
+            a_DebugName = a_ShaderPath;
+        }
 
         return tabi::IDevice::GetInstance()->CreateShader(tabi::ShaderDescription{ a_ShaderType, shaderContent.data(), shaderContent.size() }, a_DebugName);
     }

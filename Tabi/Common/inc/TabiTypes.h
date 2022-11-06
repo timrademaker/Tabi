@@ -15,7 +15,7 @@ namespace tabi
 
     namespace resources
     {
-        using ResouceID = unsigned long long int;
+        using ResourceID = unsigned long long int;
     }
 
     namespace graphics
@@ -23,6 +23,5 @@ namespace tabi
 #if defined(_WINDOWS)
         using WindowHandle = HWND;
 #endif
-        using ShaderHandle = unsigned int;
     }
 }

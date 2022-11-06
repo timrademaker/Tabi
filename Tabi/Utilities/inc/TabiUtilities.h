@@ -15,6 +15,6 @@ namespace tabi
         */
         tabi::string StringReplace(const tabi::string& a_String, const tabi::string& a_Search, const tabi::string& a_Replacement);
 
-        tabi::resources::ResouceID CalculateResourceID(const char* a_FilePath);
+        tabi::resources::ResourceID CalculateResourceID(const char* a_FilePath);
     }
 }

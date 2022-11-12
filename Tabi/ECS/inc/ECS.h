@@ -37,14 +37,7 @@ namespace tabi
          * @param a_Entity The entity for which to retrieve the signature
          * @returns The signature of the entity
          */
-        EntitySignature GetEntitySignature(const Entity a_Entity);
-        /**
-         * @brief Sets the signature of an entity
-         * @param a_Entity The entity of which the signature should be modified
-         * @param a_Signature The signature to apply to the entity
-         */
-        void SetEntitySignature(const Entity a_Entity, const EntitySignature& a_Signature);
-
+        EntitySignature GetEntitySignature(const Entity a_Entity) const;
 
         /**  ComponentManager **/
 
@@ -79,7 +72,6 @@ namespace tabi
 
         /**
          * @brief Register a new system
-         * @param a_ComponentManager The ComponentManager this system is used on
          * @returns The created system
          */
         template<typename SystemType>

@@ -47,7 +47,7 @@ namespace tabi
     template <typename ComponentType>
     void ComponentArray<ComponentType>::AddComponent(const Entity a_Entity, ComponentType& a_Component)
     {
-        // Check if the entity alrady has this component
+        // Check if the entity already has this component
         TABI_ASSERT(m_EntitiesWithComponent.find(a_Entity) == m_EntitiesWithComponent.end());
 
         m_Components[a_Entity] = a_Component;

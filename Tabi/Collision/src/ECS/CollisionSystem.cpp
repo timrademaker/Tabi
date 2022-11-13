@@ -6,10 +6,15 @@
 #include <ComponentManager.h>
 #include <Components/Transform.h>
 
-void tabi::CollisionSystem::OnUpdate(float a_DeltaTime)
+tabi::CollisionSystem::CollisionSystem(tabi::ComponentManager* a_ComponentManager)
+    : ISystem(a_ComponentManager)
 {
-    TABI_UNUSED(a_DeltaTime);
+    RequireComponent<tabi::Transform>();
+    RequireComponent<tabi::ColliderComponent>();
+}
 
+void tabi::CollisionSystem::OnUpdate(float)
+{
     for(auto ent1iter = m_Entities.begin(); std::next(ent1iter) != m_Entities.end(); ++ent1iter)
     {
         const auto& ent1 = *ent1iter;

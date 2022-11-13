@@ -49,6 +49,13 @@ namespace tabi
     }
 }
 
+tabi::StaticMeshRenderSystem::StaticMeshRenderSystem(tabi::ComponentManager* a_ComponentManager)
+    : ISystem(a_ComponentManager)
+{
+    RequireComponent<Transform>();
+    RequireComponent<StaticMeshComponent>();
+}
+
 tabi::StaticMeshRenderSystem::~StaticMeshRenderSystem()
 {
     auto* device = IDevice::GetInstance();

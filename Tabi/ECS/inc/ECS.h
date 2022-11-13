@@ -65,7 +65,7 @@ namespace tabi
          * @returns The ID of a component type
          */
         template<typename ComponentType>
-        ComponentTypeID GetComponentTypeID();
+        ComponentTypeID GetComponentTypeID() const;
 
 
         /** SystemManager **/
@@ -75,19 +75,8 @@ namespace tabi
          * @returns The created system
          */
         template<typename SystemType>
-        tabi::shared_ptr<SystemType> RegisterSystem();
-        /**
-         * @brief Set whether a component type is required or not for a system
-         * @param a_Required True if the system requires the component, false if not
-         */
-        template<typename SystemType, typename ComponentType>
-        void SetComponentTypeRequired(bool a_Required);
-        /**
-         * @brief Set the signature of a system
-         * @param a_Signature The signature to apply to the system
-         */
-        template<typename SystemType>
-        void SetSystemSignature(const SystemSignature& a_Signature);
+        std::enable_if_t<std::is_base_of_v<ISystem, SystemType>, tabi::shared_ptr<SystemType>> RegisterSystem();
+        
         /**
          * @brief Updates all registered systems
          * @param a_DeltaTime The time between the previous update and this update
@@ -123,7 +112,7 @@ namespace tabi
     }
 
     template<typename ComponentType>
-    inline ComponentTypeID ECS::GetComponentTypeID()
+    inline ComponentTypeID ECS::GetComponentTypeID() const
     {
         return m_ComponentManager->GetComponentTypeID<ComponentType>();
     }
@@ -141,33 +130,16 @@ namespace tabi
     }
 
     template<typename SystemType>
-    inline tabi::shared_ptr<SystemType> ECS::RegisterSystem()
+    std::enable_if_t<std::is_base_of_v<ISystem, SystemType>, tabi::shared_ptr<SystemType>> ECS::RegisterSystem()
     {
-        return std::move(m_SystemManager->RegisterSystem<SystemType>(m_ComponentManager.get()));
-    }
+        auto system = m_SystemManager->RegisterSystem<SystemType>(m_ComponentManager.get());
+        const auto signature = system->GetSystemSignature();
 
-    template<typename SystemType, typename ComponentType>
-    inline void ECS::SetComponentTypeRequired(bool a_Required)
-    {
-        auto systemSig = m_SystemManager->GetSystemSignature<SystemType>();
-        
-
-        systemSig.set(m_ComponentManager->GetComponentTypeID<ComponentType>(), a_Required);
-        
-       SetSystemSignature<SystemType>(systemSig);
-    }
-    
-    template<typename SystemType>
-    inline void ECS::SetSystemSignature(const SystemSignature& a_Signature)
-    {
-        m_SystemManager->SetSystemSignature<SystemType>(a_Signature);
-
+        // Add all existing entities with a matching signature to the system
         const auto& entitySignatures = m_EntityManager->GetAllSignatures();
-        auto system = m_SystemManager->GetSystem<SystemType>();
-
         for (tabi::Entity ent = 0; ent < entitySignatures.size(); ++ent)
         {
-            if ((entitySignatures[ent] & a_Signature) == a_Signature)
+            if ((entitySignatures[ent] & signature) == signature)
             {
                 system->m_Entities.insert(ent);
             }
@@ -176,5 +148,7 @@ namespace tabi
                 system->m_Entities.erase(ent);
             }
         }
+
+        return std::move(system);
     }
 }

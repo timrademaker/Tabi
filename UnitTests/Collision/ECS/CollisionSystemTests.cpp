@@ -18,8 +18,6 @@ protected:
     {
         // Register collision system
         m_ECS.RegisterSystem<tabi::CollisionSystem>();
-        m_ECS.SetComponentTypeRequired<tabi::CollisionSystem, tabi::Transform>(true);
-        m_ECS.SetComponentTypeRequired<tabi::CollisionSystem, tabi::ColliderComponent>(true);
 
         // Create two entities
         CreateEntityWithCollider(m_Entity1, m_Collider1, m_CollisionCallback1);

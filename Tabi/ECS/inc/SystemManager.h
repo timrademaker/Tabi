@@ -33,19 +33,6 @@ namespace tabi
         tabi::shared_ptr<SystemType> GetSystem();
 
         /**
-         * @brief Get the signature of a system
-         * @returns The system's signature
-         */
-        template<typename SystemType>
-        SystemSignature GetSystemSignature();
-        /**
-         * @brief Set the signature of a system
-         * @params a_Signature The signature to apply to the system
-         */
-        template<typename SystemType>
-        void SetSystemSignature(const SystemSignature& a_Signature);
-
-        /**
          * @brief Should be called when an entity is destroyed
          * @params a_Entity The entity that was destroyed
          */
@@ -76,10 +63,8 @@ namespace tabi
         static SystemTypeHash CreateHash();
 
     private:
-        /// A map containing registered systems
+        /** A map containing registered systems */
         tabi::map<SystemTypeHash, tabi::shared_ptr<ISystem>> m_Systems;
-        /// A map containing the signatures of registered systems
-        tabi::map<SystemTypeHash, SystemSignature> m_SystemSignatures;
     };
 
     template <typename SystemType>
@@ -103,28 +88,6 @@ namespace tabi
         // Check if the system has already been registered
         TABI_ASSERT(m_Systems.find(hash) != m_Systems.end());
         return std::static_pointer_cast<SystemType>(m_Systems[hash]);
-    }
-
-    template<typename SystemType>
-    inline SystemSignature SystemManager::GetSystemSignature()
-    {
-        const SystemTypeHash hash = CreateHash<SystemType>();
-
-        // Check if the system exists;
-        TABI_ASSERT(m_Systems.find(hash) != m_Systems.end());
-
-        return m_SystemSignatures[hash];
-    }
-
-    template <typename SystemType>
-    inline void SystemManager::SetSystemSignature(const SystemSignature& a_Signature)
-    {
-        const SystemTypeHash hash = CreateHash<SystemType>();
-
-        // Check if the system exists;
-        TABI_ASSERT(m_Systems.find(hash) != m_Systems.end());
-
-        m_SystemSignatures[hash] = a_Signature;
     }
 
     template <typename SystemType>

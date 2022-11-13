@@ -7,8 +7,7 @@ namespace tabi
     class StaticMeshRenderSystem final : public ISystem
     {
     public:
-        StaticMeshRenderSystem(tabi::ComponentManager* a_ComponentManager)
-            : ISystem(a_ComponentManager) {}
+        StaticMeshRenderSystem(tabi::ComponentManager* a_ComponentManager);
         virtual ~StaticMeshRenderSystem() override;
 
         virtual void OnRender() override;

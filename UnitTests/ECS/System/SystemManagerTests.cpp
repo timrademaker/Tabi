@@ -7,18 +7,10 @@
 
 TEST(SystemManagerTests, SystemRegistration)
 {
+    tabi::ComponentManager compMan;
     tabi::SystemManager sysMan;
-    tabi::shared_ptr<MockSystem> registeredSystem = sysMan.RegisterSystem<MockSystem>(nullptr);
 
-    EXPECT_EQ(sysMan.GetSystem<MockSystem>(), registeredSystem);
-}
+    const tabi::shared_ptr<MockSystem> registeredSystem = sysMan.RegisterSystem<MockSystem>(&compMan);
 
-TEST(SystemManagerTests, SystemSignature)
-{
-    tabi::SystemManager sysMan;
-    tabi::shared_ptr<MockSystem> registeredSystem = sysMan.RegisterSystem<MockSystem>(nullptr);
-    const tabi::SystemSignature expectedSignature{ 0b101 };
-    sysMan.SetSystemSignature<MockSystem>(expectedSignature);
-
-    EXPECT_EQ(sysMan.GetSystemSignature<MockSystem>(), expectedSignature);
+    EXPECT_EQ(sysMan.GetSystem<MockSystem>().get(), registeredSystem.get());
 }

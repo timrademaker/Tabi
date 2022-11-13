@@ -14,9 +14,8 @@ void SystemManager::OnEntitySignatureChanged(const Entity a_Entity, EntitySignat
 {
     for(const auto& pair : m_Systems)
     {
-        const auto& hash = pair.first;
         const auto& system = pair.second;
-        const auto& systemSignature = m_SystemSignatures[hash];
+        const auto& systemSignature = system->GetSystemSignature();
 
         if((a_Signature & systemSignature) == systemSignature)
         {

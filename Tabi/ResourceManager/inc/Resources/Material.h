@@ -11,7 +11,6 @@ namespace tinygltf
     class Model;
 }
 
-
 namespace tabi
 {
     struct MetallicRoughness
@@ -19,7 +18,7 @@ namespace tabi
         vec4 m_BaseColorFactor;
         tabi::shared_ptr<TextureResource> m_BaseColorTexture;
 
-        float m_MetalicFactor;
+        float m_MetallicFactor;
         float m_RoughnessFactor;
     };
 

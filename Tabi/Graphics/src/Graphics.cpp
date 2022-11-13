@@ -11,6 +11,8 @@
 
 #include <Logging.h>
 
+#include "Texture.h"
+#include "TextureUpdateDescription.h"
 void tabi::graphics::BeginFrame()
 {
     auto* device = IDevice::GetInstance();
@@ -71,4 +73,27 @@ tabi::Shader* tabi::graphics::LoadShader(const char* a_ShaderPath, tabi::EShader
     TABI_ERROR("Unable to read content from shader \"%s\"", a_ShaderPath);
     TABI_ASSERT(false);
     return nullptr;
+}
+
+tabi::Texture* tabi::LoadTexture(EFormat a_Format, ETextureDimension a_Dimension, uint64_t a_Width, uint64_t a_Height, uint16_t a_Depth, const void* a_Data, const char* a_DebugName)
+{
+    auto* device = IDevice::GetInstance();
+    auto* cmd = device->CreateCommandList("LoadTexture");
+    cmd->BeginRecording();
+
+    auto* tex = device->CreateTexture(TextureDescription{ a_Dimension, ETextureRole::Texture, a_Format, a_Width, a_Height, a_Depth, 1}, a_DebugName);
+
+    TextureUpdateDescription tud;
+    tud.m_Data = a_Data;
+    tud.m_DataWidth = a_Width;
+    tud.m_DataHeight = a_Height;
+    tud.m_DataDepth = a_Depth;
+    tud.m_MipLevel = 0;
+    cmd->CopyDataToTexture(tex, tud);
+
+    cmd->EndRecording();
+    device->ExecuteCommandList(cmd);
+    device->DestroyCommandList(cmd);
+
+    return tex;
 }

@@ -92,7 +92,11 @@ namespace tabi
          * @brief Updates all registered systems
          * @param a_DeltaTime The time between the previous update and this update
          */
-        void Update(float a_DeltaTime);
+        void Update(float a_DeltaTime) const;
+        /**
+         * @brief Calls OnRender() on all registered systems
+         */
+        void Render() const;
 
     private:
         tabi::unique_ptr<EntityManager> m_EntityManager;

@@ -1,5 +1,6 @@
 #include "Graphics.h"
 
+#include "Camera.h"
 #include "IWindow.h"
 
 #include <ICommandList.h>
@@ -13,6 +14,12 @@
 
 #include "Texture.h"
 #include "TextureUpdateDescription.h"
+
+namespace tabi
+{
+    Camera* s_MainCamera = nullptr;
+}
+
 void tabi::graphics::BeginFrame()
 {
     auto* device = IDevice::GetInstance();
@@ -21,7 +28,7 @@ void tabi::graphics::BeginFrame()
 
     // Bind default render target and clear its color- and stencil values
     cmd->SetRenderTarget(nullptr);
-    static constexpr float clearColor[] = { 0.109f, 0.4218f, 0.8984f, 1.0f };
+    static constexpr float clearColor[] = { 0.109f, 0.4218f, 0.8984f, 1.0f };   // TODO: Allow users to specify clear color
     cmd->ClearRenderTarget(nullptr, clearColor);
     cmd->ClearDepthStencil(nullptr);
 
@@ -39,7 +46,17 @@ void tabi::graphics::EndFrame()
     device->Present();
 }
 
-tabi::Shader* tabi::graphics::LoadShader(const char* a_ShaderPath, tabi::EShaderType a_ShaderType, const char* a_DebugName)
+tabi::Camera* tabi::graphics::GetMainCamera()
+{
+    return s_MainCamera;
+}
+
+void tabi::graphics::SetMainCamera(tabi::Camera* a_Camera)
+{
+    s_MainCamera = a_Camera;
+}
+
+tabi::Shader* tabi::LoadShader(const char* a_ShaderPath, tabi::EShaderType a_ShaderType, const char* a_DebugName)
 {
     TABI_ASSERT(a_ShaderPath != nullptr);
 

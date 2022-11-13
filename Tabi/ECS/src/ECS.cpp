@@ -27,8 +27,13 @@ tabi::EntitySignature tabi::ECS::GetEntitySignature(const Entity a_Entity) const
     return m_EntityManager->GetSignature(a_Entity);
 }
 
-void tabi::ECS::Update(float a_DeltaTime)
+void tabi::ECS::Update(float a_DeltaTime) const
 {
     m_SystemManager->Update(a_DeltaTime);
+}
+
+void ECS::Render() const
+{
+    m_SystemManager->Render();
 }
 

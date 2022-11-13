@@ -20,9 +20,13 @@ namespace tabi
 
         /**
          * @brief Updates a system
-         * @params a_DeltaTime The time between the previous update and this update
+         * @param a_DeltaTime The time between the previous update and this update
          */
-        virtual void OnUpdate(float a_DeltaTime) = 0;
+        virtual void OnUpdate(float a_DeltaTime) { }
+        /**
+         * @brief Function that is called after all systems have been updated and a new frame has started
+         */
+        virtual void OnRender() { }
 
     public:
         /// The entities that have the components this system requires

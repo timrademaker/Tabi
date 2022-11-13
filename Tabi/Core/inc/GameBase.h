@@ -13,23 +13,23 @@ namespace tabi
         virtual ~GameBase() = default;
     
         /**
-        * Called after the engine subsystems have been initialized.
-        * @return Whether the initialization was successful or not
+        * Called after the engine subsystems have been initialized
+        * @returns Whether the initialization was successful or not
         */
         virtual bool OnInitialize() { return true; };
         
         /**
-        * Called every tick, before engine systems have been updated.
+        * Called every tick, before engine systems have been updated
         */
         virtual void OnUpdate(float a_DeltaTime) { TABI_UNUSED(a_DeltaTime); };
         
         /**
-        * Called after the engine's rendering has been completed.
+        * Called after a new frame has started
         */
         virtual void OnRender() {};
     
         /**
-        * Called before the engine shuts down.
+        * Called before the engine shuts down
         */
         virtual void OnDestroy() {};
     

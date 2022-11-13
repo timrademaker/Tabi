@@ -6,6 +6,8 @@
 
 namespace tabi
 {
+	class Camera;
+
 	class Shader* LoadShader(const char* a_ShaderPath, tabi::EShaderType a_ShaderType, const char* a_DebugName = nullptr);
 
 	/**
@@ -25,5 +27,7 @@ namespace tabi
 		void BeginFrame();
 		void EndFrame();
 
+		tabi::Camera* GetMainCamera();
+		void SetMainCamera(tabi::Camera* a_Camera);
 	}
 }

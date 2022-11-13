@@ -61,7 +61,11 @@ namespace tabi
          * @brief Updates all registered systems
          * @params a_DeltaTime The time between the previous update and this update
          */
-        void Update(float a_DeltaTime);
+        void Update(float a_DeltaTime) const;
+        /**
+         * @brief Calls OnRender() on all registered systems
+         */
+        void Render() const;
 
     private:
         /**

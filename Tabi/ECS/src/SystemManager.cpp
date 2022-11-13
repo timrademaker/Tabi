@@ -6,7 +6,7 @@ void SystemManager::OnEntityDestroyed(const Entity a_Entity)
 {
     for(const auto& pair : m_Systems)
     {
-        pair.second->m_Entities.erase(a_Entity);
+        pair.second->RemoveEntity(a_Entity);
     }
 }
 
@@ -19,11 +19,11 @@ void SystemManager::OnEntitySignatureChanged(const Entity a_Entity, EntitySignat
 
         if((a_Signature & systemSignature) == systemSignature)
         {
-            system->m_Entities.insert(a_Entity);
+            system->AddEntity(a_Entity);
         }
         else
         {
-            system->m_Entities.erase(a_Entity);
+            system->RemoveEntity(a_Entity);
         }
     }
 }

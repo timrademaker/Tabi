@@ -141,11 +141,11 @@ namespace tabi
         {
             if ((entitySignatures[ent] & signature) == signature)
             {
-                system->m_Entities.insert(ent);
+                system->AddEntity(ent);
             }
             else
             {
-                system->m_Entities.erase(ent);
+                system->RemoveEntity(ent);
             }
         }
 

@@ -55,17 +55,18 @@ void tabi::OpenGLCommandList::BindVertexBuffers(int32_t a_FirstSlot, const Buffe
 		{
 			tabi::vector<GLuint> vertexBuffers(a_NumBuffers);
 			tabi::vector<GLsizei> strides(a_NumBuffers);
+			tabi::vector<GLintptr> offsets(a_NumBuffers);
 
 			for (size_t i = 0; i < a_NumBuffers; ++i)
 			{
-				const OpenGLBuffer* oglBuffer = static_cast<const OpenGLBuffer*>(buffers[i]);
+				const auto* oglBuffer = static_cast<const OpenGLBuffer*>(buffers[i]);
 				TABI_ASSERT(oglBuffer->GetBufferDescription().m_Role == EBufferRole::Vertex);
 
 				vertexBuffers[i] = oglBuffer->GetID();
 				strides[i] = buffers[i]->GetBufferDescription().m_Stride;
-			}
 
-			const tabi::vector<GLintptr> offsets(a_NumBuffers);
+				offsets[i] = 0;
+			}
 
 			glBindVertexBuffers(a_FirstSlot, a_NumBuffers, vertexBuffers.data(), offsets.data(), strides.data());
 		}

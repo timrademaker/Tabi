@@ -239,9 +239,6 @@ Mesh tabi::Mesh::LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a
         }
     }
 
-    m.m_VertexCount = static_cast<unsigned>(m.m_Vertices.size());
-    m.m_IndexCount = static_cast<unsigned>(m.m_Indices.size());
-
     auto* const device = IDevice::GetInstance();
     auto* commands = device->CreateCommandList("Load mesh");
     commands->BeginRecording();

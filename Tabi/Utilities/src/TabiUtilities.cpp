@@ -24,9 +24,9 @@ tabi::string tabi::utils::StringReplace(const tabi::string& a_String, const tabi
 // String hashing function
 // Taken from http://www.cse.yorku.ca/~oz/hash.html (public domain)
 ////////////////////////////////////////////////////////////////////////////////
-tabi::resources::ResouceID tabi::utils::CalculateResourceID(const char* a_FilePath)
+tabi::resources::ResourceID tabi::utils::CalculateResourceID(const char* a_FilePath)
 {
-    resources::ResouceID hash = 0;
+    resources::ResourceID hash = 0;
     int c = *a_FilePath++;
 
     while (c)

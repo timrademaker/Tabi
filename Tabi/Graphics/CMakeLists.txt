@@ -7,6 +7,9 @@ set(HEADERS
     inc/Graphics.h
     inc/Light.h
     inc/IWindow.h
+
+    inc/ECS/StaticMeshComponent.h
+    inc/ECS/StaticMeshRenderSystem.h
 )
 
 # Set sources for Graphics
@@ -14,6 +17,9 @@ set(SOURCES
     src/Camera.cpp
     src/Graphics.cpp
     src/IWindow.cpp
+
+    src/ECS/StaticMeshComponent.cpp
+    src/ECS/StaticMeshRenderSystem.cpp
 )
 
 if(WIN32)

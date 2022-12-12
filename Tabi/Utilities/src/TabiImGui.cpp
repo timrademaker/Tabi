@@ -262,8 +262,8 @@ namespace tabi
             a_Ctx->m_CommandList->CopyDataToTexture(a_Ctx->m_FontTexture, tud);
             io.Fonts->SetTexID(a_Ctx->m_FontTexture);
 
-            a_Ctx->m_VertexShader = tabi::graphics::LoadShader("TabiAssets/Shaders/imgui.vert", EShaderType::Vertex, "ImGui vertex shader");
-            a_Ctx->m_PixelShader = tabi::graphics::LoadShader("TabiAssets/Shaders/imgui.frag", EShaderType::Pixel, "ImGui pixel shader");
+            a_Ctx->m_VertexShader = tabi::LoadShader("TabiAssets/Shaders/imgui.vert", EShaderType::Vertex, "ImGui vertex shader");
+            a_Ctx->m_PixelShader = tabi::LoadShader("TabiAssets/Shaders/imgui.frag", EShaderType::Pixel, "ImGui pixel shader");
 
             GraphicsPipelineDescription gpd;
             gpd.m_VertexShader = a_Ctx->m_VertexShader;

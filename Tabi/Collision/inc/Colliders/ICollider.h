@@ -10,7 +10,7 @@ namespace tabi
         ICollider();
         ICollider(const Transform& a_WorldTransform);
         ICollider(const vec3& a_WorldPosition);
-        ~ICollider() = default;
+        virtual  ~ICollider() = default;
 
         /**
          * Get the furthest point in a given direction

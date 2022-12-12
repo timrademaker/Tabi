@@ -19,6 +19,8 @@ namespace tabi
         static tabi::shared_ptr<TextureResource> LoadTextureFromModel(const tinygltf::Model& a_Model, const std::size_t a_TextureIndex);
         // static tabi::shared_ptr<Texture> LoadTexture(const char* a_FilePath);
 
+        TABI_INLINE const class Texture* GetTexture() const { return m_Texture; }
+
     private:
         static EWrapMode ConvertWrapMode(unsigned int a_WrapMode);
         static EFilterMode ConvertFilter(unsigned int a_MinFilter);
@@ -31,5 +33,8 @@ namespace tabi
 
         tabi::vector<unsigned char> m_TextureData;
         SamplerDescription m_SamplerDescription;
+
+    private:
+        class Texture* m_Texture = nullptr;
     };
 }

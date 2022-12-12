@@ -1,12 +1,18 @@
 #include "Resources/TextureResource.h"
 
+#include <IDevice.h>
+#include <ICommandList.h>
+#include <Texture.h>
+
+#include <Graphics.h>
+
 #include <Logging.h>
 
 #include <tinygltf/tiny_gltf.h>
 
 
 tabi::shared_ptr<tabi::TextureResource> tabi::TextureResource::LoadTextureFromModel(const tinygltf::Model& a_Model,
-    const std::size_t a_TextureIndex)
+                                                                                    const std::size_t a_TextureIndex)
 {
     // Texture
     if (a_TextureIndex >= a_Model.textures.size())
@@ -24,6 +30,8 @@ tabi::shared_ptr<tabi::TextureResource> tabi::TextureResource::LoadTextureFromMo
     tex->m_Format = ConvertFormat(a_Model.images[imageIndex].component, a_Model.images[imageIndex].bits, a_Model.images[imageIndex].pixel_type);
 
     tex->m_TextureData = a_Model.images[imageIndex].image;
+
+    tex->m_Texture = tabi::LoadTexture(tex->m_Format, ETextureDimension::Tex2D, tex->m_Width, tex->m_Height, 1, tex->m_TextureData.data());
 
     // Sampler
     auto& samplerIndex = a_Model.textures[a_TextureIndex].sampler;

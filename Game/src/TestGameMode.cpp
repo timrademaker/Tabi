@@ -57,15 +57,15 @@ bool TestGameMode::OnInitialize()
         m.m_Position = tabi::vec3{ -10.0f, -5.0f, -15.0f };
         m.m_Rotation = tabi::vec3{ 0.0f, -1.57f, 0.0f };
 
-        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(tabi::Mesh::Vertex) * mesh->m_VertexCount, sizeof(tabi::Mesh::Vertex) }, "GLB vertex buffer");
-        m.m_VertexCount = mesh->m_VertexCount;
-        m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(mesh->m_Vertices.data()), sizeof(tabi::Mesh::Vertex) * mesh->m_VertexCount, 0);
+        m.m_VertexBuffer = device->CreateBuffer({ tabi::EFormat::RGB32_float, tabi::EBufferRole::Vertex, sizeof(tabi::Mesh::Vertex) * mesh->GetVertexCount(), sizeof(tabi::Mesh::Vertex) }, "GLB vertex buffer");
+        m.m_VertexCount = mesh->GetVertexCount();
+        m_CommandList->CopyDataToBuffer(m.m_VertexBuffer, reinterpret_cast<const char*>(mesh->m_Vertices.data()), sizeof(tabi::Mesh::Vertex) * mesh->GetVertexCount(), 0);
 
         m.m_IndexBuffer = device->CreateBuffer({ tabi::EFormat::R32_uint, tabi::EBufferRole::Index, sizeof(mesh->m_Indices[0]) * mesh->m_Indices.size(), 0 }, "GLB index buffer");
         m.m_IndexCount = mesh->m_Indices.size();
         m_CommandList->CopyDataToBuffer(m.m_IndexBuffer, reinterpret_cast<const char*>(&mesh->m_Indices[0]), sizeof(mesh->m_Indices[0]) * mesh->m_Indices.size(), 0);
 
-        auto tex = mesh->m_Material->m_MetalicRoughness->m_BaseColorTexture;
+        auto tex = mesh->m_Material->m_MetallicRoughness->m_BaseColorTexture;
         if (tex)
         {
             tabi::TextureDescription td{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::Texture, tex->m_Format };
@@ -115,8 +115,8 @@ bool TestGameMode::OnInitialize()
         m_ConstBuffer = device->CreateBuffer({ tabi::EFormat::RGBA32_float, tabi::EBufferRole::Constant, sizeof(tabi::mat4), 0 }, "Test constant buffer");
 
         // Create vertex pipeline
-        auto* vertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
-        auto* pixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
+        auto* vertShader = tabi::LoadShader("TabiAssets/Shaders/VertexShader.vert", tabi::EShaderType::Vertex, "Test vertex shader");
+        auto* pixShader = tabi::LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", tabi::EShaderType::Pixel, "Test pixel shader");
 
         m_Shaders.push_back(vertShader);
         m_Shaders.push_back(pixShader);
@@ -165,8 +165,8 @@ bool TestGameMode::OnInitialize()
         m_CommandList->CopyDataToBuffer(m_UIQuad.m_IndexBuffer, reinterpret_cast<const char*>(&quadIndices[0]), sizeof(quadIndices), 0);
 
         // Create vertex pipeline
-        auto* uiVertShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.vert", tabi::EShaderType::Vertex, "UI vertex shader");
-        auto* uiPixShader = tabi::graphics::LoadShader("TabiAssets/Shaders/UI.frag", tabi::EShaderType::Pixel, "UI pixel shader");
+        auto* uiVertShader = tabi::LoadShader("TabiAssets/Shaders/UI.vert", tabi::EShaderType::Vertex, "UI vertex shader");
+        auto* uiPixShader = tabi::LoadShader("TabiAssets/Shaders/UI.frag", tabi::EShaderType::Pixel, "UI pixel shader");
         m_Shaders.push_back(uiVertShader);
         m_Shaders.push_back(uiPixShader);
 

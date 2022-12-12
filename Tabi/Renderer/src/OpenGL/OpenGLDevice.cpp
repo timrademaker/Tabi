@@ -481,19 +481,18 @@ tabi::GraphicsPipeline* tabi::OpenGLDevice::CreateGraphicsPipeline(
 			TABI_ASSERT(vaoId != 0, "Failed to create VAO");
 			pipeline->SetVAO(vaoId);
 
-			GLuint dataOffset = 0;
+			tabi::map<uint8_t, GLuint> dataOffset;
 			for (GLuint i = 0; i < pipelineDesc.m_VertexInputLayout.m_NumInputElements; ++i)
 			{
 				const auto& inputElement = pipelineDesc.m_VertexInputLayout.m_InputElements[i];
 				const auto& formatInfo = GetFormatInfo(inputElement.m_Format);
 
-				glVertexArrayAttribFormat(vaoId, i, formatInfo.m_ComponentCount, GLType(formatInfo.m_DataType), formatInfo.m_IsNormalized ? GL_TRUE : GL_FALSE, dataOffset);
+				glVertexArrayAttribFormat(vaoId, i, formatInfo.m_ComponentCount, GLType(formatInfo.m_DataType), formatInfo.m_IsNormalized ? GL_TRUE : GL_FALSE, dataOffset[inputElement.m_InputSlot]);
+				glVertexArrayBindingDivisor(vaoId, inputElement.m_InputSlot, inputElement.m_InstanceDataStepRate);
 				glEnableVertexArrayAttrib(vaoId, i);
 				glVertexArrayAttribBinding(vaoId, i, inputElement.m_InputSlot);
 
-				glVertexArrayBindingDivisor(vaoId, i, inputElement.m_InstanceDataStepRate);
-
-				dataOffset += formatInfo.m_FormatSizeInBytes;
+				dataOffset[inputElement.m_InputSlot] += formatInfo.m_FormatSizeInBytes;
 			}
 		}
 	);

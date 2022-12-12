@@ -11,7 +11,7 @@ namespace tabi
         BoxCollider(const tabi::vec3& a_HalfBoxExtents);
         BoxCollider(const tabi::vec3& a_HalfBoxExtents, const Transform& a_WorldTransform);
         BoxCollider(const tabi::vec3& a_HalfBoxExtents, const vec3& a_WorldPosition);
-        ~BoxCollider() = default;
+        virtual ~BoxCollider() override = default;
 
         /**
          * Set the half box extents for the cube

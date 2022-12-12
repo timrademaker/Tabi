@@ -3,6 +3,10 @@
 #include "Resources/Material.h"
 #include "ModelLoaderUtils.h"
 
+#include <Buffer.h>
+#include <IDevice.h>
+#include <ICommandList.h>
+
 #include <Math/vec3.h>
 
 #include <tinygltf/tiny_gltf.h>
@@ -235,7 +239,32 @@ Mesh tabi::Mesh::LoadMeshRaw(const tinygltf::Model& a_Model, const std::size_t a
         }
     }
 
-    m.m_VertexCount = static_cast<unsigned>(m.m_Vertices.size());
+    auto* const device = IDevice::GetInstance();
+    auto* commands = device->CreateCommandList("Load mesh");
+    commands->BeginRecording();
+    {
+        BufferDescription bd;
+        bd.m_Role = EBufferRole::Vertex;
+        bd.m_SizeInBytes = sizeof(Vertex) * m.m_Vertices.size();
+        bd.m_Stride = sizeof(Vertex);
+        bd.m_Format = EFormat::RGB32_float;
+
+        m.m_VertexBuffer = device->CreateBuffer(bd, m.m_Name.c_str());
+        commands->CopyDataToBuffer(m.m_VertexBuffer, m.m_Vertices.data(), bd.m_SizeInBytes);
+    }
+    {
+        BufferDescription bd;
+        bd.m_Role = EBufferRole::Index;
+        bd.m_SizeInBytes = sizeof(unsigned) * m.m_Indices.size();
+        bd.m_Stride = sizeof(unsigned);
+        bd.m_Format = EFormat::R32_uint;
+
+        m.m_IndexBuffer = device->CreateBuffer(bd, m.m_Name.c_str());
+        commands->CopyDataToBuffer(m.m_IndexBuffer, m.m_Indices.data(), bd.m_SizeInBytes);
+    }
+    commands->EndRecording();
+    device->ExecuteCommandList(commands);
+    device->DestroyCommandList(commands);
 
     return m;
 }

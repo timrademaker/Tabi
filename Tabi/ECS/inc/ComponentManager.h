@@ -33,29 +33,29 @@ namespace tabi
 
         /**
          * @brief Add a component to an entity
-         * @params a_Entity The entity to add the component to
-         * @params a_Component The component to add to the entity
+         * @param a_Entity The entity to add the component to
+         * @param a_Component The component to add to the entity
          */
         template<typename ComponentType>
         void AddComponent(const Entity a_Entity, ComponentType& a_Component);
 
         /**
          * @brief Get a component that is attached to an entity
-         * @params a_Entity The entity to get the component from
+         * @param a_Entity The entity to get the component from
          */
         template<typename ComponentType>
         ComponentType& GetComponent(const Entity a_Entity);
 
         /**
          * @brief Remove a component from an entity
-         * @params a_Entity The entity to remove the component from
+         * @param a_Entity The entity to remove the component from
          */
         template<typename ComponentType>
         void RemoveComponent(Entity a_Entity);
 
         /**
          * @brief Called when an entity is destroyed
-         * @params a_Entity The entity that was destroyed
+         * @param a_Entity The entity that was destroyed
          */
         void OnEntityDestroyed(const Entity a_Entity);
 

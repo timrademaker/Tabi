@@ -80,7 +80,9 @@ namespace tabi
 
 	struct VertexInputLayout
 	{
-		tabi::array<VertexInputElement, 8> m_InputElements{};
+		static constexpr size_t MaxInputElements = 8;
+
+		tabi::array<VertexInputElement, MaxInputElements> m_InputElements{};
 		uint8_t m_NumInputElements = 0;
 	};
 

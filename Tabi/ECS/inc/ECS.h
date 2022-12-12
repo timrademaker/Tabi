@@ -29,41 +29,34 @@ namespace tabi
         Entity CreateEntity();
         /**
          * @brief Destroy an entity and invalidates it
-         * @params a_Entity The entity to destroy
+         * @param a_Entity The entity to destroy
          */
         void DestroyEntity(Entity& a_Entity);
         /**
          * @brief Get the signature of an entity (containing information about the components it has)
-         * @params a_Entity The entity for which to retrieve the signature
+         * @param a_Entity The entity for which to retrieve the signature
          * @returns The signature of the entity
          */
-        EntitySignature GetEntitySignature(const Entity a_Entity);
-        /**
-         * @brief Sets the signature of an entity
-         * @params a_Entity The entity of which the signature should be modified
-         * @params a_Signature The signature to apply to the entity
-         */
-        void SetEntitySignature(const Entity a_Entity, const EntitySignature& a_Signature);
-
+        EntitySignature GetEntitySignature(const Entity a_Entity) const;
 
         /**  ComponentManager **/
 
         /**
          * @brief Add a component to an entity
-         * @params a_Entity The entity to add the component to
-         * @params a_Component The component to add to the entity
+         * @param a_Entity The entity to add the component to
+         * @param a_Component The component to add to the entity
          */
         template<typename ComponentType>
         void AddComponent(const Entity a_Entity, ComponentType a_Component);
         /**
          * @brief Get a component that is attached to an entity
-         * @params a_Entity The entity to get the component from
+         * @param a_Entity The entity to get the component from
          */
         template<typename ComponentType>
         ComponentType& GetComponent(const Entity a_Entity);
         /**
          * @brief Remove a component from an entity
-         * @params a_Entity The entity to remove the component from
+         * @param a_Entity The entity to remove the component from
          */
         template<typename ComponentType>
         void RemoveComponent(Entity a_Entity);
@@ -72,35 +65,27 @@ namespace tabi
          * @returns The ID of a component type
          */
         template<typename ComponentType>
-        ComponentTypeID GetComponentTypeID();
+        ComponentTypeID GetComponentTypeID() const;
 
 
         /** SystemManager **/
 
         /**
          * @brief Register a new system
-         * @params a_ComponentManager The ComponentManager this system is used on
          * @returns The created system
          */
         template<typename SystemType>
-        tabi::shared_ptr<SystemType> RegisterSystem();
-        /**
-         * @brief Set whether a component type is required or not for a system
-         * @params a_Required True if the system requires the component, false if not
-         */
-        template<typename SystemType, typename ComponentType>
-        void SetComponentTypeRequired(bool a_Required);
-        /**
-         * @brief Set the signature of a system
-         * @params a_Signature The signature to apply to the system
-         */
-        template<typename SystemType>
-        void SetSystemSignature(const SystemSignature& a_Signature);
+        std::enable_if_t<std::is_base_of_v<ISystem, SystemType>, tabi::shared_ptr<SystemType>> RegisterSystem();
+        
         /**
          * @brief Updates all registered systems
-         * @params a_DeltaTime The time between the previous update and this update
+         * @param a_DeltaTime The time between the previous update and this update
          */
-        void Update(float a_DeltaTime);
+        void Update(float a_DeltaTime) const;
+        /**
+         * @brief Calls OnRender() on all registered systems
+         */
+        void Render() const;
 
     private:
         tabi::unique_ptr<EntityManager> m_EntityManager;
@@ -127,7 +112,7 @@ namespace tabi
     }
 
     template<typename ComponentType>
-    inline ComponentTypeID ECS::GetComponentTypeID()
+    inline ComponentTypeID ECS::GetComponentTypeID() const
     {
         return m_ComponentManager->GetComponentTypeID<ComponentType>();
     }
@@ -145,40 +130,25 @@ namespace tabi
     }
 
     template<typename SystemType>
-    inline tabi::shared_ptr<SystemType> ECS::RegisterSystem()
+    std::enable_if_t<std::is_base_of_v<ISystem, SystemType>, tabi::shared_ptr<SystemType>> ECS::RegisterSystem()
     {
-        return std::move(m_SystemManager->RegisterSystem<SystemType>(m_ComponentManager.get()));
-    }
+        auto system = m_SystemManager->RegisterSystem<SystemType>(m_ComponentManager.get());
+        const auto signature = system->GetSystemSignature();
 
-    template<typename SystemType, typename ComponentType>
-    inline void ECS::SetComponentTypeRequired(bool a_Required)
-    {
-        auto systemSig = m_SystemManager->GetSystemSignature<SystemType>();
-        
-
-        systemSig.set(m_ComponentManager->GetComponentTypeID<ComponentType>(), a_Required);
-        
-       SetSystemSignature<SystemType>(systemSig);
-    }
-    
-    template<typename SystemType>
-    inline void ECS::SetSystemSignature(const SystemSignature& a_Signature)
-    {
-        m_SystemManager->SetSystemSignature<SystemType>(a_Signature);
-
+        // Add all existing entities with a matching signature to the system
         const auto& entitySignatures = m_EntityManager->GetAllSignatures();
-        auto system = m_SystemManager->GetSystem<SystemType>();
-
         for (tabi::Entity ent = 0; ent < entitySignatures.size(); ++ent)
         {
-            if ((entitySignatures[ent] & a_Signature) == a_Signature)
+            if ((entitySignatures[ent] & signature) == signature)
             {
-                system->m_Entities.insert(ent);
+                system->AddEntity(ent);
             }
             else
             {
-                system->m_Entities.erase(ent);
+                system->RemoveEntity(ent);
             }
         }
+
+        return std::move(system);
     }
 }

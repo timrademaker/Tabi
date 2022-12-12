@@ -11,6 +11,7 @@ namespace tabi
         SphereCollider(const float a_Radius);
         SphereCollider(const float a_Radius, const vec3& a_Center);
         SphereCollider(const float a_Radius, const Transform& a_WorldTransform);
+        virtual ~SphereCollider() override = default;
 
         virtual vec3 GetFurthestPointInDirection(const vec3& a_Direction) const override;
 

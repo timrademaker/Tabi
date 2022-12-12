@@ -9,7 +9,7 @@ namespace tabi
 {
     class ResourceManager
     {
-        using ResourceMap = tabi::map<resources::ResouceID, tabi::shared_ptr<IResource>>;
+        using ResourceMap = tabi::map<resources::ResourceID, tabi::shared_ptr<IResource>>;
         using WildcardVector = tabi::vector<tabi::pair<tabi::string, tabi::string>>;
     public:
         static ResourceManager& GetInstance();

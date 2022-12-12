@@ -17,7 +17,7 @@ namespace tabi
             : m_ComponentManager(a_ComponentManager) {}
         ISystem(ISystem&) = delete;
         ISystem(const ISystem&) = delete;
-        virtual ~ISystem() = default;
+        virtual ~ISystem() = 0;
 
         SystemSignature GetSystemSignature() const { return m_Signature; }
 
@@ -42,7 +42,7 @@ namespace tabi
          * @brief Updates a system
          * @param a_DeltaTime The time between the previous update and this update
          */
-        virtual void OnUpdate(float a_DeltaTime) { }
+        virtual void OnUpdate(float a_DeltaTime) { TABI_UNUSED(a_DeltaTime); }
         /**
          * @brief Function that is called after all systems have been updated and a new frame has started
          */
@@ -71,4 +71,6 @@ namespace tabi
         /** The required components for this system */
         SystemSignature m_Signature{};
     };
+
+    inline ISystem::~ISystem() = default;
 }

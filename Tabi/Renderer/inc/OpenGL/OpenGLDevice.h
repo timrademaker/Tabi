@@ -7,7 +7,7 @@
 
 namespace tabi
 {
-	class OpenGLDevice : public IDevice
+	class OpenGLDevice final : public IDevice
 	{
 	public:
 		virtual void Initialize(void* a_Window, uint32_t a_Width, uint32_t a_Height) override;

@@ -9,7 +9,7 @@
 
 namespace tabi
 {
-	class OpenGLCommandList : public ICommandList
+	class OpenGLCommandList final : public ICommandList
 	{
 	protected:
 		TABI_NO_COPY(OpenGLCommandList);
@@ -23,7 +23,7 @@ namespace tabi
 				m_DebugName = tabi::string(a_DebugName);
 			}
 		}
-		~OpenGLCommandList() = default;
+		virtual ~OpenGLCommandList() override = default;
 
 		virtual void BeginRecording() override;
 		virtual void EndRecording() override;

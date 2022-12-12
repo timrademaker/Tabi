@@ -10,7 +10,7 @@ namespace tabi
 	{
 	protected:
 		ICommandList() = default;
-		~ICommandList() = default;
+		virtual ~ICommandList() = default;
 
 	public:
 		TABI_NO_COPY(ICommandList);

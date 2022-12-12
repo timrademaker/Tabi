@@ -13,10 +13,12 @@ namespace tabi
         virtual void OnRender() override;
 
     private:
-        void Setup();
+        void SetupRenderPipeline();
 
     private:
         class Buffer* m_ConstantDataBuffer = nullptr;   // Data shared between all meshes
         class GraphicsPipeline* m_MeshInstancePipeline = nullptr;
+        class Shader* m_VertexShader = nullptr;
+        class Shader* m_PixelShader = nullptr;
     };
 }

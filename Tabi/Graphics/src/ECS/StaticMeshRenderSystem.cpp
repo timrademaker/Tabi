@@ -59,12 +59,9 @@ tabi::StaticMeshRenderSystem::StaticMeshRenderSystem(tabi::ComponentManager* a_C
 tabi::StaticMeshRenderSystem::~StaticMeshRenderSystem()
 {
     auto* device = IDevice::GetInstance();
-    // Slightly hacky, but this system is the only one with these pointers
-    auto* vertexShader = const_cast<Shader*>(m_MeshInstancePipeline->GetPipelineDescription().m_VertexShader);
-    device->DestroyShader(vertexShader);
-    auto* pixelShader = const_cast<Shader*>(m_MeshInstancePipeline->GetPipelineDescription().m_PixelShader);
-    device->DestroyShader(pixelShader);
 
+    device->DestroyShader(m_VertexShader);
+    device->DestroyShader(m_PixelShader);
     device->DestroyGraphicsPipeline(m_MeshInstancePipeline);
     device->DestroyBuffer(m_ConstantDataBuffer);
 }
@@ -73,7 +70,7 @@ void tabi::StaticMeshRenderSystem::OnRender()
 {
     if (m_MeshInstancePipeline == nullptr)
     {
-        Setup();
+        SetupRenderPipeline();
     }
 
     auto* device = IDevice::GetInstance();
@@ -120,11 +117,13 @@ void tabi::StaticMeshRenderSystem::OnRender()
     device->DestroyCommandList(commands);
 }
 
-void tabi::StaticMeshRenderSystem::Setup()
+void tabi::StaticMeshRenderSystem::SetupRenderPipeline()
 {
     GraphicsPipelineDescription gpd;
-    gpd.m_VertexShader = LoadShader("TabiAssets/Shaders/VertexShader.vert", EShaderType::Vertex, "Mesh Vert Shader");
-    gpd.m_PixelShader = LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", EShaderType::Pixel, "Mesh Frag Shader");
+    m_VertexShader = LoadShader("TabiAssets/Shaders/VertexShader.vert", EShaderType::Vertex, "Mesh Vert Shader");
+    gpd.m_VertexShader = m_VertexShader;
+    m_PixelShader = LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", EShaderType::Pixel, "Mesh Frag Shader");
+    gpd.m_PixelShader = m_PixelShader;
     gpd.m_Topology = EToplolgy::Triangle;
 
     gpd.m_VertexInputLayout.m_InputElements[0] = VertexInputElement{ 0, 0, "POSITION", EFormat::RGB32_float, EInstanceDataStepClassification::PerVertex, 0 };

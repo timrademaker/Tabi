@@ -22,7 +22,7 @@ void tabi::ECS::DestroyEntity(Entity& a_Entity)
     m_EntityManager->DestroyEntity(a_Entity);
 }
 
-tabi::EntitySignature tabi::ECS::GetEntitySignature(const Entity a_Entity) const
+const tabi::EntitySignature& tabi::ECS::GetEntitySignature(const Entity a_Entity) const
 {
     return m_EntityManager->GetSignature(a_Entity);
 }

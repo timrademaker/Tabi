@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.8)
 
 set(ECS_HELPERS_HEADERS
     Helpers/MockSystem.h
+    Helpers/TestComponent.h
 )
 
 set(ECS_HELPERS_SOURCES

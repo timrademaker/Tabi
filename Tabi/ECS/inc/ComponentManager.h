@@ -7,6 +7,8 @@
 #include <TabiPointers.h>
 #include <TabiMacros.h>
 
+#include <Logging.h>
+
 #include <cstdint>
 
 namespace tabi
@@ -20,8 +22,10 @@ namespace tabi
     public:
         /**
          * @brief Register a component type so that it can be used
+         * @tparam ComponentType The component type to register
+         * @tparam MaxComponentsOfType The maximum number of components of ComponentType that can be created at a time
          */
-        template<typename ComponentType>
+        template<typename ComponentType, size_t MaxComponentsOfType = MAX_ENTITIES>
         void RegisterComponentType();
 
         /**
@@ -37,14 +41,14 @@ namespace tabi
          * @param a_Component The component to add to the entity
          */
         template<typename ComponentType>
-        void AddComponent(const Entity a_Entity, ComponentType& a_Component);
+        void AddComponent(Entity a_Entity, ComponentType& a_Component);
 
         /**
          * @brief Get a component that is attached to an entity
          * @param a_Entity The entity to get the component from
          */
         template<typename ComponentType>
-        ComponentType& GetComponent(const Entity a_Entity);
+        ComponentType& GetComponent(Entity a_Entity);
 
         /**
          * @brief Remove a component from an entity
@@ -57,7 +61,7 @@ namespace tabi
          * @brief Called when an entity is destroyed
          * @param a_Entity The entity that was destroyed
          */
-        void OnEntityDestroyed(const Entity a_Entity);
+        void OnEntityDestroyed(Entity a_Entity) const;
 
     private:
         /**
@@ -84,7 +88,7 @@ namespace tabi
         ComponentTypeID m_NextComponentType = 0;
     };
 
-    template<typename ComponentType>
+    template<typename ComponentType, size_t MaxComponentsOfType>
     inline void ComponentManager::RegisterComponentType()
     {
         auto hash = HashComponentType<ComponentType>();
@@ -93,7 +97,7 @@ namespace tabi
         TABI_ASSERT(m_ComponentTypes.find(hash) == m_ComponentTypes.end());
 
         m_ComponentTypes.insert(tabi::make_pair(hash, m_NextComponentType));
-        m_ComponentArrays.insert(tabi::make_pair(hash, tabi::make_shared<ComponentArray<ComponentType>>()));
+        m_ComponentArrays.insert(tabi::make_pair(hash, tabi::make_shared<ComponentArray<ComponentType>>(MaxComponentsOfType)));
 
         ++m_NextComponentType;
     }
@@ -106,6 +110,7 @@ namespace tabi
         // Make sure the component type has been registered
         if (m_ComponentTypes.find(hash) == m_ComponentTypes.end())
         {
+            TABI_WARN("Trying to get a component type ID from a component type that has not yet been registered. Registering component type.");
             RegisterComponentType<ComponentType>();
         }
 
@@ -144,6 +149,7 @@ namespace tabi
         // Make sure the component type has been registered
         if (m_ComponentTypes.find(hash) == m_ComponentTypes.end())
         {
+            TABI_WARN("Trying to get a component type ID from a component type that has not yet been registered. Registering component type.");
             RegisterComponentType<ComponentType>();
         }
 

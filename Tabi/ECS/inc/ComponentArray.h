@@ -14,9 +14,22 @@ namespace tabi
     class ComponentArray : public IComponentArray
     {
     public:
-        ComponentArray() = default;
-        ComponentArray(ComponentArray&) = delete;
-        ComponentArray(const ComponentArray&) = delete;
+        ComponentArray(const size_t a_MaxComponentsOfType = MAX_ENTITIES)
+        {
+            TABI_ASSERT(a_MaxComponentsOfType <= MAX_ENTITIES, "Trying to create a component array that can hold more components than the number of entities that can be created");
+
+            // NOTE: a_MaxComponentsOfType is not a template parameter because that would mean we can't cast an IComponentArray
+            // to the correct type without knowing the max number of components in other places at compile time (see ComponentManager::GetComponentArray())
+            m_Components.resize(a_MaxComponentsOfType);
+
+            for (size_t i = 0; i < a_MaxComponentsOfType; ++i)
+            {
+                m_AvailableComponentIndices.push(i);
+            }
+        }
+
+        TABI_NO_MOVE(ComponentArray);
+        TABI_NO_COPY(ComponentArray);
         virtual ~ComponentArray() override = default;
 
         /**
@@ -40,44 +53,48 @@ namespace tabi
         virtual void OnEntityDestroyed(const Entity a_Entity) override;
 
     private:
-        tabi::array<ComponentType, MAX_ENTITIES> m_Components;
-        tabi::set<Entity> m_EntitiesWithComponent;
+        tabi::vector<ComponentType> m_Components;
+        tabi::queue<size_t> m_AvailableComponentIndices;
+
+        tabi::unordered_map<Entity, size_t> m_EntityToComponentIndex;
     };
 
-    template <typename ComponentType>
+    template<typename ComponentType>
     void ComponentArray<ComponentType>::AddComponent(const Entity a_Entity, ComponentType& a_Component)
     {
-        // Check if the entity already has this component
-        TABI_ASSERT(m_EntitiesWithComponent.find(a_Entity) == m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntityToComponentIndex.find(a_Entity) == m_EntityToComponentIndex.end(), "Entity already has a component of this type");
+        TABI_ASSERT(!m_AvailableComponentIndices.empty(), "Trying to add more components of this type than expected");
 
-        m_Components[a_Entity] = a_Component;
-        m_EntitiesWithComponent.insert(a_Entity);
+
+        auto index = m_AvailableComponentIndices.front();
+        m_AvailableComponentIndices.pop();
+        m_Components[index] = a_Component;
+        m_EntityToComponentIndex.insert({ a_Entity, index });
     }
 
-    template <typename ComponentType>
+    template<typename ComponentType>
     ComponentType& ComponentArray<ComponentType>::GetComponent(const Entity a_Entity)
     {
-        // Check if the entity has this component
-        TABI_ASSERT(m_EntitiesWithComponent.find(a_Entity) != m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntityToComponentIndex.find(a_Entity) != m_EntityToComponentIndex.end(), "Entity does not have a component of this type");
 
-        return m_Components[a_Entity];
+        return m_Components[m_EntityToComponentIndex[a_Entity]];
     }
 
-    template <typename ComponentType>
+    template<typename ComponentType>
     void ComponentArray<ComponentType>::RemoveComponent(const Entity a_Entity)
     {
-        // Check if the entity has this component
-        TABI_ASSERT(m_EntitiesWithComponent.find(a_Entity) != m_EntitiesWithComponent.end());
+        TABI_ASSERT(m_EntityToComponentIndex.find(a_Entity) != m_EntityToComponentIndex.end(), "Entity does not have a component of this type");
 
         // Zero out memory
-        std::memset(&m_Components[a_Entity], 0, sizeof(ComponentType));      
-        m_EntitiesWithComponent.erase(a_Entity);
+        std::memset(&m_Components[m_EntityToComponentIndex[a_Entity]], 0, sizeof(ComponentType));
+        m_EntityToComponentIndex.erase(a_Entity);
+        m_AvailableComponentIndices.push(m_EntityToComponentIndex[a_Entity]);
     }
 
-    template <typename ComponentType>
+    template<typename ComponentType>
     void ComponentArray<ComponentType>::OnEntityDestroyed(const Entity a_Entity)
     {
-        if(m_EntitiesWithComponent.find(a_Entity) != m_EntitiesWithComponent.end())
+        if(m_EntityToComponentIndex.find(a_Entity) != m_EntityToComponentIndex.end())
         {
             RemoveComponent(a_Entity);
         }

@@ -43,9 +43,9 @@ namespace tabi
 
         /**
          * @brief Get all entity signatures
-         * @returns An array with all entitiy signatures (including entities that aren't alive)
+         * @returns An array with all entity signatures (including entities that aren't alive)
          */
-        const tabi::array<EntitySignature, MAX_ENTITIES>& GetAllSignatures();
+        const tabi::array<EntitySignature, MAX_ENTITIES>& GetAllSignatures() const;
 
     private:
         /// The signatures of all the entities

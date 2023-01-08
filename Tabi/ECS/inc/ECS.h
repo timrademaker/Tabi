@@ -19,7 +19,6 @@ namespace tabi
         
         ~ECS() = default;
 
-
         /** EntityManager **/
 
         /**
@@ -37,7 +36,7 @@ namespace tabi
          * @param a_Entity The entity for which to retrieve the signature
          * @returns The signature of the entity
          */
-        EntitySignature GetEntitySignature(const Entity a_Entity) const;
+        const EntitySignature& GetEntitySignature(const Entity a_Entity) const;
 
         /**  ComponentManager **/
 
@@ -66,6 +65,13 @@ namespace tabi
          */
         template<typename ComponentType>
         ComponentTypeID GetComponentTypeID() const;
+        /**
+         * @brief Register a component type
+         * @tparam ComponentType The component type to register
+         * @tparam MaxComponentsOfType The maximum number of components of ComponentType that can be created at a time
+         */
+        template<typename ComponentType, size_t MaxComponentsOfType = MAX_ENTITIES>
+        void RegisterComponentType();
 
 
         /** SystemManager **/
@@ -115,6 +121,12 @@ namespace tabi
     inline ComponentTypeID ECS::GetComponentTypeID() const
     {
         return m_ComponentManager->GetComponentTypeID<ComponentType>();
+    }
+
+    template <typename ComponentType, size_t MaxComponentsOfType>
+    void ECS::RegisterComponentType()
+    {
+        m_ComponentManager->RegisterComponentType<ComponentType, MaxComponentsOfType>();
     }
 
     template<typename ComponentType>

@@ -20,8 +20,7 @@ Entity tabi::EntityManager::CreateEntity()
     // Make sure there's still an available ID for a new entity
     TABI_ASSERT(!m_AvailableIDs.empty());
     
-    Entity ent;
-    ent = m_AvailableIDs.front();
+    const Entity ent = m_AvailableIDs.front();
     m_AvailableIDs.pop();
 
     return ent;
@@ -54,7 +53,7 @@ void tabi::EntityManager::SetSignature(const Entity a_Entity, const EntitySignat
     m_EntitySignatures[a_Entity] = a_Signature;
 }
 
-const tabi::array<EntitySignature, MAX_ENTITIES>& tabi::EntityManager::GetAllSignatures()
+const tabi::array<EntitySignature, MAX_ENTITIES>& tabi::EntityManager::GetAllSignatures() const
 {
     return m_EntitySignatures;
 }

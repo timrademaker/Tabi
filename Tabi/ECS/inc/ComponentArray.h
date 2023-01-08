@@ -14,8 +14,12 @@ namespace tabi
     class ComponentArray : public IComponentArray
     {
     public:
-        ComponentArray(const size_t a_MaxComponentsOfType = MAX_COMPONENTS)
+        ComponentArray(const size_t a_MaxComponentsOfType = MAX_ENTITIES)
         {
+            TABI_ASSERT(a_MaxComponentsOfType <= MAX_ENTITIES, "Trying to create a component array that can hold more components than the number of entities that can be created");
+
+            // NOTE: a_MaxComponentsOfType is not a template parameter because that would mean we can't cast an IComponentArray
+            // to the correct type without knowing the max number of components in other places at compile time (see ComponentManager::GetComponentArray())
             m_Components.resize(a_MaxComponentsOfType);
 
             for (size_t i = 0; i < a_MaxComponentsOfType; ++i)

@@ -41,14 +41,14 @@ namespace tabi
          * @param a_Component The component to add to the entity
          */
         template<typename ComponentType>
-        void AddComponent(const Entity a_Entity, ComponentType& a_Component);
+        void AddComponent(Entity a_Entity, ComponentType& a_Component);
 
         /**
          * @brief Get a component that is attached to an entity
          * @param a_Entity The entity to get the component from
          */
         template<typename ComponentType>
-        ComponentType& GetComponent(const Entity a_Entity);
+        ComponentType& GetComponent(Entity a_Entity);
 
         /**
          * @brief Remove a component from an entity
@@ -61,7 +61,7 @@ namespace tabi
          * @brief Called when an entity is destroyed
          * @param a_Entity The entity that was destroyed
          */
-        void OnEntityDestroyed(const Entity a_Entity);
+        void OnEntityDestroyed(Entity a_Entity) const;
 
     private:
         /**

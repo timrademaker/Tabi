@@ -17,7 +17,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.3.0
     
     - name: Setup
       shell: cmd
@@ -45,7 +45,7 @@ jobs:
         ctest -C %BUILD_TYPE% --output-on-failure
       
     - name: Archive Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: Tabi-${{ env.PLATFORM }}-${{ env.BUILD_TYPE }}-${{ github.run_number }}
         path: ${{ github.workspace }}/bin/${{ env.PLATFORM }}/${{ env.BUILD_TYPE }}/bin

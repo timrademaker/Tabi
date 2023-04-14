@@ -4,7 +4,7 @@
 
 namespace tabi
 {
-	enum class EToplolgy : uint8_t
+	enum class ETopology : uint8_t
 	{
 		Point,
 		Line,

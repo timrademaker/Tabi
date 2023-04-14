@@ -93,7 +93,7 @@ namespace tabi
 		const class Shader* m_VertexShader = nullptr;
 		const class Shader* m_PixelShader = nullptr;
 
-		EToplolgy m_Topology = EToplolgy::Triangle;
+		ETopology m_Topology = ETopology::Triangle;
 		// If false, the first blend state will be used for all blend targets
 		bool m_IndividualBlend = false;
 		tabi::array<BlendState, MaxBlendTargets> m_BlendState;

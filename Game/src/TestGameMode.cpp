@@ -139,7 +139,7 @@ bool TestGameMode::OnInitialize()
         tabi::DepthStencilState depthStencilState;
         depthStencilState.m_EnableDepthTest = true;
 
-        const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
+        const auto pipelineDesc = tabi::GraphicsPipelineDescription{ vertShader, pixShader, tabi::ETopology::Triangle, false, {blendState}, rasterizerState, depthStencilState, vertexInput };
         m_MeshPipeline = device->CreateGraphicsPipeline(pipelineDesc, "Test pipeline");
     }
 
@@ -184,7 +184,7 @@ bool TestGameMode::OnInitialize()
         tabi::DepthStencilState depthStencilState;
         depthStencilState.m_EnableDepthTest = false;
 
-        m_UIPipeline = device->CreateGraphicsPipeline(tabi::GraphicsPipelineDescription{ uiVertShader, uiPixShader, tabi::EToplolgy::Triangle, false, {blendState}, rasterizerState, depthStencilState, uiVertexInput }, "UI pipeline");
+        m_UIPipeline = device->CreateGraphicsPipeline(tabi::GraphicsPipelineDescription{ uiVertShader, uiPixShader, tabi::ETopology::Triangle, false, {blendState}, rasterizerState, depthStencilState, uiVertexInput }, "UI pipeline");
 
         m_DrawTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::RenderTexture, tabi::EFormat::RGBA32_uint, 1280, 720, 1, 1 }, "Render texture");
         m_DepthTex = device->CreateTexture(tabi::TextureDescription{ tabi::ETextureDimension::Tex2D, tabi::ETextureRole::DepthStencil, tabi::EFormat::Depth24Stencil8, 1280, 720, 1, 1 }, "Depth texture");

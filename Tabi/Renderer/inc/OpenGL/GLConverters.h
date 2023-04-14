@@ -39,7 +39,7 @@ namespace tabi
 	GLenum GLBlendEquation(EBlendOperation a_BlendOperation);
 	GLenum GLBlendFactor(EBlendFactor a_BlendFactor);
 
-	GLenum GLTopology(EToplolgy a_Topology);
+	GLenum GLTopology(ETopology a_Topology);
 
 	GLint GLCubeFaceToLayer(ETextureDimension a_TextureDimension, uint8_t a_Layer, ECubeMapFace a_Face);
 

@@ -268,7 +268,7 @@ namespace tabi
             GraphicsPipelineDescription gpd;
             gpd.m_VertexShader = a_Ctx->m_VertexShader;
             gpd.m_PixelShader = a_Ctx->m_PixelShader;
-            gpd.m_Topology = EToplolgy::Triangle;
+            gpd.m_Topology = ETopology::Triangle;
 
             gpd.m_IndividualBlend = false;
             gpd.m_BlendState[0].m_BlendEnabled = true;

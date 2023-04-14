@@ -549,19 +549,19 @@ namespace tabi
 			}
 		}
 
-		GLenum GLTopology(EToplolgy a_Topology)
+		GLenum GLTopology(ETopology a_Topology)
 		{
 			switch (a_Topology)
 			{
-			case EToplolgy::Point:
+			case ETopology::Point:
 				return GL_POINTS;
-			case EToplolgy::Line:
+			case ETopology::Line:
 				return GL_LINES;
-			case EToplolgy::LineStrip:
+			case ETopology::LineStrip:
 				return GL_LINE_STRIP;
-			case EToplolgy::Triangle:
+			case ETopology::Triangle:
 				return GL_TRIANGLES;
-			case EToplolgy::TriangleStrip:
+			case ETopology::TriangleStrip:
 				return GL_TRIANGLE_STRIP;
 
 			default:

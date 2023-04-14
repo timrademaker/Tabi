@@ -124,7 +124,7 @@ void tabi::StaticMeshRenderSystem::SetupRenderPipeline()
     gpd.m_VertexShader = m_VertexShader;
     m_PixelShader = LoadShader("TabiAssets/Shaders/SingleTextureShader.frag", EShaderType::Pixel, "Mesh Frag Shader");
     gpd.m_PixelShader = m_PixelShader;
-    gpd.m_Topology = EToplolgy::Triangle;
+    gpd.m_Topology = ETopology::Triangle;
 
     gpd.m_VertexInputLayout.m_InputElements[0] = VertexInputElement{ 0, 0, "POSITION", EFormat::RGB32_float, EInstanceDataStepClassification::PerVertex, 0 };
     gpd.m_VertexInputLayout.m_InputElements[1] = VertexInputElement{ 0, 0, "NORMAL", EFormat::RGB32_float, EInstanceDataStepClassification::PerVertex, 0 };
